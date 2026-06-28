@@ -1,0 +1,68 @@
+.resources-catalog-virtual-scroll {
+  max-height: min(72vh, 720px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-secondary);
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
+}
+
+.resources-catalog-virtual-spacer {
+  position: relative;
+  width: 100%;
+}
+
+.resources-catalog-virtual-window {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.resources-catalog-virtual-row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.resource-catalog-card {
+  min-height: 0;
+}
+
+.material-source-btn {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  color: var(--btn-on-accent-text, #fff);
+  transition: transform 0.15s ease, filter 0.2s ease, background 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease;
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--accent-muted);
+}
+
+.material-source-btn:hover:not(.is-active) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.material-source-btn.is-active {
+  color: var(--accent-hover);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent-muted) 70%, var(--bg-secondary));
+  border-color: var(--border-primary);
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+.material-source-btn:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 2px;
+}

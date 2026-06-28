@@ -1,0 +1,76 @@
+
+> artquest@1.0.0 test
+> vitest run
+
+
+ RUN  v1.6.1 D:/artquest
+
+ тЬУ src/renderer/utils/__tests__/skillReview.test.ts  (9 tests) 6ms
+ тЬУ src/renderer/utils/__tests__/dailyQuests.test.ts  (17 tests) 8ms
+ тЬУ src/renderer/utils/__tests__/skillUnlocks.test.ts  (5 tests) 3ms
+ тЬУ src/renderer/utils/__tests__/recommendedQuest.test.ts  (4 tests) 3ms
+ тЬУ src/shared/__tests__/progressSchema.test.ts  (4 tests) 11ms
+ тЬУ src/renderer/utils/__tests__/dailyQuestGenerator.test.ts  (8 tests) 7ms
+ тЭп src/renderer/store/__tests__/useUIStore.test.ts  (0 test)
+ тЭп src/renderer/store/__tests__/questDeterminism.test.ts  (0 test)
+ тЭп src/renderer/store/__tests__/useSkillStore.test.ts  (0 test)
+ тЭп src/renderer/utils/__tests__/questService.test.ts  (0 test)
+ тЭп src/renderer/store/__tests__/useQuestStore.test.ts  (0 test)
+ тЭп src/renderer/store/__tests__/questFlow.test.ts  (0 test)
+ тЬУ src/renderer/utils/__tests__/useTimer.test.ts  (9 tests) 61ms
+ тЬУ src/renderer/components/__tests__/ErrorBoundary.test.tsx  (5 tests) 90ms
+ тЭп src/renderer/pages/__tests__/QuestDetail.test.tsx  (0 test)
+ тЬУ src/renderer/utils/__tests__/progressionBalance.test.ts  (10 tests) 4ms
+ тЬУ src/renderer/store/__tests__/useThemeStore.test.ts  (5 tests) 9ms
+ тЭп src/renderer/utils/__tests__/weeklyChallenge.test.ts  (0 test)
+ тЬУ src/renderer/utils/__tests__/questPrerequisites.test.ts  (2 tests) 3ms
+ тЭп src/renderer/components/__tests__/QuestCard.test.tsx  (0 test)
+ тЬУ src/renderer/utils/__tests__/youtubeLinks.test.ts  (7 tests) 11ms
+ тЭп src/renderer/utils/__tests__/sound.test.ts  (0 test)
+ тЬУ src/renderer/utils/__tests__/readImageCache.test.ts  (2 tests) 4ms
+ тЭп src/renderer/utils/__tests__/useDailyQuests.test.ts  (0 test)
+ тЬУ src/renderer/utils/__tests__/fileHelpers.test.ts  (2 tests) 6ms
+ тЭп src/renderer/i18n/__tests__/index.test.tsx  (0 test)
+ тЭп src/renderer/components/__tests__/Navbar.test.tsx  (0 test)
+ тЭп src/renderer/pages/__tests__/Settings.test.tsx  (0 test)
+ тЭп src/renderer/components/__tests__/AchievementPopup.test.tsx  (0 test)
+ тЭп src/renderer/components/__tests__/XpRewardToast.test.tsx  (0 test)
+ тЭп src/renderer/store/__tests__/largeProgress.test.ts  (0 test)
+ тЬУ src/renderer/utils/__tests__/browserProgress.test.ts  (3 tests) 3ms
+ тЬУ src/renderer/utils/__tests__/tokenizeTitleForTags.test.ts  (2 tests) 3ms
+
+тОптОптОптОптОптОп Failed Suites 17 тОптОптОптОптОптОп
+
+ FAIL  src/renderer/components/__tests__/AchievementPopup.test.tsx [ src/renderer/components/__tests__/AchievementPopup.test.tsx ]
+ FAIL  src/renderer/components/__tests__/Navbar.test.tsx [ src/renderer/components/__tests__/Navbar.test.tsx ]
+ FAIL  src/renderer/components/__tests__/QuestCard.test.tsx [ src/renderer/components/__tests__/QuestCard.test.tsx ]
+ FAIL  src/renderer/components/__tests__/XpRewardToast.test.tsx [ src/renderer/components/__tests__/XpRewardToast.test.tsx ]
+ FAIL  src/renderer/i18n/__tests__/index.test.tsx [ src/renderer/i18n/__tests__/index.test.tsx ]
+ FAIL  src/renderer/pages/__tests__/QuestDetail.test.tsx [ src/renderer/pages/__tests__/QuestDetail.test.tsx ]
+ FAIL  src/renderer/pages/__tests__/Settings.test.tsx [ src/renderer/pages/__tests__/Settings.test.tsx ]
+ FAIL  src/renderer/store/__tests__/largeProgress.test.ts [ src/renderer/store/__tests__/largeProgress.test.ts ]
+ FAIL  src/renderer/store/__tests__/questDeterminism.test.ts [ src/renderer/store/__tests__/questDeterminism.test.ts ]
+ FAIL  src/renderer/store/__tests__/questFlow.test.ts [ src/renderer/store/__tests__/questFlow.test.ts ]
+ FAIL  src/renderer/store/__tests__/useQuestStore.test.ts [ src/renderer/store/__tests__/useQuestStore.test.ts ]
+ FAIL  src/renderer/store/__tests__/useSkillStore.test.ts [ src/renderer/store/__tests__/useSkillStore.test.ts ]
+ FAIL  src/renderer/store/__tests__/useUIStore.test.ts [ src/renderer/store/__tests__/useUIStore.test.ts ]
+ FAIL  src/renderer/utils/__tests__/questService.test.ts [ src/renderer/utils/__tests__/questService.test.ts ]
+ FAIL  src/renderer/utils/__tests__/sound.test.ts [ src/renderer/utils/__tests__/sound.test.ts ]
+ FAIL  src/renderer/utils/__tests__/useDailyQuests.test.ts [ src/renderer/utils/__tests__/useDailyQuests.test.ts ]
+ FAIL  src/renderer/utils/__tests__/weeklyChallenge.test.ts [ src/renderer/utils/__tests__/weeklyChallenge.test.ts ]
+Error: Transform failed with 1 error:
+D:/artquest/src/renderer/utils/weeklyChallenge.ts:14:92: ERROR: Expected ";" but found ")"
+ тЭп failureErrorWithLog node_modules/vitest/node_modules/esbuild/lib/main.js:1472:15
+ тЭп node_modules/vitest/node_modules/esbuild/lib/main.js:755:50
+ тЭп responseCallbacks.<computed> node_modules/vitest/node_modules/esbuild/lib/main.js:622:9
+ тЭп handleIncomingPacket node_modules/vitest/node_modules/esbuild/lib/main.js:677:12
+ тЭп Socket.readFromStdout node_modules/vitest/node_modules/esbuild/lib/main.js:600:7
+ тЭп Socket.emit node:events:519:28
+
+тОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОптОп[1/17]тОп
+
+ Test Files  17 failed | 16 passed (33)
+      Tests  94 passed (94)
+   Start at  19:01:19
+   Duration  5.08s (transform 1.11s, setup 3.58s, collect 1.26s, tests 232ms, environment 42.41s, prepare 7.62s)
+

@@ -1,0 +1,14 @@
+node_modules/
+dist/
+out/
+release/
+coverage/
+dist-artquest-build*/
+dist-build*/
+public/fundamentals/pages/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.local

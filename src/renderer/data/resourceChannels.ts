@@ -1,0 +1,55 @@
+/** Curated instructor channels — expand resources in `videoResources.ts` over time. */
+export const RESOURCE_CHANNELS = {
+  /** Fallback for youtube search–curated links (mixed creators); regen via `npm run curate:node-youtube`. */
+  youtube_curated_mix: {
+    name: 'YouTube search picks',
+    url: 'https://www.youtube.com/',
+  },
+  animationschool_live: { name: 'Animation School Live', url: 'https://www.youtube.com/@animationschool_live' },
+  dongchang: { name: 'Dong Chang', url: 'https://www.youtube.com/@DongChang' },
+  mother_is_ape: { name: 'mother is ape', url: 'https://www.youtube.com/@mother_is_ape' },
+  ytartschool: { name: 'YT Art School', url: 'https://www.youtube.com/@YTartschool' },
+  ergojosh: { name: 'ErgoJosh', url: 'https://www.youtube.com/@ergojosh' },
+  linessensei: { name: 'Lines Sensei', url: 'https://www.youtube.com/@LinesSensei' },
+  aleiriau: { name: 'aleiriau', url: 'https://www.youtube.com/@aleiriau' },
+  cgspeak: { name: 'CGSpeak', url: 'https://www.youtube.com/@CGSpeak' },
+  aaronblaiseart: { name: 'Aaron Blaise', url: 'https://www.youtube.com/@AaronBlaiseArt' },
+  drawlikeasir: { name: 'Draw Like a Sir', url: 'https://www.youtube.com/@DrawlikeaSir' },
+  spywis: { name: "Spywi's Mind Palace Animations", url: 'https://www.youtube.com/@SpywisMindPalaceAnimations' },
+  pikat: { name: 'pikat', url: 'https://www.youtube.com/@pikat' },
+  brokendraw: { name: 'brokendraw', url: 'https://www.youtube.com/@brokendraw' },
+  keshart: { name: 'KeshArt', url: 'https://www.youtube.com/@KeshArt' },
+  rjanimationstoo: { name: 'RJ Animations Too', url: 'https://www.youtube.com/@rjanimationstoo' },
+  sakugafoundry: { name: 'Sakuga Foundry', url: 'https://www.youtube.com/@SakugaFoundry' },
+  alanbeckertutorials: { name: 'Alan Becker Tutorials', url: 'https://www.youtube.com/@AlanBeckerTutorials' },
+  tonikopantoja: { name: 'Toniko Pantoja', url: 'https://www.youtube.com/@TonikoPantoja' },
+  howardwimshurst: { name: 'Howard Wimshurst', url: 'https://www.youtube.com/@HowardWimshurst' },
+  marcobucci: { name: 'Marco Bucci', url: 'https://www.youtube.com/@MarcoBucci' },
+  sinixdesign: { name: 'Sinix Design', url: 'https://www.youtube.com/@SinixDesign' },
+  rossdraws: { name: 'Ross Draws', url: 'https://www.youtube.com/@RossDraws' },
+  ahmedaldoori: { name: 'Ahmed Aldoori', url: 'https://www.youtube.com/@AhmedAldoori' },
+  samdoesarts: { name: 'SamDoesArts', url: 'https://www.youtube.com/@SamDoesArts' },
+  jazza: { name: 'Jazza', url: 'https://www.youtube.com/@Jazza' },
+  stevenmichaelhampton: { name: 'Steven Michael Hampton', url: 'https://www.youtube.com/@stevenmichaelhampton' },
+  prokotv: { name: 'Proko', url: 'https://www.youtube.com/@ProkoTV' },
+  niroxious: { name: 'niroxious', url: 'https://www.youtube.com/@niroxious' },
+  kaycemcrew: { name: 'Kaycem Crew', url: 'https://www.youtube.com/@KaycemCrew' },
+  animecharlie: { name: 'Anime Charlie', url: 'https://www.youtube.com/@AnimeCharlie' },
+  rtfxanimation: { name: 'RTFX animation', url: 'https://www.youtube.com/@RTFXanimation' },
+  olofstorm: { name: 'Olof Storm', url: 'https://www.youtube.com/@OlofStorm' },
+  smertimbagraphics: { name: 'Smertimba Graphics', url: 'https://www.youtube.com/@SmertimbaGraphics' },
+  jaysenbatchelor: { name: 'Jaysen Batchelor', url: 'https://www.youtube.com/@JaysenBatchelor' },
+  sixteenbitdev: { name: '16BitDev', url: 'https://www.youtube.com/@16BitDev' },
+  dicode: { name: 'Dicode', url: 'https://www.youtube.com/@Dicode' },
+  gabrielaguiarprod: { name: 'Gabriel Aguiar Prod.', url: 'https://www.youtube.com/@GabrielAguiarProd' },
+  thespastudios: { name: 'The SPA Studios', url: 'https://www.youtube.com/@TheSPAStudios' },
+  doxiastudio: { name: 'Doxia Studio', url: 'https://www.youtube.com/@DoxiaStudio' },
+  lelu: { name: 'Le Lu', url: 'https://www.youtube.com/@LeLuVFX' },
+} as const
+
+export type ResourceChannelKey = keyof typeof RESOURCE_CHANNELS
+
+export const RESOURCE_CHANNEL_LIST = Object.entries(RESOURCE_CHANNELS).map(([key, v]) => ({
+  key: key as ResourceChannelKey,
+  ...v,
+}))

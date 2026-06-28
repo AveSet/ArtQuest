@@ -1,0 +1,47 @@
+ArtQuest
+
+Геймифицированное приложение для обучения рисованию и анимации.
+
+О приложении
+ArtQuest — десктопное приложение для Windows, которое помогает художникам и аниматорам выстраивать регулярную практику. Прогресс хранится локально на вашем устройстве. Синхронизация с Google Drive — опциональна и включается только по вашему выбору.
+
+Основные возможности
+• Каталог творческих заданий (квестов) с уровнями сложности
+• Дерево навыков с прокачкой по категориям
+• Ежедневная и недельная практика, стрики и достижения
+• Галерея ваших работ
+• Библиотека материалов и референсов
+
+Google Drive (опционально)
+Если вы подключаете Google Drive, ArtQuest может сохранять файлы галереи (изображения и видео ваших работ) в папку My Drive → ArtQuest → Gallery. Приложение получает доступ только к файлам, которые оно само создаёт. Прогресс, настройки и другие данные остаются на вашем компьютере.
+
+Платформа: Windows (Electron)
+Версия: 1.0.3
+
+Контакты
+По вопросам приложения: [УКАЖИТЕ ВАШ EMAIL]
+
+---
+
+ArtQuest
+
+A gamified desktop app for learning drawing and animation.
+
+About
+ArtQuest is a Windows desktop application that helps artists and animators build a consistent practice routine. Progress is stored locally on your device. Google Drive sync is optional and only enabled when you choose it.
+
+Features
+• Structured creative quests with difficulty levels
+• Skill tree with category progression
+• Daily and weekly practice, streaks, and achievements
+• Personal artwork gallery
+• Learning materials and reference library
+
+Google Drive (optional)
+When you connect Google Drive, ArtQuest can store gallery files (images and videos of your artwork) in My Drive → ArtQuest → Gallery. The app only accesses files it creates. Progress, settings, and other data remain on your computer.
+
+Platform: Windows (Electron)
+Version: 1.0.3
+
+Contact
+For app inquiries: [YOUR EMAIL]

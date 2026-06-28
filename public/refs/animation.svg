@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="Animation reference">
+  <rect width="320" height="180" fill="#1a1f2e"/>
+  <circle cx="80" cy="100" r="8" fill="#34d399"/><circle cx="160" cy="90" r="8" fill="#34d399"/><circle cx="240" cy="100" r="8" fill="#34d399"/>
+  <path d="M80 100 Q120 85 160 90 T240 100" stroke="#c9a227" stroke-width="2" fill="none"/>
+  <text x="160" y="24" fill="#94a3b8" font-size="12" text-anchor="middle" font-family="system-ui,sans-serif">Spacing &amp; arcs</text>
+</svg>

@@ -1,0 +1,704 @@
+[
+  {
+    "scope": "achievement",
+    "id": "first_quest",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete your first quest",
+    "value": "完成你的第一个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "two_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 2 quests",
+    "value": "完成 2 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "three_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 3 quests",
+    "value": "完成 3 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "five_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 5 quests",
+    "value": "完成 5 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "ten_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 10 quests",
+    "value": "完成 10 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "fifteen_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 15 quests",
+    "value": "完成 15 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "twentyfive_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 25 quests",
+    "value": "完成 25 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "thirty_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 30 quests",
+    "value": "完成 30 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "fifty_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 50 quests",
+    "value": "完成 50 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "seventyfive_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 75 quests",
+    "value": "完成 75 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "hundred_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 quests",
+    "value": "完成 100 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "onefifty_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 150 quests",
+    "value": "完成 150 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "twohundred_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 200 quests",
+    "value": "完成 200 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "threehundred_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 300 quests",
+    "value": "完成 300 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "fourhundred_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 400 quests",
+    "value": "完成 400 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "fivehundred_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 500 quests",
+    "value": "完成 500 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "sevenfifty_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 750 quests",
+    "value": "完成 750 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "thousand_quests",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 1000 quests",
+    "value": "完成 1000 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "all_categories",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete at least one quest in each category",
+    "value": "在每个类别中至少完成一个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "category_5",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 5 quests in each category",
+    "value": "在每个类别中完成 5 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "category_10",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 10 quests in each category",
+    "value": "在每个类别中完成 10 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "category_25",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 25 quests in each category",
+    "value": "在每个类别中完成 25 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "category_50",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 50 quests in each category",
+    "value": "在每个类别中完成 50 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "category_100",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 quests in each category",
+    "value": "在每个类别中完成 100 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "drawing_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 25 Drawing quests",
+    "value": "完成 25 个绘画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "drawing_enforcer",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 50 Drawing quests",
+    "value": "完成 50 个绘画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "drawing_century",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 Drawing quests",
+    "value": "完成 100 个绘画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "drawing_bicentury",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 200 Drawing quests",
+    "value": "完成 200 个绘画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "drawing_fivehund",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 500 Drawing quests",
+    "value": "完成 500 个绘画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "anatomy_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 25 Anatomy quests",
+    "value": "完成 25 个解剖学任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "anatomy_enforcer",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 50 Anatomy quests",
+    "value": "完成 50 个解剖学任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "anatomy_century",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 Anatomy quests",
+    "value": "完成 100 个解剖学任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "anatomy_bicentury",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 200 Anatomy quests",
+    "value": "完成 200 个解剖学任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "animation_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 15 Animation quests",
+    "value": "完成 15 个动画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "animation_expert",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 30 Animation quests",
+    "value": "完成 30 个动画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "animation_century",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 Animation quests",
+    "value": "完成 100 个动画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "animation_bicentury",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 200 Animation quests",
+    "value": "完成 200 个动画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "effects_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 15 Effects quests",
+    "value": "完成 15 个特效任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "effects_expert",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 30 Effects quests",
+    "value": "完成 30 个特效任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "effects_century",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 Effects quests",
+    "value": "完成 100 个特效任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "effects_bicentury",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 200 Effects quests",
+    "value": "完成 200 个特效任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "storytelling_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 15 Storytelling quests",
+    "value": "完成 15 个叙事任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "character_design_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 15 Character Design quests",
+    "value": "完成 15 个角色设计任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "environment_master",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 15 Environment quests",
+    "value": "完成 15 个环境任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "storytelling_expert",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 30 Storytelling quests",
+    "value": "完成 30 个叙事任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "storytelling_century",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 Storytelling quests",
+    "value": "完成 100 个叙事任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "storytelling_bicentury",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 200 Storytelling quests",
+    "value": "完成 200 个叙事任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_1",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete all daily quests in one day",
+    "value": "在一天内完成所有每日任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_3",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 3 days in a row",
+    "value": "连续 3 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_7",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 7 days in a row",
+    "value": "连续 7 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_14",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 14 days in a row",
+    "value": "连续 14 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_30",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 30 days in a row",
+    "value": "连续 30 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_50",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 50 days in a row",
+    "value": "连续 50 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_100",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 100 days in a row",
+    "value": "连续 100 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_200",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 200 days in a row",
+    "value": "连续 200 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "streak_365",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests for 365 days in a row",
+    "value": "连续 365 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "digital_artist",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 20 digital quests",
+    "value": "完成 20 个数字绘画任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "traditional_artist",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 20 traditional quests",
+    "value": "完成 20 个传统媒介任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "week_warrior",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests in same category for 7 days in a row",
+    "value": "在同一类别中连续 7 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "early_bird",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete a quest before 8 AM",
+    "value": "在上午 8 点前完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "night_owl",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete a quest after 10 PM",
+    "value": "在晚上 10 点后完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "speed_runner",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete a quest faster than half its estimated time",
+    "value": "用不到预计时间一半的速度完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "speed_demon_plus",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 5 quests faster than half the time",
+    "value": "用不到预计时间一半的速度完成 5 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "speed_elite",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 10 quests faster than half the time",
+    "value": "用不到预计时间一半的速度完成 10 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "speed_legend",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 25 quests faster than half the time",
+    "value": "用不到预计时间一半的速度完成 25 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "dedication",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests in same category for 5 days in a row",
+    "value": "在同一类别中连续 5 天完成任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "all_difficulties",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete quests of all difficulty levels",
+    "value": "完成所有难度等级的任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "five_in_day",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 5 quests in a single day",
+    "value": "在一天内完成 5 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "marathon_day",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 10 quests in a single day",
+    "value": "在一天内完成 10 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "all_legendary",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 5 quests of each difficulty level",
+    "value": "每个难度等级各完成 5 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "night_owl_elite",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 10 quests past midnight",
+    "value": "在午夜后完成 10 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "early_bird_elite",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 10 quests before 7 AM",
+    "value": "在上午 7 点前完成 10 个任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "unique_50",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 50 unique quests",
+    "value": "完成 50 个不同的任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "unique_100",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 100 unique quests",
+    "value": "完成 100 个不同的任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "unique_250",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 250 unique quests",
+    "value": "完成 250 个不同的任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "unique_500",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 500 unique quests",
+    "value": "完成 500 个不同的任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "unique_750",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete 750 unique quests",
+    "value": "完成 750 个不同的任务"
+  },
+  {
+    "scope": "achievement",
+    "id": "unique_1000",
+    "field": "description",
+    "lang": "zh",
+    "type": "zh_renwu_task",
+    "en": "Complete all 1540 catalog quests",
+    "value": "完成目录中的全部 1540 个任务"
+  }
+]

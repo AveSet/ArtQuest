@@ -1,0 +1,201 @@
+/* Theme-aware status & skill-node surfaces */
+
+.banner-success {
+  color: var(--status-success-text);
+  background: var(--status-success-bg);
+  border: 1px solid var(--status-success-border);
+}
+
+.banner-error {
+  color: var(--status-danger-text);
+  background: var(--status-danger-bg);
+  border: 1px solid var(--status-danger-border);
+}
+
+.chip-success {
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+  border: 1px solid var(--status-success-border);
+}
+
+.chip-info {
+  background: var(--status-info-bg);
+  color: var(--status-info-text);
+  border: 1px solid var(--status-info-border);
+}
+
+.chip-prestige {
+  background: var(--status-prestige-bg);
+  color: var(--status-prestige-text);
+  border: 1px solid var(--status-prestige-border);
+}
+
+.chip-warning-text {
+  color: var(--status-warning-text);
+}
+
+.prereq-met {
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+}
+
+.prereq-unmet {
+  background: var(--status-danger-bg);
+  color: var(--status-danger-text);
+}
+
+.stat-badge--streak-active {
+  background: var(--celebration-streak-bg);
+  border: 1px solid var(--celebration-streak-border);
+}
+
+.btn-danger,
+.btn-primary.btn-danger {
+  background: var(--btn-danger-bg) !important;
+  border-color: var(--btn-danger-border) !important;
+  color: #fff;
+}
+
+.btn-danger:hover,
+.btn-primary.btn-danger:hover {
+  background: var(--btn-danger-hover) !important;
+  filter: none;
+}
+
+.btn-dismiss-overlay {
+  background: var(--btn-dismiss-bg);
+  color: #fff;
+}
+
+.btn-dismiss-overlay:hover {
+  background: var(--btn-dismiss-hover);
+}
+
+.text-status-success {
+  color: var(--status-success-text);
+}
+
+.text-status-prestige {
+  color: var(--status-prestige-text);
+}
+
+.text-status-warning {
+  color: var(--status-warning-text);
+}
+
+/* Skill tree nodes */
+.node-skill {
+  box-sizing: border-box;
+  width: 5.5rem;
+  max-width: 5.5rem;
+  min-height: 4.875rem;
+  height: auto;
+  padding: 0.375rem 0.25rem 0.3125rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.125rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .node-skill {
+    width: 6rem;
+    max-width: 6rem;
+    min-height: 5.125rem;
+  }
+}
+
+.node-skill--selected {
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 24px var(--accent-muted);
+  scale: 1.05;
+  z-index: 10;
+}
+
+.node-skill--locked {
+  border: 2px solid var(--border-secondary);
+  background: var(--bg-tertiary);
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.node-skill--available {
+  border: 2px solid var(--border-primary);
+  background: var(--bg-secondary);
+}
+
+.node-skill--in-progress {
+  border: 2px solid var(--node-progress-border);
+  background: var(--node-progress-bg);
+  box-shadow: var(--node-progress-shadow);
+}
+
+.node-skill--mastered {
+  border: 2px solid var(--node-mastered-border);
+  background: var(--node-mastered-bg);
+  box-shadow: var(--node-mastered-shadow);
+}
+
+.node-skill:not(.node-skill--locked):hover {
+  scale: 1.05;
+  z-index: 10;
+}
+
+.node-level-badge {
+  position: absolute;
+  bottom: -0.5rem;
+  right: -0.5rem;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  color: #fff;
+}
+
+.node-level-badge--prestige {
+  background: var(--status-prestige-solid);
+}
+
+.node-level-badge--mastered {
+  background: var(--success);
+}
+
+.node-level-badge--default {
+  background: var(--accent);
+}
+
+.prestige-border {
+  border-width: 2px;
+  border-style: solid;
+}
+
+.prestige-border--10 {
+  border-color: var(--prestige-10-border);
+  box-shadow: var(--prestige-10-shadow);
+}
+
+.prestige-border--7 {
+  border-color: var(--prestige-7-border);
+  box-shadow: var(--prestige-7-shadow);
+}
+
+.prestige-border--5 {
+  border-color: var(--prestige-5-border);
+  box-shadow: var(--prestige-5-shadow);
+}
+
+.prestige-border--3 {
+  border-color: var(--prestige-3-border);
+  box-shadow: var(--prestige-3-shadow);
+}
+
+.prestige-border--1 {
+  border-color: var(--prestige-1-border);
+  box-shadow: var(--prestige-1-shadow);
+}

@@ -1,0 +1,34 @@
+{
+  "assets": [
+    {
+      "name": "Raven Fantasy Icons",
+      "author": "Raven",
+      "license": "Free for commercial use (pack terms)",
+      "source": "resources/Pixelart/Free - Raven Fantasy Icons"
+    },
+    {
+      "name": "Tiny RPG Character Asset Pack (Soldier & Orc)",
+      "author": "Unknown (pack author)",
+      "license": "Free",
+      "source": "resources/Pixelart/Tiny RPG Character Asset Pack v1.03b -Free Soldier&Orc"
+    },
+    {
+      "name": "Parallax Resource Pack (RPG Maker tilesets)",
+      "author": "Parallax",
+      "license": "Commercial use per pack terms",
+      "source": "resources/pixelart_new/parallax_Resource_Pack"
+    },
+    {
+      "name": "BaseResource SF Characters",
+      "author": "Unknown (pack author)",
+      "license": "Commercial use per pack terms",
+      "source": "resources/pixelart_new/BaseResource"
+    },
+    {
+      "name": "Dark Fantasy Character Pack",
+      "author": "Unknown (pack author)",
+      "license": "Commercial use per pack terms",
+      "source": "resources/pixelart_new/DarkFantasyCharacterPack"
+    }
+  ]
+}

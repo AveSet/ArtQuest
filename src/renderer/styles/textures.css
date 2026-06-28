@@ -1,0 +1,31 @@
+/* ArtQuest Fantasy UI - Textures */
+.bg-parchment {
+  background-color: var(--bg-parchment);
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 109, 56, 0.03) 2px, rgba(139, 109, 56, 0.03) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139, 109, 56, 0.03) 2px, rgba(139, 109, 56, 0.03) 4px);
+}
+
+.bg-wood-dark {
+  background-color: var(--bg-primary);
+  background-image: 
+    repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(201, 162, 39, 0.02) 50px, rgba(201, 162, 39, 0.02) 51px),
+    repeating-linear-gradient(0deg, transparent, transparent 100px, rgba(0,0,0,0.1) 100px, rgba(0,0,0,0.1) 101px);
+}
+
+.bg-stone {
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(201, 162, 39, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(201, 162, 39, 0.03) 0%, transparent 50%);
+}
+
+.panel-gradient {
+  background: linear-gradient(180deg, var(--panel-gradient-start) 0%, var(--panel-gradient-mid) 50%, var(--panel-gradient-end) 100%);
+}
+
+.ornate-border {
+  border: 2px solid var(--gold-dark);
+  border-image: linear-gradient(45deg, var(--gold-dark), var(--gold-primary), var(--gold-dark)) 1;
+  box-shadow: inset 0 0 20px rgba(201, 162, 39, 0.1), 0 4px 20px rgba(0,0,0,0.5);
+}

@@ -1,0 +1,209 @@
+/* Light theme — calm study UI, gold accent throughout */
+
+html.light body {
+  background-image:
+    radial-gradient(ellipse 100% 60% at 50% -10%, rgba(184, 134, 11, 0.06), transparent 50%);
+}
+
+html.light .bg-parchment {
+  background-image: none;
+}
+
+html.light .bg-wood-dark,
+html.light .bg-stone {
+  background-image: none;
+}
+
+html.light .ornate-border {
+  box-shadow: inset 0 0 12px rgba(184, 134, 11, 0.06), var(--shadow-sm);
+}
+
+/* Surfaces */
+html.light .card-fantasy,
+html.light .panel-fantasy {
+  background: var(--bg-primary);
+  border-color: color-mix(in srgb, var(--border-secondary) 85%, var(--accent) 15%);
+  box-shadow: var(--shadow-sm);
+}
+
+html.light .card-fantasy:hover {
+  border-color: color-mix(in srgb, var(--border-primary) 60%, var(--accent) 40%);
+  box-shadow: var(--shadow-md);
+}
+
+html.light .nav-fantasy {
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Buttons */
+html.light .btn-primary {
+  background: var(--accent);
+  color: var(--btn-on-accent-text, #fff);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+html.light .btn-primary:hover {
+  background: var(--accent-hover);
+  filter: none;
+  box-shadow: var(--shadow-md);
+}
+
+html.light .btn-secondary {
+  background: var(--bg-secondary);
+}
+
+html.light .btn-secondary:hover,
+html.light .btn-secondary.active {
+  background: var(--bg-tertiary);
+  color: var(--accent-hover);
+}
+
+/* Skill bars on dashboard */
+html.light .skill-bar {
+  background: var(--bg-tertiary);
+  box-shadow: var(--skill-bar-inset);
+}
+
+html.light .skill-bar-fill::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+}
+
+html.light [class*='skill-label-'] {
+  color: var(--text-secondary);
+}
+
+/* Skill tree */
+html.light .skills-tree-canvas {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-secondary);
+}
+
+html.light .skills-tree-canvas .connection-line {
+  background: var(--border-secondary) !important;
+}
+
+html.light .node-skill--locked {
+  opacity: 0.92;
+  filter: none;
+  background: var(--bg-secondary);
+  border-color: var(--border-secondary);
+  color: var(--text-muted);
+}
+
+html.light .node-skill--locked span {
+  opacity: 0.55;
+}
+
+html.light .node-skill--available {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-secondary));
+}
+
+html.light .node-skill--selected {
+  box-shadow: 0 0 0 3px var(--accent-muted), var(--shadow-md);
+}
+
+/* Quest detail — softer category stripe */
+html.light .quest-detail-card {
+  border-left-color: color-mix(
+    in srgb,
+    var(--quest-category-color, var(--accent)) var(--category-accent-mix),
+    var(--border-secondary)
+  ) !important;
+}
+
+html.light .quest-detail-desc {
+  border-left-color: color-mix(
+    in srgb,
+    var(--quest-category-color, var(--accent)) 28%,
+    var(--border-secondary)
+  ) !important;
+}
+
+html.light .quest-detail-icon {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-secondary);
+}
+
+/* Achievements */
+html.light .achievement-card--locked {
+  opacity: 1;
+  background: var(--bg-secondary);
+}
+
+html.light .achievement-card--locked .quest-card-title,
+html.light .achievement-card--locked .quest-card-description {
+  color: var(--text-muted);
+}
+
+html.light .achievement-card--new {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 16px rgba(184, 134, 11, 0.2);
+}
+
+html.light .achievement-card--seen {
+  border-color: var(--border-secondary);
+  opacity: 0.95;
+}
+
+html.light .achievement-card--unlocked {
+  background: var(--bg-primary);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border-secondary));
+}
+
+html.light .achievement-status {
+  color: var(--status-success-text);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Effects cleanup */
+html.light .glow-gold,
+html.light .glow-gold-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+html.light .text-glow {
+  text-shadow: none;
+}
+
+html.light .quest-card::before {
+  opacity: 0.25;
+}
+
+html.light .quest-card-description {
+  color: var(--text-muted);
+}
+
+html.light .quest-card:hover::before {
+  opacity: 0.5;
+}
+
+html.light .shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent-muted) 60%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+/* Dashboard rank badge — warm gold, not green */
+html.light .character-rank-badge {
+  background: var(--color-novice-bg);
+  color: var(--rank-novice) !important;
+  border-color: var(--color-novice-border) !important;
+  box-shadow: 0 1px 3px rgba(139, 105, 20, 0.12);
+}
+
+/* Daily quest progress — gold fill */
+html.light .daily-progress-fill {
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary)) !important;
+}
+
+html.light .achievement-status {
+  color: var(--status-success-text);
+}

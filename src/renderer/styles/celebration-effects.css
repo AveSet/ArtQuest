@@ -1,0 +1,611 @@
+/* Theme tokens: --celeb-hot, --celeb-warm, --celeb-cool, --celeb-flash, --celeb-vignette, --celeb-spark */
+
+/* ─── Quest complete — full screen ─── */
+.quest-celebration-screen {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: calc(var(--z-overlay-celebration) - 2);
+  overflow: hidden;
+}
+
+.quest-celebration-screen__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 95% 75% at 50% 45%,
+      transparent 35%,
+      color-mix(in srgb, var(--celeb-vignette) 85%, transparent) 100%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      color-mix(in srgb, var(--celeb-warm) 22%, transparent),
+      transparent 55%
+    );
+  opacity: 0;
+  animation: quest-screen-vignette 2.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.quest-celebration-screen__flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 42%,
+    color-mix(in srgb, var(--celeb-flash) 55%, transparent),
+    transparent 48%
+  );
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: quest-screen-flash 2.9s ease-out forwards;
+}
+
+.quest-celebration-screen__sweep {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 38%;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 8%,
+    color-mix(in srgb, var(--celeb-cool) 28%, transparent) 32%,
+    color-mix(in srgb, var(--celeb-hot) 42%, transparent) 48%,
+    color-mix(in srgb, var(--celeb-warm) 38%, transparent) 58%,
+    transparent 72%
+  );
+  filter: blur(1px);
+  animation: quest-screen-sweep 2.9s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: var(--sweep-delay, 0s);
+}
+
+.quest-celebration-screen__sweep--a {
+  top: 18%;
+  --sweep-delay: 0.08s;
+}
+
+.quest-celebration-screen__sweep--b {
+  bottom: 12%;
+  --sweep-delay: 0.42s;
+  animation-name: quest-screen-sweep-rev;
+}
+
+.quest-celebration-screen__spark {
+  position: absolute;
+  width: var(--spark-size, 4px);
+  height: var(--spark-size, 4px);
+  left: var(--spark-x, 50%);
+  top: var(--spark-y, 50%);
+  border-radius: 50%;
+  background: var(--celeb-spark);
+  box-shadow:
+    0 0 6px color-mix(in srgb, var(--celeb-hot) 80%, transparent),
+    0 0 14px color-mix(in srgb, var(--celeb-warm) 45%, transparent);
+  opacity: 0;
+  animation: quest-screen-spark 2.9s ease-out forwards;
+  animation-delay: var(--spark-delay, 0s);
+}
+
+.quest-celebration-screen__corner {
+  position: absolute;
+  width: 5.5rem;
+  height: 5.5rem;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--corner-origin-x, 0%) var(--corner-origin-y, 0%),
+    color-mix(in srgb, var(--celeb-hot) 50%, transparent),
+    transparent 68%
+  );
+  animation: quest-screen-corner 2.9s ease-out forwards;
+  animation-delay: var(--corner-delay, 0s);
+}
+
+.quest-celebration-screen__corner--tl {
+  top: 0;
+  left: 0;
+  --corner-origin-x: 0%;
+  --corner-origin-y: 0%;
+  --corner-delay: 0.05s;
+}
+
+.quest-celebration-screen__corner--tr {
+  top: 0;
+  right: 0;
+  --corner-origin-x: 100%;
+  --corner-origin-y: 0%;
+  --corner-delay: 0.12s;
+}
+
+.quest-celebration-screen__corner--bl {
+  bottom: 0;
+  left: 0;
+  --corner-origin-x: 0%;
+  --corner-origin-y: 100%;
+  --corner-delay: 0.18s;
+}
+
+.quest-celebration-screen__corner--br {
+  bottom: 0;
+  right: 0;
+  --corner-origin-x: 100%;
+  --corner-origin-y: 100%;
+  --corner-delay: 0.24s;
+}
+
+@keyframes quest-screen-vignette {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  55% { opacity: 0.75; }
+  100% { opacity: 0; }
+}
+
+@keyframes quest-screen-flash {
+  0%, 100% { opacity: 0; transform: scale(0.92); }
+  8% { opacity: 0.55; transform: scale(1); }
+  22% { opacity: 0.12; transform: scale(1.02); }
+}
+
+@keyframes quest-screen-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-35%) skewX(-8deg);
+  }
+  18% {
+    opacity: 0.85;
+  }
+  42% {
+    opacity: 0.35;
+    transform: translateX(35%) skewX(-8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(55%) skewX(-8deg);
+  }
+}
+
+@keyframes quest-screen-sweep-rev {
+  0% {
+    opacity: 0;
+    transform: translateX(35%) skewX(8deg);
+  }
+  18% {
+    opacity: 0.75;
+  }
+  42% {
+    opacity: 0.3;
+    transform: translateX(-35%) skewX(8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-55%) skewX(8deg);
+  }
+}
+
+@keyframes quest-screen-spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(var(--spark-dx, 0), var(--spark-dy, -12px)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--spark-dx, 0) * 1.4), calc(var(--spark-dy, -12px) * 2.2)) scale(0.2);
+  }
+}
+
+@keyframes quest-screen-corner {
+  0% { opacity: 0; transform: scale(0.5); }
+  20% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.15); }
+}
+
+/* ─── Quest complete — portrait ─── */
+.portrait-quest-celebrate {
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+}
+
+.portrait-quest-celebrate__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 88%,
+    color-mix(in srgb, var(--celeb-warm) 45%, transparent),
+    transparent 70%
+  );
+  animation: portrait-halo 2.8s ease-out forwards;
+}
+
+.portrait-quest-celebrate__ring {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: 88%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(0.55);
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--celeb-hot) 70%, transparent);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--celeb-warm) 50%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--celeb-warm) 25%, transparent);
+  opacity: 0;
+  animation: portrait-ring 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--ring-delay, 0s);
+}
+
+.portrait-quest-celebrate__shimmer {
+  position: absolute;
+  inset: 8% 6%;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  opacity: 0;
+  animation: portrait-shimmer-wrap 2.8s ease-out forwards;
+}
+
+.portrait-quest-celebrate__shimmer::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 45%;
+  height: 180%;
+  background: linear-gradient(
+    105deg,
+    transparent,
+    color-mix(in srgb, var(--celeb-flash) 55%, transparent),
+    transparent
+  );
+  transform: translateX(-140%) skewX(-12deg);
+  animation: portrait-shimmer-slide 2.8s ease-out forwards;
+}
+
+.portrait-quest-celebrate__spark {
+  position: absolute;
+  width: var(--p-spark-size, 3px);
+  height: var(--p-spark-size, 3px);
+  left: var(--p-spark-x, 50%);
+  top: var(--p-spark-y, 50%);
+  border-radius: 50%;
+  background: var(--celeb-spark);
+  box-shadow: 0 0 8px var(--celeb-hot);
+  opacity: 0;
+  animation: portrait-spark 2.8s ease-out forwards;
+  animation-delay: var(--p-spark-delay, 0s);
+}
+
+.character-portrait--quest-complete .character-portrait__frame {
+  animation: portrait-frame-pop 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes portrait-halo {
+  0% { opacity: 0; transform: scaleY(0.4); }
+  18% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1.05); }
+}
+
+@keyframes portrait-ring {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
+@keyframes portrait-shimmer-wrap {
+  0%, 100% { opacity: 0; }
+  10%, 45% { opacity: 1; }
+}
+
+@keyframes portrait-shimmer-slide {
+  0% { transform: translateX(-140%) skewX(-12deg); }
+  35% { transform: translateX(290%) skewX(-12deg); }
+  100% { transform: translateX(290%) skewX(-12deg); }
+}
+
+@keyframes portrait-spark {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.1) translateY(-1.8rem);
+  }
+}
+
+@keyframes portrait-frame-pop {
+  0% {
+    box-shadow: 0 0 0 0 transparent;
+    filter: brightness(1);
+  }
+  14% {
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--celeb-hot) 55%, transparent),
+      0 0 28px color-mix(in srgb, var(--celeb-warm) 50%, transparent),
+      0 0 48px color-mix(in srgb, var(--celeb-cool) 18%, transparent);
+    filter: brightness(1.12);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    filter: brightness(1);
+  }
+}
+
+/* ─── Skill level-up — full screen ─── */
+.levelup-celebration-screen {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: calc(var(--z-overlay-celebration) - 1);
+  overflow: hidden;
+}
+
+.levelup-celebration-screen__edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 42%;
+  opacity: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--celeb-warm) 38%, transparent),
+    color-mix(in srgb, var(--celeb-hot) 12%, transparent) 45%,
+    transparent
+  );
+  animation: levelup-edge 3.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.levelup-celebration-screen__edge--bottom {
+  bottom: 0;
+}
+
+.levelup-celebration-screen__edge--top {
+  top: 0;
+  transform: scaleY(-1);
+  animation-delay: 0.15s;
+}
+
+.levelup-celebration-screen__wave {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -1rem;
+  height: 9rem;
+  opacity: 0;
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 100%,
+      color-mix(in srgb, var(--celeb-hot) 55%, transparent),
+      transparent 68%
+    ),
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--celeb-warm) 65%, transparent),
+      transparent
+    );
+  filter: blur(2px);
+  animation: levelup-wave 3.1s ease-out forwards;
+}
+
+.levelup-celebration-screen__beam {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  height: 55%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to top,
+    var(--celeb-hot),
+    color-mix(in srgb, var(--celeb-cool) 40%, transparent) 55%,
+    transparent
+  );
+  opacity: 0;
+  filter: blur(0.5px);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--celeb-warm) 70%, transparent);
+  animation: levelup-beam 3.1s ease-out forwards;
+}
+
+.levelup-celebration-screen__burst {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: min(92vw, 36rem);
+  height: 14rem;
+  transform: translateX(-50%);
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 100%,
+    color-mix(in srgb, var(--celeb-flash) 35%, transparent),
+    color-mix(in srgb, var(--celeb-warm) 25%, transparent) 40%,
+    transparent 72%
+  );
+  animation: levelup-burst 3.1s ease-out forwards;
+}
+
+.levelup-celebration-screen__shard {
+  position: absolute;
+  left: var(--shard-x, 50%);
+  bottom: var(--shard-base, 8%);
+  width: var(--shard-w, 3px);
+  height: var(--shard-h, 10px);
+  border-radius: 999px;
+  background: linear-gradient(
+    to top,
+    var(--celeb-hot),
+    color-mix(in srgb, var(--celeb-spark) 80%, white)
+  );
+  opacity: 0;
+  transform-origin: center bottom;
+  animation: levelup-shard 3.1s ease-out forwards;
+  animation-delay: var(--shard-delay, 0s);
+}
+
+.levelup-celebration-screen__orbit {
+  position: absolute;
+  left: 50%;
+  bottom: 14%;
+  width: var(--orbit-size, 6px);
+  height: var(--orbit-size, 6px);
+  margin-left: calc(var(--orbit-size, 6px) / -2);
+  border-radius: 50%;
+  background: var(--celeb-spark);
+  box-shadow: 0 0 10px var(--celeb-hot);
+  opacity: 0;
+  animation: levelup-orbit 3.1s ease-out forwards;
+  animation-delay: var(--orbit-delay, 0s);
+}
+
+@keyframes levelup-edge {
+  0% { opacity: 0; }
+  10% { opacity: 0.85; }
+  70% { opacity: 0.35; }
+  100% { opacity: 0; }
+}
+
+@keyframes levelup-wave {
+  0% {
+    opacity: 0;
+    transform: translateY(100%) scaleY(0.4);
+  }
+  16% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+  55% {
+    opacity: 0.5;
+    transform: translateY(-18%) scaleY(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-42%) scaleY(0.9);
+  }
+}
+
+@keyframes levelup-beam {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scaleY(0.2);
+  }
+  14% {
+    opacity: 1;
+    transform: translateX(-50%) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scaleY(1.1) translateY(-20%);
+  }
+}
+
+@keyframes levelup-burst {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  18% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(1.2) translateY(-2rem);
+  }
+}
+
+@keyframes levelup-shard {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--shard-rot, 0deg)) translateY(0) scaleY(0.3);
+  }
+  20% {
+    opacity: 1;
+    transform: rotate(var(--shard-rot, 0deg)) translateY(calc(var(--shard-rise, -4rem) * 0.35)) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--shard-rot, 0deg)) translateY(var(--shard-rise, -4rem)) scaleY(0.4);
+  }
+}
+
+@keyframes levelup-orbit {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--orbit-start, 0deg)) translateX(var(--orbit-r, 5rem)) rotate(calc(var(--orbit-start, 0deg) * -1));
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--orbit-start, 0deg) + 95deg)) translateX(calc(var(--orbit-r, 5rem) * 1.15))
+      rotate(calc((var(--orbit-start, 0deg) + 95deg) * -1));
+  }
+}
+
+/* Softer screen blend on light / modern themes */
+html.light .quest-celebration-screen__flash,
+html.light .levelup-celebration-screen__burst,
+html[data-theme='modern'] .quest-celebration-screen__flash,
+html[data-theme='modern'] .levelup-celebration-screen__burst {
+  mix-blend-mode: normal;
+}
+
+html.light .quest-celebration-screen__flash {
+  animation-name: quest-screen-flash-light;
+}
+
+@keyframes quest-screen-flash-light {
+  0%, 100% { opacity: 0; }
+  8% { opacity: 0.35; }
+  22% { opacity: 0.08; }
+}
+
+/* Reduced motion */
+[data-motion='reduce'] .quest-celebration-screen__vignette,
+[data-motion='reduce'] .levelup-celebration-screen__edge--bottom {
+  animation: celeb-reduce-pulse 0.45s ease-out forwards;
+}
+
+[data-motion='reduce'] .quest-celebration-screen__flash,
+[data-motion='reduce'] .quest-celebration-screen__sweep,
+[data-motion='reduce'] .quest-celebration-screen__spark,
+[data-motion='reduce'] .quest-celebration-screen__corner,
+[data-motion='reduce'] .portrait-quest-celebrate__halo,
+[data-motion='reduce'] .portrait-quest-celebrate__ring,
+[data-motion='reduce'] .portrait-quest-celebrate__shimmer,
+[data-motion='reduce'] .portrait-quest-celebrate__spark,
+[data-motion='reduce'] .levelup-celebration-screen__wave,
+[data-motion='reduce'] .levelup-celebration-screen__beam,
+[data-motion='reduce'] .levelup-celebration-screen__burst,
+[data-motion='reduce'] .levelup-celebration-screen__shard,
+[data-motion='reduce'] .levelup-celebration-screen__orbit,
+[data-motion='reduce'] .levelup-celebration-screen__edge--top {
+  display: none;
+}
+
+[data-motion='reduce'] .character-portrait--quest-complete .character-portrait__frame {
+  animation: celeb-reduce-pulse 0.45s ease-out forwards;
+}
+
+@keyframes celeb-reduce-pulse {
+  0%, 100% { opacity: 0; }
+  40% { opacity: 0.85; }
+}

@@ -1,0 +1,729 @@
+/* ArtQuest Fantasy UI - Effects & Animations */
+/* Gold glow */
+.glow-gold {
+  box-shadow: 0 0 10px var(--gold-glow), 0 0 20px var(--gold-glow), 0 0 30px rgba(201, 162, 39, 0.1);
+}
+
+.glow-gold-sm {
+  box-shadow: 0 0 5px var(--gold-glow);
+}
+
+/* Pulse animation */
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 10px var(--gold-glow); }
+  50% { box-shadow: 0 0 20px var(--gold-glow), 0 0 30px var(--pulse-glow-wide); }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+/* Text glow */
+.text-glow {
+  text-shadow: 0 0 10px var(--gold-glow), 0 0 20px var(--gold-glow);
+}
+
+/* Fade in up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--motion-duration-med) var(--ease-out-soft);
+}
+
+/* Fill bar animation */
+@keyframes fillBar {
+  from { width: 0%; }
+}
+
+.animate-fill-bar {
+  animation: fillBar 0.8s ease-out;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--accent-muted) 50%, 
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Rotate animation */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-rotate {
+  animation: rotate 10s linear infinite;
+}
+
+/* Slide in animation for notifications */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Celebration bounce for daily completion */
+@keyframes celebrateBounce {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  60% { transform: scale(0.95); }
+  80% { transform: scale(1.05); }
+}
+
+.animate-celebrate {
+  animation: celebrateBounce 0.6s ease-out;
+}
+
+@keyframes uploadFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-upload-fade-in {
+  animation: uploadFadeIn var(--motion-duration-med, 0.35s) var(--ease-out-soft, ease-out);
+}
+
+@keyframes dailyProgressPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.35); }
+}
+
+.daily-progress-fill--celebrate {
+  animation: dailyProgressPulse 0.55s ease-out;
+}
+
+@keyframes streakBump {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  70% { transform: scale(0.96); }
+}
+
+.stat-badge--streak-bump {
+  animation: streakBump 0.65s ease-out;
+}
+
+.work-upload-zone {
+  border: 2px dashed var(--border-secondary);
+  border-radius: 12px;
+  padding: 0.75rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  outline: none;
+}
+
+.work-upload-zone:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-muted);
+}
+
+.work-upload-zone--active {
+  border-color: var(--accent-hover);
+  background: var(--accent-muted);
+}
+
+.work-upload-zone--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.level-up-toast-inner {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+}
+
+.timer-expired-banner {
+  animation: dailyProgressPulse 1.8s ease-in-out infinite;
+}
+
+[data-motion="reduce"] .timer-expired-banner,
+[data-motion="reduce"] .daily-progress-fill--celebrate,
+[data-motion="reduce"] .stat-badge--streak-bump,
+[data-motion="reduce"] .animate-upload-fade-in,
+[data-motion="reduce"] .animate-celebrate,
+[data-motion="reduce"] .animate-fade-in-up,
+[data-motion="reduce"] .animate-fill-bar,
+[data-motion="reduce"] .wow-quest-marker--highlight,
+[data-motion="reduce"] .animate-pulse-gold,
+[data-motion="reduce"] .animate-sparkle,
+[data-motion="reduce"] .animate-rotate,
+[data-motion="reduce"] .shimmer,
+[data-motion="reduce"] .quest-session-card--enter,
+[data-motion="reduce"] .submit-step-backdrop__panel--enter,
+[data-motion="reduce"] .submit-step-panel--enter,
+[data-motion="reduce"] .phase-transition-card__panel--enter,
+[data-motion="reduce"] .quest-phase-timer--low-time .quest-phase-timer__clock,
+[data-motion="reduce"] .quest-split-timer--low-time .quest-split-timer__main {
+  animation: none !important;
+}
+
+/* Session micro-feedback — press pop for primary CTA */
+@keyframes sessionBtnPressPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+.btn-session-primary:focus-visible:not(:disabled) {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 3px;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  50% { opacity: 1; transform: translateY(-10px) rotate(180deg); }
+}
+
+.animate-sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* Achievement toast — subtle “burst” (disabled when data-motion=reduce via instant vars) */
+@keyframes achievementGlow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold-primary) 45%, transparent);
+  }
+  70% {
+    box-shadow:
+      0 0 0 6px color-mix(in srgb, var(--gold-primary) 15%, transparent),
+      0 0 28px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.achievement-popup-fx {
+  animation: achievementGlow var(--motion-duration-med) var(--ease-out-soft) 1;
+}
+
+html[data-motion='reduce'] .achievement-popup-fx {
+  animation: none;
+}
+
+.achievement-card--locked {
+  opacity: 0.55;
+  filter: grayscale(0.85);
+  border-color: var(--border-secondary);
+}
+
+.achievement-card--seen {
+  border-color: var(--border-secondary);
+  opacity: 0.92;
+}
+
+.achievement-card--new {
+  border: 2px solid var(--gold-primary);
+  background: color-mix(in srgb, var(--gold-primary) 12%, var(--bg-secondary));
+  box-shadow:
+    0 0 36px color-mix(in srgb, var(--gold-primary) 55%, transparent),
+    0 0 64px color-mix(in srgb, var(--gold-primary) 25%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--gold-primary) 15%, transparent);
+  z-index: 1;
+  position: relative;
+}
+
+.achievement-card--new-animate {
+  animation: achievementNewReveal 0.85s cubic-bezier(0.34, 1.4, 0.64, 1) both,
+    achievementNewPulse 2.2s ease-in-out 0.85s infinite;
+  transform-origin: center center;
+}
+
+@keyframes achievementNewReveal {
+  0% {
+    transform: scale(0.88);
+    opacity: 0.7;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--gold-primary) 20%, transparent);
+  }
+  55% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes achievementNewPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 28px color-mix(in srgb, var(--gold-primary) 45%, transparent),
+      0 0 48px color-mix(in srgb, var(--gold-primary) 20%, transparent);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 44px color-mix(in srgb, var(--gold-primary) 70%, transparent),
+      0 0 72px color-mix(in srgb, var(--gold-primary) 35%, transparent);
+    transform: scale(1.02);
+  }
+}
+
+html[data-motion='reduce'] .achievement-card--new-animate {
+  animation: none;
+  transform: none;
+}
+
+.quest-split-timer {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quest-split-timer--lg {
+  font-size: clamp(2.5rem, 8vw, 3.75rem);
+}
+
+.quest-split-timer--sm {
+  font-size: 0.85rem;
+}
+
+.quest-split-timer__ref {
+  color: var(--timer-reference-color);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--timer-reference-color) 55%, transparent);
+}
+
+.quest-split-timer__sep {
+  color: var(--text-muted);
+  font-weight: 500;
+  opacity: 0.65;
+}
+
+.quest-split-timer__main {
+  color: var(--accent-hover);
+}
+
+.quest-session-widget__split.quest-split-timer--sm .quest-split-timer__main {
+  color: var(--text-primary);
+}
+
+.quest-session-widget__split.quest-split-timer--sm .quest-split-timer__ref {
+  color: var(--timer-reference-color, var(--status-info-text));
+}
+
+.quest-session-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0.35rem 0.35rem 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quest-session-widget__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.quest-session-widget__label {
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  line-height: 1.2;
+  opacity: 0.92;
+}
+
+.quest-session-widget__link:hover {
+  color: inherit;
+}
+
+.quest-session-widget:hover {
+  border-color: var(--gold-dark);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--gold-primary) 25%, transparent);
+}
+
+.quest-session-widget--expired {
+  border-color: var(--status-warning-border, var(--gold-dark));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--status-warning-text, var(--gold-primary)) 22%, transparent);
+}
+
+.quest-session-widget--expired .quest-session-widget__split .quest-split-timer__main {
+  color: var(--status-warning-text, var(--gold-light));
+}
+
+.quest-session-widget--reference {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.quest-session-widget--reference .quest-session-widget__time {
+  color: var(--accent-hover);
+  font-weight: 700;
+}
+
+.quest-session-widget__time {
+  font-family: ui-monospace, monospace;
+  font-weight: 600;
+}
+
+.quest-session-widget__pause {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  line-height: 1;
+}
+
+.quest-timer--reference {
+  color: var(--accent-hover);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.reference-bonus-toast {
+  color: var(--accent-hover);
+  font-weight: 600;
+}
+
+.break-reminder-toast {
+  position: absolute;
+  right: 1rem;
+  bottom: max(5rem, calc(env(safe-area-inset-bottom, 0px) + 3.5rem));
+  z-index: var(--z-toast, 210);
+  width: min(22rem, calc(100vw - 2rem));
+  padding: 0.9rem 1rem;
+  box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 900px) {
+  .quest-session-widget__label {
+    display: none;
+  }
+}
+
+/* progress-tab transitions live in motion.css */
+
+.achievement-status--new {
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+.gallery-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.gallery-grid-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+  padding: 0.35rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.gallery-grid-tile:hover {
+  border-color: var(--gold-dark);
+}
+
+.gallery-grid-tile img,
+.gallery-grid-tile video {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  background: var(--bg-tertiary);
+}
+
+.gallery-compact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gallery-compact-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.gallery-compact-row img,
+.gallery-compact-row video {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+}
+
+.node-skill-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  width: 100%;
+  max-width: 100%;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 0.125rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.node-skill-progress {
+  width: calc(100% - 0.5rem);
+  height: 0.25rem;
+  margin-top: 0.2rem;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border-secondary) 75%, transparent);
+  background: color-mix(in srgb, var(--bg-deep) 82%, transparent);
+}
+
+.node-skill-progress__fill {
+  display: block;
+  height: 100%;
+  min-width: 0.125rem;
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+/* Gallery — wide horizontal previews (natural aspect), stacked vertically */
+.gallery-work-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.gallery-category-pill {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.gallery-thumb {
+  display: block;
+  object-fit: contain;
+}
+
+/* Full-screen gallery viewer — portaled, vertically centered when content fits */
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgba(0, 0, 0, 0.92);
+  cursor: default;
+  padding: max(0.75rem, env(safe-area-inset-top, 0px)) 1rem 2rem;
+}
+
+.gallery-lightbox-inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 56rem;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.gallery-lightbox-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  min-height: 2rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.gallery-lightbox-toolbar-extra {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.gallery-lightbox-counter {
+  margin-right: auto;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery-lightbox-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.gallery-lightbox-nav {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.gallery-lightbox-nav__triangle {
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 0.65rem solid transparent;
+  border-bottom: 0.65rem solid transparent;
+  opacity: 0.85;
+}
+
+.gallery-lightbox-nav--prev .gallery-lightbox-nav__triangle {
+  border-right: 0.9rem solid rgba(255, 255, 255, 0.9);
+  margin-right: 0.15rem;
+}
+
+.gallery-lightbox-nav--next .gallery-lightbox-nav__triangle {
+  border-left: 0.9rem solid rgba(255, 255, 255, 0.9);
+  margin-left: 0.15rem;
+}
+
+.gallery-lightbox-media {
+  width: fit-content;
+  max-width: min(100%, calc(100% - 7rem));
+  margin: 0 auto;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gallery-lightbox-zoom {
+  touch-action: none;
+  overflow: hidden;
+  border-radius: 0.375rem;
+}
+
+.gallery-lightbox-zoom--panning {
+  cursor: grab;
+}
+
+.gallery-lightbox-zoom--panning:active,
+.gallery-lightbox-zoom--dragging {
+  cursor: grabbing;
+}
+
+.gallery-lightbox-zoom--panning .gallery-lightbox-zoom__stage img,
+.gallery-lightbox-zoom--panning .gallery-lightbox-zoom__stage video {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.gallery-lightbox-zoom__stage {
+  transform-origin: center center;
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+.gallery-lightbox-zoom--dragging .gallery-lightbox-zoom__stage {
+  transition: none;
+}
+
+.gallery-lightbox-media img,
+.gallery-lightbox-media video {
+  display: block;
+  max-width: 100%;
+  max-height: min(70vh, calc(100dvh - 11rem));
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.375rem;
+}
+
+.gallery-lightbox-meta {
+  margin-top: 1rem;
+  color: #fff;
+  text-align: center;
+  flex-shrink: 0;
+}

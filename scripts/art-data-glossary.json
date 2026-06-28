@@ -1,0 +1,268 @@
+{
+  "comment": "Curated zh/ja/ko overrides for art-education strings. Keys match English source text in skillTree.ts / achievements.json.",
+  "entries": {
+    "Primitives & fundamentals": { "zh": "基础形体与基本功", "ja": "プリミティブと基礎", "ko": "기초 형태와 기본기" },
+    "Perspective": { "zh": "透视", "ja": "パース", "ko": "원근법" },
+    "Shapes & Forms": { "zh": "形状与体积", "ja": "形と立体", "ko": "형태와 입체" },
+    "Composition": { "zh": "构图", "ja": "構図", "ko": "구도" },
+    "Practice": { "zh": "练习", "ja": "練習", "ko": "연습" },
+    "Quick Sketch": { "zh": "快速速写", "ja": "クイックスケッチ", "ko": "퀵 스케치" },
+    "Contour Lines": { "zh": "轮廓线", "ja": "輪郭線", "ko": "윤곽선" },
+    "Value & Light": { "zh": "明暗与光影", "ja": "明暗と光", "ko": "명암과 조명" },
+    "Advanced": { "zh": "进阶", "ja": "上級", "ko": "심화" },
+    "Digital Tools": { "zh": "数字工具", "ja": "デジタルツール", "ko": "디지털 도구" },
+    "Color Theory": { "zh": "色彩理论", "ja": "色彩理論", "ko": "색채 이론" },
+    "Anatomy Basics": { "zh": "解剖学基础", "ja": "解剖学の基礎", "ko": "해부학 기초" },
+    "Skeleton": { "zh": "骨骼", "ja": "骨格", "ko": "골격" },
+    "Musculature": { "zh": "肌肉结构", "ja": "筋肉", "ko": "근육" },
+    "Proportions": { "zh": "比例", "ja": "プロポーション", "ko": "비율" },
+    "Full Body": { "zh": "全身", "ja": "全身", "ko": "전신" },
+    "Hands": { "zh": "手部", "ja": "手", "ko": "손" },
+    "Feet": { "zh": "足部", "ja": "足", "ko": "발" },
+    "Head & Face": { "zh": "头部与面部", "ja": "頭部と顔", "ko": "머리와 얼굴" },
+    "Dynamics": { "zh": "动态", "ja": "ダイナミクス", "ko": "역동성" },
+    "Foreshortening": { "zh": "缩透视", "ja": "短縮", "ko": "원근 축소" },
+    "Animation Basics": { "zh": "动画基础", "ja": "アニメーション基礎", "ko": "애니메이션 기초" },
+    "Timing": { "zh": "时间节奏", "ja": "タイミング", "ko": "타이밍" },
+    "Spacing": { "zh": "间距", "ja": "スペーシング", "ko": "스페이싱" },
+    "Arcs": { "zh": "运动弧线", "ja": "アーク", "ko": "호" },
+    "Walk Cycle": { "zh": "走路循环", "ja": "ウォークサイクル", "ko": "워크 사이클" },
+    "Run Cycle": { "zh": "跑步循环", "ja": "ランサイクル", "ko": "런 사이클" },
+    "Idle Animation": { "zh": "待机动画", "ja": "アイドルアニメーション", "ko": "대기 애니메이션" },
+    "Transitions": { "zh": "过渡动画", "ja": "トランジション", "ko": "전환" },
+    "Facial Animation": { "zh": "面部动画", "ja": "フェイシャルアニメーション", "ko": "얼굴 애니메이션" },
+    "Complex Actions": { "zh": "复杂动作", "ja": "複合アクション", "ko": "복합 동작" },
+    "Effects Basics": { "zh": "特效基础", "ja": "エフェクト基礎", "ko": "이펙트 기초" },
+    "Particles": { "zh": "粒子", "ja": "パーティクル", "ko": "파티클" },
+    "Energy Effects": { "zh": "能量特效", "ja": "エネルギーエフェクト", "ko": "에너지 이펙트" },
+    "Weather": { "zh": "天气效果", "ja": "天候エフェクト", "ko": "날씨 효과" },
+    "Combat FX": { "zh": "战斗特效", "ja": "戦闘エフェクト", "ko": "전투 이펙트" },
+    "Magic Spells": { "zh": "魔法效果", "ja": "魔法エフェクト", "ko": "마법 이펙트" },
+    "Elemental": { "zh": "元素特效", "ja": "元素エフェクト", "ko": "원소 이펙트" },
+    "Advanced FX": { "zh": "高级特效", "ja": "上級エフェクト", "ko": "고급 이펙트" },
+    "Particle Mastery": { "zh": "粒子精通", "ja": "パーティクル習得", "ko": "파티클 숙련" },
+    "Post Processing": { "zh": "后期处理", "ja": "ポストプロセス", "ko": "후처리" },
+    "Story Basics": { "zh": "叙事基础", "ja": "ストーリー基礎", "ko": "스토리 기초" },
+    "Visual Story": { "zh": "视觉叙事", "ja": "ビジュアルストーリー", "ko": "비주얼 스토리" },
+    "Pacing": { "zh": "叙事节奏", "ja": "ペース配分", "ko": "페이싱" },
+    "Emotional Impact": { "zh": "情感冲击", "ja": "感情的インパクト", "ko": "감정적 임팩트" },
+    "Panel Layout": { "zh": "分镜布局", "ja": "コマ割り", "ko": "패널 배치" },
+    "Sequential Art": { "zh": "连环画艺术", "ja": "連続画", "ko": "연속 예술" },
+    "Character Arc": { "zh": "角色弧光", "ja": "キャラクターアーク", "ko": "캐릭터 아크" },
+    "Advanced Story": { "zh": "进阶叙事", "ja": "上級ストーリー", "ko": "심화 스토리" },
+    "World Building": { "zh": "世界观构建", "ja": "世界観構築", "ko": "세계관 구축" },
+    "Thematic Depth": { "zh": "主题深度", "ja": "テーマの深さ", "ko": "주제적 깊이" },
+    "Gesture Drawing": { "zh": "动态速写", "ja": "ジェスチャードロー", "ko": "제스처 드로잉" },
+    "Line Quality": { "zh": "线条质量", "ja": "ラインの質", "ko": "선 품질" },
+    "Construction": { "zh": "形体构建", "ja": "構図組み立て", "ko": "구조화" },
+    "Simplification": { "zh": "简化概括", "ja": "簡略化", "ko": "단순화" },
+    "Textures & Materials": { "zh": "质感与材质", "ja": "テクスチャと素材", "ko": "질감과 재질" },
+    "Rendering & Polish": { "zh": "渲染与精修", "ja": "レンダリングと仕上げ", "ko": "렌더링과 마무리" },
+    "Speedpainting": { "zh": "速涂", "ja": "スピードペイント", "ko": "스피드페인팅" },
+    "Master Studies": { "zh": "大师研习", "ja": "マスター写経", "ko": "마스터 스터디" },
+    "Facial Features": { "zh": "五官", "ja": "顔のパーツ", "ko": "얼굴 특징" },
+    "Eyes": { "zh": "眼睛", "ja": "目", "ko": "눈" },
+    "Hair": { "zh": "头发", "ja": "髪", "ko": "머리카락" },
+    "Drapery & Folds": { "zh": "衣褶", "ja": "ドレープとひだ", "ko": "옷 주름" },
+    "Clothing on Figure": { "zh": "人体服装", "ja": "人体への衣服", "ko": "인체 의상" },
+    "Squash & Stretch": { "zh": "挤压与拉伸", "ja": "スカッシュ＆ストレッチ", "ko": "스쿼시 앤 스트레치" },
+    "Anticipation": { "zh": "预备动作", "ja": "アンティシペーション", "ko": "예비 동작" },
+    "Secondary Action": { "zh": "次要动作", "ja": "セカンダリアクション", "ko": "보조 동작" },
+    "Follow Through": { "zh": "跟随与重叠", "ja": "フォロースルー", "ko": "팔로스루" },
+    "Solid Drawing": { "zh": "立体造型", "ja": "ソリッドドローイング", "ko": "솔리드 드로잉" },
+    "Staging": { "zh": "场面调度", "ja": "ステージング", "ko": "스테이징" },
+    "Camera & Angles": { "zh": "镜头与角度", "ja": "カメラとアングル", "ko": "카메라와 앵글" },
+    "Shot Types": { "zh": "景别类型", "ja": "ショットの種類", "ko": "샷 종류" },
+    "Visual Development": { "zh": "视觉开发", "ja": "ビジュアル開発", "ko": "비주얼 개발" },
+    "Storyboarding": { "zh": "分镜脚本", "ja": "絵コンテ", "ko": "스토리보드" },
+    "Animatics": { "zh": "动态分镜", "ja": "アニマティクス", "ko": "애니매틱" },
+    "Continuity": { "zh": "连续性", "ja": "連続性", "ko": "연속성" },
+    "Smoke & Steam": { "zh": "烟雾与蒸汽", "ja": "煙と蒸気", "ko": "연기와 증기" },
+    "Fire & Explosions": { "zh": "火焰与爆炸", "ja": "火炎と爆発", "ko": "불꽃과 폭발" },
+    "Water & Liquids": { "zh": "水流与液体", "ja": "水と液体", "ko": "물과 액체" },
+    "Character Design Basics": { "zh": "角色设计基础", "ja": "キャラクターデザイン基礎", "ko": "캐릭터 디자인 기초" },
+    "Silhouette & Readability": { "zh": "剪影与辨识度", "ja": "シルエットと視認性", "ko": "실루엣과 가독성" },
+    "Shape Language": { "zh": "形状语言", "ja": "シェイプランゲージ", "ko": "형태 언어" },
+    "Proportions & Stylization": { "zh": "比例与风格化", "ja": "プロポーションと様式化", "ko": "비율과 양식화" },
+    "Personality Through Design": { "zh": "设计体现性格", "ja": "デザインで性格表現", "ko": "디자인으로 성격 표현" },
+    "Character Variety": { "zh": "角色多样性", "ja": "キャラクターの多様性", "ko": "캐릭터 다양성" },
+    "Costume & Accessories": { "zh": "服装与配饰", "ja": "コスチュームとアクセサリー", "ko": "의상과 액세서리" },
+    "Facial Expressions": { "zh": "面部表情", "ja": "表情", "ko": "표정" },
+    "Character Turnaround": { "zh": "角色三视图", "ja": "ターンアラウンド", "ko": "턴어라운드" },
+    "Model Sheet": { "zh": "设定表", "ja": "モデルシート", "ko": "모델 시트" },
+    "Creatures & Monsters": { "zh": "生物与怪物", "ja": "クリーチャーとモンスター", "ko": "크리처와 몬스터" },
+    "Mechanical & Robots": { "zh": "机械与机器人", "ja": "メカとロボット", "ko": "메카와 로봇" },
+    "Environment Basics": { "zh": "场景设计基础", "ja": "環境デザイン基礎", "ko": "환경 디자인 기초" },
+    "Perspective in Environment": { "zh": "场景透视", "ja": "環境のパース", "ko": "환경 원근법" },
+    "Location Composition": { "zh": "场景构图", "ja": "ロケーション構成", "ko": "장면 구도" },
+    "Architecture": { "zh": "建筑", "ja": "建築", "ko": "건축" },
+    "Nature & Landscape": { "zh": "自然与风景", "ja": "自然と風景", "ko": "자연과 풍경" },
+    "Interiors": { "zh": "室内设计", "ja": "インテリア", "ko": "실내" },
+    "Props & Objects": { "zh": "道具与物件", "ja": "小道具とオブジェクト", "ko": "소품과 오브젝트" },
+    "Scene Lighting": { "zh": "场景光影", "ja": "シーン照明", "ko": "장면 조명" },
+    "Atmosphere & Mood": { "zh": "氛围与情绪", "ja": "雰囲気とムード", "ko": "분위기와 무드" },
+    "Matte Painting": { "zh": "数字绘景", "ja": "マットペインティング", "ko": "매트 페인팅" },
+    "Arranging elements in a frame": { "zh": "在画面中安排元素", "ja": "フレーム内で要素を配置する", "ko": "프레임 안에서 요소 배치" },
+    "Continuous line drawing": { "zh": "连续线描", "ja": "連続線描", "ko": "연속 선 드로잉" },
+    "Shading and light analysis": { "zh": "明暗与光影分析", "ja": "陰影と光の分析", "ko": "명암과 조명 분석" },
+    "Regular drawing exercises": { "zh": "日常绘画练习", "ja": "定期的なドローイング練習", "ko": "정기적인 드로잉 연습" },
+    "Rapid gesture drawing": { "zh": "快速动态速写", "ja": "素早いジェスチャードロー", "ko": "빠른 제스처 드로잉" },
+    "Building complex forms from simple shapes": { "zh": "用简单形状构建复杂形体", "ja": "単純な形から複雑な形を組み立てる", "ko": "단순한 형태로 복잡한 형체 구성" },
+    "Copying masters and analytical studies": { "zh": "临摹大师与分析性研习", "ja": "マスター写経と分析的研究", "ko": "마스터 복습과 분석 스터디" },
+    "Fabric folds and drapery on the human form": { "zh": "人体上的衣褶与布料", "ja": "人体のドレープとひだ", "ko": "인체 위의 옷 주름과 드레이프" },
+    "Different shot types and their narrative meaning": { "zh": "不同景别及其叙事含义", "ja": "ショットの種類とその物語的意味", "ko": "다양한 샷 종류와 내러티브 의미" },
+    "Comic panel composition": { "zh": "漫画分镜构图", "ja": "漫画コマの構成", "ko": "만화 패널 구도" },
+    "Rhythm of storytelling": { "zh": "叙事节奏", "ja": "物語のリズム", "ko": "스토리텔링의 리듬" },
+    "Creating immersive worlds": { "zh": "构建沉浸式世界", "ja": "没入感のある世界を作る", "ko": "몰입형 세계 구축" },
+    "Basic walk animation": { "zh": "基础走路动画", "ja": "基本的な歩行アニメーション", "ko": "기본 걷기 애니메이션" },
+    "Running animation": { "zh": "跑步动画", "ja": "走行アニメーション", "ko": "달리기 애니메이션" },
+    "Third Time's Charm": { "zh": "事不过三", "ja": "三度目の正直", "ko": "세 번째는 매력" },
+    "Thirty Labors": { "zh": "三十项成就", "ja": "三十の偉業", "ko": "서른 가지 업적" },
+    "One Fifty": { "zh": "一百五十", "ja": "百五十", "ko": "백오십" },
+    "Double Century": { "zh": "二百", "ja": "二百", "ko": "이백" },
+    "Three Hundred": { "zh": "三百", "ja": "三百", "ko": "삼백" },
+    "Four Hundred": { "zh": "四百", "ja": "四百", "ko": "사백" },
+    "Half Thousand": { "zh": "五百", "ja": "五百", "ko": "오백" },
+    "Seven Fifty": { "zh": "七百五十", "ja": "七百五十", "ko": "칠백오십" },
+    "Thousand": { "zh": "一千", "ja": "千", "ko": "천" },
+    "Three Quarters": { "zh": "四分之三路程", "ja": "四分の三", "ko": "목표의 4분의 3" },
+    "50k XP": { "ja": "5万XP", "ko": "5만 XP" },
+    "100k XP": { "ja": "10万XP", "ko": "10만 XP" },
+    "250k XP": { "ja": "25万XP", "ko": "25만 XP" },
+    "Rendering different surfaces and materials": {
+      "zh": "表现不同表面与材质",
+      "ja": "さまざまな表面と材質の表現",
+      "ko": "다양한 표면과 재질 표현"
+    },
+    "Breaking down complex subjects into simple shapes": {
+      "zh": "将复杂对象分解为简单形状",
+      "ja": "複雑な対象を単純な形に分解する",
+      "ko": "복잡한 대상을 단순한 형태로 분해"
+    },
+    "Complex drawing techniques": {
+      "zh": "高级绘画技法",
+      "ja": "高度な描画テクニック",
+      "ko": "고급 드로잉 기법"
+    },
+    "Geometric shapes and organic forms": {
+      "zh": "几何形状与有机形体",
+      "ja": "幾何学的な形と有機的なフォルム",
+      "ko": "기하학적 형태와 유기적 형체"
+    },
+    "Lines, shapes, boxes, cylinders — core drills for beginners.": {
+      "zh": "线条、形状、方体、圆柱，新手核心练习",
+      "ja": "線、形、箱、円柱など、初心者向けの基本練習",
+      "ko": "선, 형태, 상자, 원기둥 등 초보자 핵심 연습"
+    },
+    "Deforming objects for motion impact": {
+      "zh": "通过形变增强动作表现力",
+      "ja": "動きの勢いを出すための変形",
+      "ko": "동작의 힘을 살리기 위한 형태 변형"
+    },
+    "Impact and hit effects": {
+      "zh": "打击与命中特效",
+      "ja": "打撃とヒットのエフェクト",
+      "ko": "타격과 히트 이펙트"
+    },
+    "Smoke, steam and gaseous effects": {
+      "zh": "烟雾、蒸汽与气体特效",
+      "ja": "煙、蒸気、気体のエフェクト",
+      "ko": "연기, 증기, 기체 이펙트"
+    },
+    "Fire, flame and explosion effects": {
+      "zh": "火焰与爆炸特效",
+      "ja": "炎と爆発のエフェクト",
+      "ko": "불꽃과 폭발 이펙트"
+    },
+    "Line confidence and clean lineart": {
+      "zh": "自信流畅的线条与干净线稿",
+      "ja": "自信のある線とクリーンな線画",
+      "ko": "자신감 있는 선과 깔끔한 선화"
+    },
+    "Dynamic poses and gesture drawing": {
+      "zh": "动态姿势与速写练习",
+      "ja": "ダイナミックなポーズとジェスチャードロー",
+      "ko": "역동적인 포즈와 제스처 드로잉"
+    },
+    "Final rendering and finishing techniques": {
+      "zh": "最终渲染与收尾技巧",
+      "ja": "最終レンダリングと仕上げの技法",
+      "ko": "최종 렌더링과 마무리 기법"
+    },
+    "Exaggerated proportions and stylistic choices": {
+      "zh": "夸张比例与风格化选择",
+      "ja": "誇張されたプロポーションとスタイルの選択",
+      "ko": "과장된 비율과 스타일 선택"
+    },
+    "Designing props and objects for scenes": {
+      "zh": "为场景设计道具与物件",
+      "ja": "シーン用の小道具とオブジェクトのデザイン",
+      "ko": "장면용 소품과 오브젝트 디자인"
+    },
+    "Drawing consistent character from all angles": {
+      "zh": "从各角度绘制一致的角色",
+      "ja": "あらゆる角度から一貫したキャラクターを描く",
+      "ko": "모든 각도에서 일관된 캐릭터 그리기"
+    },
+    "Professional character model sheets for production": {
+      "zh": "用于制作的正式角色设定表",
+      "ja": "制作向けのキャラクター設定シート",
+      "ko": "제작용 캐릭터 모델 시트"
+    },
+    "Advanced perspective for environment art": {
+      "zh": "场景绘画中的高级透视",
+      "ja": "環境アートの高度なパース",
+      "ko": "환경 아트의 고급 원근법"
+    },
+    "Composing environment scenes and landscapes": {
+      "zh": "场景与风景的构图",
+      "ja": "環境シーンと風景の構図",
+      "ko": "환경 장면과 풍경 구도"
+    },
+    "Interior spaces and room design": {
+      "zh": "室内空间与房间设计",
+      "ja": "室内空間と部屋のデザイン",
+      "ko": "실내 공간과 방 디자인"
+    },
+    "Digital matte painting techniques": {
+      "zh": "数字绘景技法",
+      "ja": "デジタルマットペインティングの技法",
+      "ko": "디지털 매트 페인팅 기법"
+    },
+    "Preparing the audience for an action": {
+      "zh": "为动作做预备铺垫",
+      "ja": "動作のための予備動作",
+      "ko": "동작을 위한 예비 준비"
+    },
+    "Overlapping action and motion decay": {
+      "zh": "重叠动作与运动衰减",
+      "ja": "オーバーラップと動きの減衰",
+      "ko": "겹치는 동작과 움직임 감쇄"
+    },
+    "Presenting actions clearly to the audience": {
+      "zh": "向观众清晰呈现动作",
+      "ja": "動作を観客に明確に見せる",
+      "ko": "동작을 관객에게 명확히 보여주기"
+    },
+    "Timed storyboard sequences with sound": {
+      "zh": "带声音的节奏分镜序列",
+      "ja": "音声付きのタイミング付き絵コンテ",
+      "ko": "사운드가 있는 타이밍 스토리보드"
+    },
+    "Facial expressions and acting": {
+      "zh": "面部表情与表演",
+      "ja": "表情と演技",
+      "ko": "표정과 연기"
+    },
+    "Multi-layered animations": {
+      "zh": "多层动画合成",
+      "ja": "多層のアニメーション",
+      "ko": "다층 애니메이션"
+    },
+    "Basic storytelling elements": {
+      "zh": "基本叙事要素",
+      "ja": "ストーリーテリングの基本要素",
+      "ko": "기본 스토리텔링 요소"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "nav.completed": { "zh": "已完成", "ja": "完了", "ko": "완료" },
+  "quests.complete": { "zh": "完成", "ja": "完了", "ko": "완료" },
+  "dashboard.totalLevel": { "zh": "总等级", "ja": "合計レベル", "ko": "총 레벨" },
+  "dashboard.activeQuest": { "zh": "进行中的任务", "ja": "進行中のクエスト", "ko": "진행 중인 퀘스트" },
+  "dashboard.completed": { "zh": "已完成", "ja": "完了", "ko": "완료" },
+  "dashboard.xpEconomyHint": {
+    "zh": "任务经验值计入技能树；练习时长与加成倍率也会生效。",
+    "ja": "クエストの経験値はスキルツリーに加算されます。練習時間とボーナス倍率も適用されます。",
+    "ko": "퀘스트 경험치는 스킬 트리에 반영됩니다. 연습 시간과 보너스 배율도 적용됩니다."
+  },
+  "dashboard.reviewTitle": { "zh": "待复习技能", "ja": "復習が必要なスキル", "ko": "복습이 필요한 스킬" },
+  "dashboard.reviewDueBadge": { "zh": "待复习", "ja": "復習期限", "ko": "복습 기한" },
+  "quests.viewRecommended": { "zh": "推荐", "ja": "おすすめ", "ko": "추천" },
+  "quests.viewAll": { "zh": "查看全部", "ja": "すべて見る", "ko": "전체 보기" },
+  "quests.quickDifficulty": { "zh": "难度如何？", "ja": "難易度はどうでしたか？", "ko": "난이도는 어땠나요?" },
+  "quests.mediumDigital": { "zh": "数字", "ja": "デジタル", "ko": "디지털" },
+  "skills.practiceInProgress": {
+    "zh": "请先完成当前进行中的练习",
+    "ja": "進行中の練習を先に完了してください",
+    "ko": "진행 중인 연습을 먼저 완료하세요"
+  },
+  "categories.effects": { "zh": "特效", "ja": "エフェクト", "ko": "이펙트" },
+  "categories.animation": { "zh": "动画", "ja": "アニメーション", "ko": "애니메이션" },
+  "categories.storytelling": { "zh": "叙事", "ja": "ストーリーテリング", "ko": "스토리텔링" },
+  "quests.materials": { "zh": "学习资料", "ja": "学習素材", "ko": "학습 자료" },
+  "profile.chooseAnimation": { "zh": "动画", "ja": "アニメーション", "ko": "애니메이션" },
+  "profile.drawingFocus": { "zh": "绘画为主", "ja": "ドローイング中心", "ko": "드로잉 중심" },
+  "dashboard.title": { "zh": "角色", "ja": "キャラクター", "ko": "캐릭터" },
+  "resources.refWindowTitle": { "zh": "学习资料", "ja": "学習素材", "ko": "학습 자료" },
+  "dashboard.nextActionOpenMaterials": { "zh": "打开学习资料", "ja": "学習素材を開く", "ko": "학습 자료 열기" },
+  "dashboard.reviewCta": { "zh": "打开技能", "ja": "スキルを開く", "ko": "스킬 열기" }
+}

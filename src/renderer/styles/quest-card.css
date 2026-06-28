@@ -1,0 +1,143 @@
+.quest-card--locked {
+  border-style: dashed;
+}
+
+.quest-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+}
+
+.quest-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-hover), var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.quest-card:hover {
+  border-color: var(--accent-muted);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.quest-card:hover::before {
+  opacity: 1;
+}
+
+.difficulty-badge {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.difficulty-badge.novice {
+  background: var(--color-novice-bg, rgba(52, 211, 153, 0.12));
+  color: var(--color-novice-text, #6ee7b7);
+  border: 1px solid var(--color-novice-border, rgba(52, 211, 153, 0.35));
+}
+
+.difficulty-badge.intermediate {
+  background: var(--color-intermediate-bg, rgba(96, 165, 250, 0.12));
+  color: var(--color-intermediate-text, #93c5fd);
+  border: 1px solid var(--color-intermediate-border, rgba(96, 165, 250, 0.35));
+}
+
+.difficulty-badge.advanced {
+  background: var(--color-advanced-bg, rgba(192, 132, 252, 0.12));
+  color: var(--color-advanced-text, #d8b4fe);
+  border: 1px solid var(--color-advanced-border, rgba(192, 132, 252, 0.35));
+}
+
+.difficulty-badge.master {
+  background: var(--color-master-bg, rgba(251, 191, 36, 0.12));
+  color: var(--color-master-text, #fcd34d);
+  border: 1px solid var(--color-master-border, rgba(251, 191, 36, 0.35));
+}
+
+.difficulty-badge.expert {
+  background: var(--color-expert-bg, rgba(248, 113, 113, 0.12));
+  color: var(--color-expert-text, #fca5a5);
+  border: 1px solid var(--color-expert-border, rgba(248, 113, 113, 0.35));
+}
+
+.quest-card-title {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  line-height: 1.35;
+  margin-bottom: 0.65rem;
+}
+
+.quest-card-desc-wrap {
+  margin-bottom: 1rem;
+}
+
+.quest-card-description {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.quest-card-tags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  overflow: hidden;
+}
+
+.quest-card-tag {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 6.75rem;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quest-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.quest-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}

@@ -1,0 +1,60 @@
+appId: com.artquest.app
+productName: ArtQuest
+copyright: Copyright © ArtQuest
+
+# After pack + fuses; before NSIS — same ordering as built-in rcedit, without winCodeSign archive.
+artifactBuildStarted: scripts/rcedit-win-unpacked.mjs
+afterAllArtifactBuild: scripts/sign-build-artifacts.mjs
+
+directories:
+  output: dist-build
+  buildResources: build
+
+files:
+  - out/**/*
+  - package.json
+
+asar: true
+# Copy to flat resources/tray.png (string path preserves subfolders → resources/resources/tray.png).
+extraResources:
+  - from: resources/tray.png
+    to: tray.png
+  - from: resources/window-icon.png
+    to: window-icon.png
+  # BrowserWindow + shell: ICO loads reliably on Windows taskbar / Start
+  - from: build/icon.ico
+    to: app-icon.ico
+
+win:
+  icon: build/icon.ico
+  requestedExecutionLevel: asInvoker
+  target:
+    # NSIS + zip: fewer AV heuristics than single-file portable (self-extract to Temp).
+    - target: nsis
+      arch:
+        - x64
+    - target: zip
+      arch:
+        - x64
+  verifyUpdateCodeSignature: false
+  # Built-in rcedit uses app-builder winCodeSign (7z with darwin symlinks — fails without symlink rights).
+  # Icon/metadata: scripts/rcedit-win-unpacked.mjs; signing: scripts/win-sign.mjs when CSC_LINK is set.
+  signAndEditExecutable: false
+
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+
+# Optional portable (heuristic AV risk): set ARTQUEST_BUILD_PORTABLE=1 before electron:build
+portable:
+  artifactName: "ArtQuest-Portable.exe"
+  unpackDirName: ArtQuestPortable-1.0.1

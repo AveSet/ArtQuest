@@ -1,0 +1,683 @@
+================================================================================
+  ARTQUEST — СИСТЕМА КВЕСТОВ: ПОЛНАЯ ДОКУМЕНТАЦИЯ
+  Quest System — Complete Documentation
+================================================================================
+
+1. ОБЩИЙ ОБЗОР / OVERVIEW
+─────────────────────────
+
+Приложение ArtQuest содержит 1000 квестов (ещё 1 в quests.json). 
+Все квесты направлены на развитие навыков рисования, анатомии, 
+анимации, эффектов и сторителлинга.
+
+Источники методологии: Marc Brunet ART School, Drawabox, Proko Anatomy,
+Illusion of Life / 12 Principles of Animation, и др.
+
+Всего повторяемых квестов (is_repeatable = true): 518
+Квесты можно проходить несколько раз с обновлённым бонусом за стрик.
+
+
+
+2. СТРУКТУРА КВЕСТА / QUEST STRUCTURE
+───────────────────────────────────────
+
+Каждый квест в JSON имеет следующие поля:
+
+{
+  "id": 1,                            // Уникальный ID (int)
+  "code": "DRW-00001",                // Уникальный код (категория + номер)
+  "title": {                          // Название
+    "ru": "Индустриальный: линии",
+    "en": "Portfolio: lighting"
+  },
+  "category": "drawing",              // Категория (см. раздел 4)
+  "difficulty": "expert",             // Сложность (см. раздел 5)
+  "description": {                    // Описание задания
+    "ru": "Портфолио-уровень: мяч с ...",
+    "en": "Portfolio-level: eye with ..."
+  },
+  "xp": 427,                          // Базовый опыт за выполнение
+  "estimatedTime": 179,               // Примерное время (в минутах)
+  "source": "Keys to Drawing",        // Источник/методология
+  "icon": "🎨",                        // Иконка (зависит от категории)
+  "color": "#6366f1",                 // Цвет (зависит от категории)
+  "min_level": 32,                    // Минимальный уровень игрока
+  "tags": [                           // Теги (см. раздел 6)
+    "lighting", "lines", "texture",
+    "expert", "drawing", "both"
+  ],
+  "prerequisites": [66, 232],         // ID квестов, которые нужно выполнить
+  "medium": "both",                   // Формат (см. раздел 7)
+  "is_repeatable": true,              // Можно ли проходить повторно
+  "review_after_days": 2,             // Через сколько дней рекомендован повтор
+  "streak_bonus": 1.2                 // Множитель опыта от стрика
+}
+
+
+
+3. ПОЛЯ ПОДРОБНО / FIELDS IN DETAIL
+────────────────────────────────────
+
+3.1 id
+  Уникальный числовой идентификатор квеста. Используется в prerequisites
+  для указания зависимостей.
+
+3.2 code
+  Строковый код в формате {КАТЕГОРИЯ}-{НОМЕР_С_ПАДДИНГОМ}.
+  Примеры: DRW-00001, ANA-00003, ANM-00006, VFX-00280, STY-00286.
+  Префиксы:
+    DRW → drawing
+    ANA → anatomy
+    ANM → animation
+    VFX → effects
+    STY → storytelling
+
+3.3 title
+  Объект с двумя полями: ru (русский) и en (английский).
+  Формат названия: "{Уровень_сложности}: {ключевой_навык}"
+  Примеры: "Основы: линии", "Mastery: anatomy", "Практика: свет"
+
+3.4 category (см. раздел 4)
+
+3.5 difficulty (см. раздел 5)
+
+3.6 description
+  Объект ru/en с полным описанием задания.
+  Для drawing: "Этюд {объект}: акцент на {аспект} и передачу материала"
+  Для anatomy: "Динамическая поза: {часть_тела} в движении с акцентом на {аспект}"
+  Для animation: "{тип} анимация: {объект} с принципом {принцип}, {кол-во} кадров"
+  Для effects: "Эффект {тип}: базовая техника {техника}"
+  Для storytelling: "Раскадровка: {N} кадров истории про {персонаж}"
+
+3.7 xp
+  Опыт за выполнение. Диапазон: 40–600.
+  Распределение по сложности:
+    novice:     40–65
+    intermediate: 66–120
+    advanced:    121–250
+    master:      252–400
+    expert:      407–600
+
+3.8 estimatedTime
+  Примерное время выполнения в минутах. Диапазон: 15–179.
+
+3.9 source
+  Источник методики. Возможные значения:
+    "Keys to Drawing"
+    "Drawabox"
+    "Marc Brunet Basics"
+    "Marc Brunet Figure Basics"
+    "Marc Brunet Animation"
+    "Proko Anatomy"
+    "Morpho: Simplified Forms"
+    "Figure Drawing for All It's Worth"
+    "Anatomy for Sculptors"
+    "Illusion of Life"
+    "12 Principles of Animation"
+    "Animation Mentor"
+    "The Animator's Survival Kit"
+    "Perspective Handbook"
+    "Visual Storytelling"
+    "Framed Ink"
+    "Sequential Art"
+    "Story: Substance, Structure, Style"
+    "The Visual Story"
+    "VFX Fundamentals"
+    "Digital Painting Techniques"
+    "Particle Systems Guide"
+    "Light and Color Theory"
+    "After Effects for Artists"
+
+3.10 icon
+  Эмодзи-иконка, определяется категорией:
+    drawing:      🎨
+    anatomy:      🦴
+    animation:    🎬
+    effects:      ✨
+    storytelling: 📖
+
+3.11 color
+  Шестнадцатеричный цвет, определяется категорией:
+    drawing:      #6366f1 (indigo)
+    anatomy:      #ec4899 (pink)
+    animation:    #10b981 (emerald)
+    effects:      #f59e0b (amber)
+    storytelling: #8b5cf6 (purple)
+
+3.12 min_level
+  Минимальный уровень игрока для доступа к квесту.
+  novice:       1–4
+  intermediate: 5–14
+  advanced:     15–24
+  master:       25–30
+  expert:       31–35
+
+3.13 tags (см. раздел 6)
+
+3.14 prerequisites
+  Массив ID квестов, которые нужно выполнить перед этим.
+  Может быть пустым ([]).
+  Для daily quests: если prerequisites пустой, квест может быть выбран
+  в ежедневную ротацию.
+
+3.15 medium
+  Формат выполнения:
+    "traditional" — традиционные материалы
+    "digital"     — цифровые инструменты
+    "both"        — любой формат
+
+3.16 is_repeatable
+  Можно ли проходить квест повторно. 
+  Повторяемые квесты: 518 шт. (обычно novice/intermediate, study/practice).
+  Неповторяемые: advanced+ квесты, мастерские работы, портфолио.
+
+3.17 review_after_days
+  Через сколько дней рекомендован повтор.
+
+3.18 streak_bonus
+  Множитель опыта от стрика. Диапазон: 1.0–1.5.
+  Чем выше множитель, тем выгоднее проходить квест при длинном стрике.
+
+
+
+4. КАТЕГОРИИ / CATEGORIES
+──────────────────────────
+
+4.1 drawing (Рисование)
+  Иконка: 🎨  Цвет: #6366f1
+  Всего квестов в файле: ~400
+  Описание: базовые навыки рисования — линии, формы, перспектива,
+  композиция, светотень, работа с цветом и материалами.
+  
+  Разделы (по тегам):
+    • lines — линии и контроль
+    • form — объём и форма
+    • perspective — перспектива (1-2-3 точки схода)
+    • composition — композиция кадра
+    • shading — штриховка и затенение
+    • lighting — свет и тень
+    • texture — текстуры и материалы
+    • color — цвет и колористика
+    • construction — конструктивный рисунок
+    • warmup — разминка
+    • practice — практика
+    • workflow — рабочий процесс
+    • depth — глубина
+    • space — пространство
+    • value — тональность
+    • control — контроль линии
+    • digital — цифровое рисование
+    • traditional — традиционное рисование
+
+4.2 anatomy (Анатомия)
+  Иконка: 🦴  Цвет: #ec4899
+  Всего квестов в файле: ~250
+  Описание: анатомия человека — скелет, мышцы, пропорции,
+  жесты, динамические позы.
+  
+  Разделы:
+    • skeleton — скелет
+    • muscles — мускулатура
+    • gesture — жестовый рисунок
+    • proportions — пропорции
+    • head — голова
+    • hands — кисти
+    • feet — стопы
+    • torso — торс
+    • pose — поза
+    • figure — фигура
+    • movement — движение
+    • expression — мимика
+    • construction — конструкция
+    • advanced-anatomy — продвинутая анатомия
+    • anatomy-basics — основы анатомии
+
+4.3 animation (Анимация)
+  Иконка: 🎬  Цвет: #10b981
+  Всего квестов в файле: ~180
+  Описание: принципы анимации по Диснею — timing, spacing,
+  squash & stretch, arcs, secondary action, и др.
+  
+  Разделы (основаны на 12 принципах анимации):
+    • squash-stretch — сжатие и растяжение
+    • anticipation — подготовка к действию
+    • staging — постановка
+    • straight-ahead — сквозная анимация
+    • pose-to-pose — от позы к позе
+    • follow-through — завершение движения
+    • slow-in-out — замедление входа/выхода
+    • arcs — дуги движения
+    • secondary-action — вторичное действие
+    • timing — тайминг
+    • spacing — интервалы
+    • appeal — привлекательность
+    • walk-cycle — цикл ходьбы
+    • run-cycle — цикл бега
+    • cycle — цикл
+
+4.4 effects (Эффекты / VFX)
+  Иконка: ✨  Цвет: #f59e0b
+  Всего квестов в файле: ~100
+  Описание: визуальные эффекты — частицы, свет, туман,
+  огонь, вода, магия, композитинг.
+  
+  Разделы:
+    • particles — частицы
+    • fire — огонь
+    • water — вода
+    • smoke — дым
+    • magic — магия
+    • light — свет
+    • blur — размытие
+    • glow — свечение
+    • atmosphere — атмосфера
+    • compositing — композитинг
+    • post-processing — пост-обработка
+    • vfx-basics — основы VFX
+    • advanced-vfx — продвинутый VFX
+    • motion-blur — размытие движения
+
+4.5 storytelling (Сторителлинг / Нарратив)
+  Иконка: 📖  Цвет: #8b5cf6
+  Всего квестов в файле: ~70
+  Описание: раскадровка, визуальный нарратив, эмоции,
+  сюжет, композиция кадра.
+  
+  Разделы:
+    • storyboard — раскадровка
+    • narrative — нарратив
+    • composition — композиция
+    • emotion — эмоция
+    • pacing — темп
+    • mood — настроение
+    • camera — работа с камерой
+    • thumbnail — миниатюры
+    • concept — концепт
+    • character-design — дизайн персонажа
+    • world-building — построение мира
+    • shot-types — типы кадров
+    • visual-narrative — визуальное повествование
+
+
+
+5. УРОВНИ СЛОЖНОСТИ / DIFFICULTY
+───────────────────────────────────
+
+┌──────────────┬──────────┬───────────┬─────────────────────────────┐
+│ Уровень      │ min_level│ XP        │ Описание                    │
+├──────────────┼──────────┼───────────┼─────────────────────────────┤
+│ novice       │   1–4    │  40–65    │ Базовые упражнения,         │
+│ (Новичок)    │          │           │ разминка, простые формы     │
+├──────────────┼──────────┼───────────┼─────────────────────────────┤
+│ intermediate │   5–14   │  66–120   │ Изучение, применение,       │
+│ (Средний)    │          │           │ работа с референсами        │
+├──────────────┼──────────┼───────────┼─────────────────────────────┤
+│ advanced     │  15–24   │ 121–250   │ Сложные этюды, мастерство,  │
+│ (Продвинутый)│          │           │ динамические позы           │
+├──────────────┼──────────┼───────────┼─────────────────────────────┤
+│ master       │  25–30   │ 252–400   │ Профессиональные работы,    │
+│ (Мастер)     │          │           │ иллюстрации, полные сцены   │
+├──────────────┼──────────┼───────────┼─────────────────────────────┤
+│ expert       │  31–35   │ 407–600   │ Портфолио-уровень,          │
+│ (Эксперт)    │          │           │ индустриальное качество     │
+└──────────────┴──────────┴───────────┴─────────────────────────────┘
+
+
+
+6. ТЕГИ / TAGS
+───────────────
+
+Каждый квест содержит массив тегов. Теги используются для:
+  • Фильтрации квестов в интерфейсе
+  • Определения скрытых достижений
+  • Адаптивного подбора весов (adaptiveWeights)
+
+6.1 Теги категории (присутствуют у всех квестов):
+  "drawing", "anatomy", "animation", "effects", "storytelling"
+
+6.2 Теги сложности:
+  "novice", "intermediate", "advanced", "master", "expert"
+
+6.3 Теги медиума:
+  "traditional" — традиционные материалы
+  "digital"     — цифровые
+  "both"        — любой формат
+
+6.4 Теги навыков (Drawing):
+  lines, form, perspective, composition, shading, lighting, 
+  texture, color, construction, warmup, practice, workflow,
+  depth, space, value, control
+
+6.5 Теги навыков (Anatomy):
+  skeleton, muscles, gesture, proportions, head, hands, feet,
+  torso, pose, figure, movement, expression, construction,
+  advanced-anatomy, anatomy-basics
+
+6.6 Теги навыков (Animation):
+  squash-stretch, anticipation, staging, straight-ahead,
+  pose-to-pose, follow-through, slow-in-out, arcs,
+  secondary-action, timing, spacing, appeal, walk-cycle,
+  run-cycle, cycle
+
+6.7 Теги навыков (Effects):
+  particles, fire, water, smoke, magic, light, blur, glow,
+  atmosphere, compositing, post-processing, vfx-basics,
+  advanced-vfx, motion-blur
+
+6.8 Теги навыков (Storytelling):
+  storyboard, narrative, composition, emotion, pacing, mood,
+  camera, thumbnail, concept, character-design, world-building,
+  shot-types, visual-narrative, story
+
+
+
+7. МЕДИУМ / MEDIUM
+───────────────────
+
+"digital"      — задание выполняется в цифровом формате (графический
+                 планшет, iPad, ПК)
+"traditional"  — задание выполняется в традиционных материалах
+                 (бумага, карандаш, маркеры, краски)
+"both"         — задание можно выполнить в любом формате
+
+
+
+8. ЕЖЕДНЕВНЫЕ КВЕСТЫ / DAILY QUESTS
+─────────────────────────────────────
+
+Механика:
+  • Каждый день генерируется 3 ежедневных квеста
+  • Отбор происходит детерминированно на основе seed (дата + уровень)
+  • В ротацию попадают квесты с is_repeatable = true (518 шт.)
+  • Гарантированный состав: 1 drawing + 1 animation + 1 из остальных
+  • Выбор взвешен по difficulty с учётом уровня игрока
+
+Проверка:
+  • При загрузке приложения проверяется lastDailyQuestDate
+  • Если дата изменилась — запускается generateDailyQuests()
+  • Если квест выполнен сегодня — он отмечается в completedToday
+  • Готовые daily-квесты заменяются новыми на следующий день
+
+
+
+9. ПРИМЕРЫ КВЕСТОВ / QUEST EXAMPLES
+────────────────────────────────────
+
+--- Пример 1: Простой квест (novice, drawing) ---
+{
+  "id": 59,
+  "code": "DRW-00059",
+  "title": { "ru": "Основы: свет", "en": "Warmup: form" },
+  "category": "drawing",
+  "difficulty": "novice",
+  "description": {
+    "ru": "Нарисуйте 3 персонаж с акцентом на конструкция",
+    "en": "Draw 30 character focusing on color"
+  },
+  "xp": 48,
+  "estimatedTime": 25,
+  "source": "Keys to Drawing",
+  "icon": "🎨",
+  "color": "#6366f1",
+  "min_level": 1,
+  "tags": ["practice", "color", "lighting", "perspective", 
+           "novice", "drawing", "both"],
+  "prerequisites": [],
+  "medium": "both",
+  "is_repeatable": true,
+  "review_after_days": 5,
+  "streak_bonus": 1.4
+}
+
+
+--- Пример 2: Анимация (intermediate, animation) ---
+{
+  "id": 107,
+  "code": "ANM-00107",
+  "title": { "ru": "Изучение: цикл", "en": "Study: principles" },
+  "category": "animation",
+  "difficulty": "intermediate",
+  "description": {
+    "ru": "Цикл анимации: конус с акцентом на appeal",
+    "en": "Animation cycle: character focusing on secondary action"
+  },
+  "xp": 73,
+  "estimatedTime": 46,
+  "source": "Marc Brunet Animation",
+  "icon": "🎬",
+  "color": "#10b981",
+  "min_level": 8,
+  "tags": ["pose-to-pose", "straight-ahead", "slow-in-out",
+           "intermediate", "animation", "both"],
+  "prerequisites": [477],
+  "medium": "both",
+  "is_repeatable": true,
+  "review_after_days": 14,
+  "streak_bonus": 1.4
+}
+
+
+--- Пример 3: Сложный квест (advanced, anatomy) ---
+{
+  "id": 35,
+  "code": "ANA-00035",
+  "title": { "ru": "Сложный этюд: пропорции", 
+             "en": "Advanced: construction" },
+  "category": "anatomy",
+  "difficulty": "advanced",
+  "description": {
+    "ru": "Динамическая поза: голова в движении с акцентом на текстура",
+    "en": "Dynamic pose: torso in motion focusing on gesture"
+  },
+  "xp": 218,
+  "estimatedTime": 79,
+  "source": "Proko Anatomy",
+  "icon": "🦴",
+  "color": "#ec4899",
+  "min_level": 18,
+  "tags": ["expression", "anatomy-basics", "figure", 
+           "skeleton", "character", "pose", 
+           "advanced", "anatomy", "digital"],
+  "prerequisites": [532, 447],
+  "medium": "digital",
+  "is_repeatable": false,
+  "review_after_days": 0,
+  "streak_bonus": 1.1
+}
+
+
+--- Пример 4: Expert / Portfolio (effects) ---
+{
+  "id": 418,
+  "code": "VFX-00418",
+  "title": { "ru": "Портфолио: частицы", 
+             "en": "Expert: atmosphere" },
+  "category": "effects",
+  "difficulty": "expert",
+  "description": {
+    "ru": "VFX для портфолио: дождь с индустриальным качеством свет",
+    "en": "Portfolio VFX: magic with industry-standard lines"
+  },
+  "xp": 439,
+  "estimatedTime": 152,
+  "source": "VFX Fundamentals",
+  "icon": "✨",
+  "color": "#f59e0b",
+  "min_level": 32,
+  "tags": ["water", "vfx-basics", "fire", "compositing",
+           "advanced-vfx", "atmosphere", "expert", "effects", "both"],
+  "prerequisites": [98, 872],
+  "medium": "both",
+  "is_repeatable": true,
+  "review_after_days": 7,
+  "streak_bonus": 1.1
+}
+
+
+--- Пример 5: Storytelling (master) ---
+{
+  "id": 613,
+  "code": "STY-00613",
+  "title": { "ru": "Экспрессия: композиция", 
+             "en": "Master: storyboard" },
+  "category": "storytelling",
+  "difficulty": "master",
+  "description": {
+    "ru": "Полноценная история: 10-кадровая последовательность про призрак",
+    "en": "Full story: 15-frame sequence about mage"
+  },
+  "xp": 333,
+  "estimatedTime": 130,
+  "source": "Story: Substance, Structure, Style",
+  "icon": "📖",
+  "color": "#8b5cf6",
+  "min_level": 30,
+  "tags": ["narrative", "pacing", "character-design",
+           "master", "storytelling", "digital"],
+  "prerequisites": [320],
+  "medium": "digital",
+  "is_repeatable": false,
+  "review_after_days": 0,
+  "streak_bonus": 1.0
+}
+
+
+
+10. ПАТТЕРНЫ НАЗВАНИЙ / TITLE PATTERNS
+────────────────────────────────────────
+
+Категория drawing (перевод условных префиксов):
+  "Основы: ..."     → "Basics: ..."       — novice
+  "Упражнение: ..."  → "Warmup: ..."       — novice
+  "Практика: ..."    → "Тренировка: ..."   — novice
+  "Изучение: ..."    → "Study: ..."        — intermediate
+  "Применение: ..."  → "Practice: ..."     — intermediate
+  "Развитие: ..."    → "Intermediate: ..." — intermediate
+  "Мастерство: ..."  → "Mastery: ..."      — advanced
+  "Углубление: ..."  → "Advanced: ..."     — advanced
+  "Сложный этюд: ..." → "Advanced: ..."    — advanced
+  "Профессиональный: ..." → "Master: ..."  — master
+  "Экспрессия: ..."  → "Pro: ..."          — master
+  "Профи: ..."       → "Pro: ..."          — master
+  "Индустриальный: ..." → "Expert: ..."    — expert
+  "Портфолио: ..."   → "Portfolio: ..."    — expert
+  "Эксперт: ..."     → "Expert: ..."       — expert
+
+Категория anatomy:
+  "Основы: ..."      → "Basics: ..." / "Warmup: ..."
+  "Упражнение: ..."  → "Тренировка: ..." / "Warmup: ..."
+  "Практика: ..."    → "Basics: ..." / "Тренировка: ..."
+  "Изучение: ..."    → "Study: ..." / "Practice: ..."
+  "Развитие: ..."    → "Intermediate: ..." / "Practice: ..."
+  "Применение: ..."  → "Practice: ..." / "Intermediate: ..."
+  "Мастерство: ..."  → "Mastery: ..." / "Advanced: ..."
+  "Сложный этюд: ..." → "Advanced: ..." / "Mastery: ..."
+  "Углубление: ..."  → "Advanced: ..." / "Mastery: ..."
+  "Профессиональный: ..." → "Master: ..." / "Pro: ..."
+  "Экспрессия: ..."  → "Master: ..." / "Pro: ..."
+  "Профи: ..."       → "Master: ..." / "Pro: ..."
+  "Индустриальный: ..." → "Expert: ..."
+  "Портфолио: ..."   → "Expert: ..." / "Portfolio: ..."
+  "Эксперт: ..."     → "Expert: ..."
+
+Категория animation:
+  "Основы: ..."      → "Basics: ..." / "Warmup: ..."
+  "Упражнение: ..."  → "Basics: ..." / "Тренировка: ..."
+  "Практика: ..."    → "Тренировка: ..." / "Basics: ..."
+  "Изучение: ..."    → "Study: ..." / "Intermediate: ..."
+  "Развитие: ..."    → "Intermediate: ..." / "Practice: ..."
+  "Применение: ..."  → "Practice: ..." / "Study: ..."
+  "Мастерство: ..."  → "Mastery: ..." / "Advanced: ..."
+  "Сложный этюд: ..." → "Advanced: ..." / "Mastery: ..."
+  "Углубление: ..."  → "Advanced: ..." / "Mastery: ..."
+  "Профессиональный: ..." → "Master: ..." / "Pro: ..."
+  "Экспрессия: ..."  → "Master: ..." / "Pro: ..."
+  "Профи: ..."       → "Master: ..." / "Pro: ..."
+  "Индустриальный: ..." → "Expert: ..."
+  "Портфолио: ..."   → "Expert: ..." / "Portfolio: ..."
+  "Эксперт: ..."     → "Expert: ..."
+
+
+
+11. ИСТОЧНИКИ И МЕТОДОЛОГИЯ / SOURCES & METHODOLOGY
+──────────────────────────────────────────────────────
+
+Drawing:
+  • Keys to Drawing — базовые принципы рисования
+  • Drawabox — перспектива, конструкция, линии
+  • Marc Brunet Basics — фундаментальные навыки
+  • Figure Drawing for All It's Worth — фигуративное рисование
+  • Perspective Handbook — перспектива
+
+Anatomy:
+  • Proko Anatomy — детальная анатомия
+  • Morpho: Simplified Forms — упрощённая анатомия
+  • Anatomy for Sculptors — анатомия для скульпторов
+  • Marc Brunet Figure Basics — основы фигуры
+  • Figure Drawing for All It's Worth — фигура
+
+Animation:
+  • Illusion of Life — 12 принципов анимации
+  • 12 Principles of Animation — детальная проработка принципов
+  • Animation Mentor — профессиональная анимация
+  • The Animator's Survival Kit — выживание аниматора
+  • Marc Brunet Animation — анимация от Марка Бруне
+
+Effects (VFX):
+  • Digital Painting Techniques — цифровая живопись
+  • Light and Color Theory — теория света и цвета
+  • Particle Systems Guide — системы частиц
+  • VFX Fundamentals — основы VFX
+  • After Effects for Artists — After Effects для художников
+
+Storytelling:
+  • Visual Storytelling — визуальное повествование
+  • Framed Ink — композиция и раскадровка
+  • Sequential Art — последовательное искусство
+  • Story: Substance, Structure, Style — сценарий
+  • The Visual Story — визуальная история
+
+
+
+12. ОСОБЕННОСТИ И НЮАНСЫ / FEATURES & NUANCES
+────────────────────────────────────────────────
+
+12.1 Повторяемость
+  • 518 из 1000 квестов — повторяемые
+  • Все novice — повторяемые (для ежедневной практики)
+  • Большинство intermediate — повторяемые
+  • Почти все advanced, master, expert — НЕ повторяемые
+  • Исключение: expert-квесты с пометкой "Portfolio" могут быть
+    повторяемыми (для переработки портфолио)
+
+12.2 Пререквизиты
+  • Квесты могут требовать выполнения других квестов
+  • Пререквизиты указываются массивом ID: [66, 232]
+  • dailyQuests выбираются только из квестов без пререквизитов
+  • Для мастер-квеста могут требоваться 2+ intermediate квеста
+
+12.3 Бонус стрика (streak_bonus)
+  • Множитель опыта за непрерывное выполнение
+  • Диапазон: 1.0 (нейтрально) — 1.5 (максимальный бонус)
+  • Выше множитель у коротких практических квестов
+  • Ниже у портфолио-работ
+
+12.4 Время на повтор (review_after_days)
+  • 0 — не требуется повтор
+  • 2–7 — интенсивный повтор (для базовых навыков)
+  • 14 — умеренный повтор
+  • 30 — редкий повтор
+
+12.5 Распределение по сложности (приблизительно):
+  • novice:      ~300 квестов
+  • intermediate: ~250 квестов
+  • advanced:    ~250 квестов
+  • master:      ~120 квестов
+  • expert:      ~80 квестов
+
+12.6 Распределение по категориям:
+  • drawing:      ~400 квестов
+  • anatomy:      ~250 квестов
+  • animation:    ~180 квестов
+  • effects:      ~100 квестов
+  • storytelling: ~70 квестов

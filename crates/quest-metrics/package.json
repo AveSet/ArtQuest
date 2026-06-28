@@ -1,0 +1,10 @@
+{
+  "name": "quest-metrics",
+  "version": "0.1.0",
+  "napi": {
+    "name": "quest-metrics",
+    "triples": {
+      "defaults": true
+    }
+  }
+}

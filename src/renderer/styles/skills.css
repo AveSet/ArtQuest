@@ -1,0 +1,163 @@
+.skill-node-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--skill-node-accent, var(--accent));
+  filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--skill-node-accent, var(--accent)) 25%, transparent));
+}
+
+.skill-node-emoji--tree {
+  font-size: 1.5rem;
+}
+
+.skill-node-emoji--panel {
+  font-size: 1.75rem;
+}
+
+.skill-node-emoji--inline {
+  font-size: 1rem;
+}
+
+[data-theme="rpg"] .skill-node-emoji {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--skill-node-accent, var(--gold-primary)) 35%, transparent));
+}
+
+.node-skill--locked .skill-node-emoji {
+  opacity: 0.5;
+  filter: grayscale(0.85);
+}
+
+.skill-bar-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.skill-name {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-level {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 0.6875rem;
+  color: var(--accent-hover);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.skill-bar {
+  height: 8px;
+  background: var(--bg-deep);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--skill-bar-inset, inset 0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.skill-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.skill-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 100%);
+}
+
+.skill-bar-fill.drawing {
+  background: var(--skill-fill-drawing);
+  box-shadow: var(--skill-fill-drawing-shadow);
+}
+
+.skill-bar-fill.anatomy {
+  background: var(--skill-fill-anatomy);
+  box-shadow: var(--skill-fill-anatomy-shadow);
+}
+
+.skill-bar-fill.animation {
+  background: var(--skill-fill-animation);
+  box-shadow: var(--skill-fill-animation-shadow);
+}
+
+.skill-bar-fill.effects {
+  background: var(--skill-fill-effects);
+  box-shadow: var(--skill-fill-effects-shadow);
+}
+
+.skill-bar-fill.storytelling {
+  background: var(--skill-fill-storytelling);
+  box-shadow: var(--skill-fill-storytelling-shadow);
+}
+
+.skill-bar-fill.character_design {
+  background: var(--skill-fill-character_design);
+  box-shadow: var(--skill-fill-character_design-shadow);
+}
+
+.skill-bar-fill.environment {
+  background: var(--skill-fill-environment);
+  box-shadow: var(--skill-fill-environment-shadow);
+}
+
+/* BEM-style names for dashboard skill bars (avoids inline-style override of RPG theme) */
+.skill-bar-fill--drawing {
+  background: var(--skill-fill-drawing);
+  box-shadow: var(--skill-fill-drawing-shadow);
+}
+.skill-bar-fill--anatomy {
+  background: var(--skill-fill-anatomy);
+  box-shadow: var(--skill-fill-anatomy-shadow);
+}
+.skill-bar-fill--animation {
+  background: var(--skill-fill-animation);
+  box-shadow: var(--skill-fill-animation-shadow);
+}
+.skill-bar-fill--effects {
+  background: var(--skill-fill-effects);
+  box-shadow: var(--skill-fill-effects-shadow);
+}
+.skill-bar-fill--storytelling {
+  background: var(--skill-fill-storytelling);
+  box-shadow: var(--skill-fill-storytelling-shadow);
+}
+.skill-bar-fill--character_design {
+  background: var(--skill-fill-character_design);
+  box-shadow: var(--skill-fill-character_design-shadow);
+}
+.skill-bar-fill--environment {
+  background: var(--skill-fill-environment);
+  box-shadow: var(--skill-fill-environment-shadow);
+}
+
+/* Skill labels with category colors */
+.skill-label-drawing { color: var(--color-drawing); }
+.skill-label-anatomy { color: var(--color-anatomy); }
+.skill-label-animation { color: var(--color-animation); }
+.skill-label-effects { color: var(--color-effects); }
+.skill-label-storytelling { color: var(--color-storytelling); }
+.skill-label-character_design { color: var(--color-character-design); }
+.skill-label-environment { color: var(--color-environment); }

@@ -1,0 +1,986 @@
+{
+  "files": [
+    "quests_anatomy.json",
+    "quests_animation.json",
+    "quests_character_design.json",
+    "quests_drawing.json",
+    "quests_effects.json",
+    "quests_environment.json",
+    "quests_storytelling.json"
+  ],
+  "totalQuests": 2046,
+  "strict": {
+    "titleEnglish": 281,
+    "descEnglish": 232,
+    "both": 90
+  },
+  "englishArtPhrases": {
+    "inTitle": 32,
+    "inDescription": 65
+  },
+  "imperative": {
+    "withImperative": 110,
+    "without": 1936,
+    "rateAll": 0.0538,
+    "rateNoLatinTitle": 0.0623,
+    "rateLatinTitle": 0
+  },
+  "byFile": {
+    "quests_anatomy.json": {
+      "total": 261,
+      "titleEn": 11,
+      "descEn": 2,
+      "noImp": 249,
+      "pctTitleEn": "4.2%",
+      "pctDescEn": "0.8%",
+      "pctNoImp": "95.4%"
+    },
+    "quests_animation.json": {
+      "total": 318,
+      "titleEn": 89,
+      "descEn": 80,
+      "noImp": 318,
+      "pctTitleEn": "28.0%",
+      "pctDescEn": "25.2%",
+      "pctNoImp": "100.0%"
+    },
+    "quests_character_design.json": {
+      "total": 294,
+      "titleEn": 19,
+      "descEn": 66,
+      "noImp": 261,
+      "pctTitleEn": "6.5%",
+      "pctDescEn": "22.4%",
+      "pctNoImp": "88.8%"
+    },
+    "quests_drawing.json": {
+      "total": 443,
+      "titleEn": 20,
+      "descEn": 15,
+      "noImp": 432,
+      "pctTitleEn": "4.5%",
+      "pctDescEn": "3.4%",
+      "pctNoImp": "97.5%"
+    },
+    "quests_effects.json": {
+      "total": 244,
+      "titleEn": 54,
+      "descEn": 35,
+      "noImp": 239,
+      "pctTitleEn": "22.1%",
+      "pctDescEn": "14.3%",
+      "pctNoImp": "98.0%"
+    },
+    "quests_environment.json": {
+      "total": 230,
+      "titleEn": 27,
+      "descEn": 8,
+      "noImp": 186,
+      "pctTitleEn": "11.7%",
+      "pctDescEn": "3.5%",
+      "pctNoImp": "80.9%"
+    },
+    "quests_storytelling.json": {
+      "total": 256,
+      "titleEn": 61,
+      "descEn": 26,
+      "noImp": 251,
+      "pctTitleEn": "23.8%",
+      "pctDescEn": "10.2%",
+      "pctNoImp": "98.0%"
+    }
+  },
+  "topLatinTokens": [
+    [
+      "shape",
+      61
+    ],
+    [
+      "language",
+      61
+    ],
+    [
+      "fx",
+      48
+    ],
+    [
+      "fx-",
+      33
+    ],
+    [
+      "contact",
+      28
+    ],
+    [
+      "passing",
+      27
+    ],
+    [
+      "spacing",
+      24
+    ],
+    [
+      "smear",
+      22
+    ],
+    [
+      "anticipation",
+      21
+    ],
+    [
+      "value",
+      21
+    ],
+    [
+      "distillation",
+      20
+    ],
+    [
+      "idle",
+      16
+    ],
+    [
+      "impact",
+      14
+    ],
+    [
+      "smear-",
+      12
+    ],
+    [
+      "hue",
+      12
+    ],
+    [
+      "ufotable",
+      12
+    ],
+    [
+      "pixar",
+      12
+    ],
+    [
+      "to",
+      12
+    ],
+    [
+      "foreshortening",
+      11
+    ],
+    [
+      "overlap",
+      11
+    ],
+    [
+      "rule",
+      10
+    ],
+    [
+      "of",
+      10
+    ],
+    [
+      "thirds",
+      10
+    ],
+    [
+      "squash",
+      9
+    ],
+    [
+      "slow-in",
+      9
+    ],
+    [
+      "lip",
+      9
+    ],
+    [
+      "hold",
+      9
+    ],
+    [
+      "stretch",
+      8
+    ],
+    [
+      "sync-",
+      8
+    ],
+    [
+      "out",
+      6
+    ],
+    [
+      "in",
+      6
+    ],
+    [
+      "and",
+      5
+    ],
+    [
+      "slow-out",
+      5
+    ],
+    [
+      "staging",
+      5
+    ],
+    [
+      "dwarf",
+      5
+    ],
+    [
+      "spaceport",
+      5
+    ],
+    [
+      "interior",
+      5
+    ],
+    [
+      "hallway",
+      5
+    ],
+    [
+      "at",
+      5
+    ],
+    [
+      "in-between",
+      4
+    ],
+    [
+      "snap",
+      4
+    ],
+    [
+      "pp",
+      4
+    ],
+    [
+      "line",
+      4
+    ],
+    [
+      "rivalry",
+      4
+    ],
+    [
+      "eye",
+      4
+    ],
+    [
+      "moment",
+      4
+    ],
+    [
+      "calm",
+      4
+    ],
+    [
+      "before",
+      4
+    ],
+    [
+      "storm",
+      4
+    ],
+    [
+      "clumps",
+      3
+    ]
+  ],
+  "topTitleHitPatterns": [
+    [
+      "FX",
+      24
+    ],
+    [
+      "Value|distillation",
+      20
+    ],
+    [
+      "anticipation",
+      15
+    ],
+    [
+      "Smear-",
+      12
+    ],
+    [
+      "Pixar|Ufotable",
+      12
+    ],
+    [
+      "foreshortening",
+      11
+    ],
+    [
+      "FX-",
+      10
+    ],
+    [
+      "Lip|sync-",
+      8
+    ],
+    [
+      "Idle",
+      8
+    ],
+    [
+      "to",
+      7
+    ],
+    [
+      "Impact",
+      6
+    ],
+    [
+      "dwarf",
+      5
+    ],
+    [
+      "spaceport",
+      5
+    ],
+    [
+      "hallway|interior",
+      5
+    ],
+    [
+      "and|squash|stretch",
+      4
+    ],
+    [
+      "spacing",
+      4
+    ],
+    [
+      "hold|snap",
+      4
+    ],
+    [
+      "Slow-in|slow-out",
+      4
+    ],
+    [
+      "eye|rivalry|to",
+      4
+    ],
+    [
+      "mage",
+      3
+    ],
+    [
+      "by",
+      3
+    ],
+    [
+      "bridge",
+      3
+    ],
+    [
+      "arrangement",
+      3
+    ],
+    [
+      "last|moment|rescue",
+      3
+    ],
+    [
+      "anticipation|before|calm|of|rule|storm|thirds",
+      3
+    ],
+    [
+      "in-between",
+      2
+    ],
+    [
+      "Layout",
+      2
+    ],
+    [
+      "overlap",
+      2
+    ],
+    [
+      "monster",
+      2
+    ],
+    [
+      "elf",
+      2
+    ]
+  ],
+  "topRuTitlePatternsWithLatin": [
+    [
+      "FX миниатюры — N кадров (форма)",
+      24
+    ],
+    [
+      "Value distillation — N тона",
+      20
+    ],
+    [
+      "Smear-полоса — N кадра",
+      12
+    ],
+    [
+      "Lip sync-лист — N форм рта",
+      8
+    ],
+    [
+      "Idle / дыхание — N ключей",
+      8
+    ],
+    [
+      "Сделать читаемый силуэт: dwarf",
+      5
+    ],
+    [
+      "Нарисовать в перспективе: spaceport",
+      5
+    ],
+    [
+      "Нарисовать в перспективе: interior hallway",
+      5
+    ],
+    [
+      "Добавить anticipation: эмоциональной реакции перед действием",
+      4
+    ],
+    [
+      "Лестница spacing — N точек → N кадров (N кадров)",
+      4
+    ],
+    [
+      "График тайминга — N hold + N snap (N кадров)",
+      4
+    ],
+    [
+      "Slow-in/slow-out — маятник с графиком (N кадров)",
+      4
+    ],
+    [
+      "Добавить anticipation: объекта с весом перед действием",
+      3
+    ],
+    [
+      "Сделать читаемый силуэт: mage",
+      3
+    ],
+    [
+      "Анализ студийного стиля: атмосфера (студии Ufotable и Pixar)",
+      3
+    ],
+    [
+      "Нарисовать в перспективе: bridge",
+      3
+    ],
+    [
+      "Блокинг сцены эмоционального момента arrangement",
+      3
+    ],
+    [
+      "Подобрать кадрирование: anticipation (calm before storm, rule of thirds)",
+      3
+    ],
+    [
+      "Нарисовать с сильным foreshortening: мышц",
+      2
+    ],
+    [
+      "Нарисовать с сильным foreshortening: скелетной системы",
+      2
+    ],
+    [
+      "Нарисовать с сильным foreshortening: жестов фигуры",
+      2
+    ],
+    [
+      "Добавить anticipation: вторичной анимации перед действием",
+      2
+    ],
+    [
+      "Сделать читаемый силуэт: monster",
+      2
+    ],
+    [
+      "Сделать читаемый силуэт: elf",
+      2
+    ],
+    [
+      "Сделать читаемый силуэт: robot",
+      2
+    ]
+  ],
+  "worst30": [
+    {
+      "id": 805,
+      "code": "STY-00805",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: pride (looking at own work, rule of thirds)",
+      "titleEn": "Frame pride (looking at own work) with strong composition",
+      "titleLatin": [
+        "pride",
+        "looking",
+        "at",
+        "own",
+        "work",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 785,
+      "code": "STY-00785",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: boredom (waiting in line, rule of thirds)",
+      "titleEn": "Frame boredom (waiting in line) with strong composition",
+      "titleLatin": [
+        "boredom",
+        "waiting",
+        "in",
+        "line",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 792,
+      "code": "STY-00792",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: anticipation (calm before storm, rule of thirds)",
+      "titleEn": "Frame anticipation (calm before storm) with strong composition",
+      "titleLatin": [
+        "anticipation",
+        "calm",
+        "before",
+        "storm",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 816,
+      "code": "STY-00816",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: anticipation (calm before storm, rule of thirds)",
+      "titleEn": "Frame anticipation (calm before storm) with strong composition",
+      "titleLatin": [
+        "anticipation",
+        "calm",
+        "before",
+        "storm",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 820,
+      "code": "STY-00820",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: anticipation (calm before storm, rule of thirds)",
+      "titleEn": "Frame anticipation (calm before storm) with strong composition",
+      "titleLatin": [
+        "anticipation",
+        "calm",
+        "before",
+        "storm",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 990,
+      "code": "STY-00990",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: journey (farewell to home, rule of thirds)",
+      "titleEn": "Frame journey (farewell to home) with strong composition",
+      "titleLatin": [
+        "journey",
+        "farewell",
+        "to",
+        "home",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 781,
+      "code": "STY-00781",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: command (authoritative gesture, rule of thirds)",
+      "titleEn": "Frame command (authoritative gesture) with strong composition",
+      "titleLatin": [
+        "command",
+        "authoritative",
+        "gesture",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 793,
+      "code": "STY-00793",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: exposure (lie revealed, rule of thirds)",
+      "titleEn": "Frame exposure (lie revealed) with strong composition",
+      "titleLatin": [
+        "exposure",
+        "lie",
+        "revealed",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 795,
+      "code": "STY-00795",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: pride (looking at own work)",
+      "titleEn": "Design a readable pride (looking at own work) silhouette",
+      "titleLatin": [
+        "pride",
+        "looking",
+        "at",
+        "own",
+        "work"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 797,
+      "code": "STY-00797",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: victory (triumph, rule of thirds)",
+      "titleEn": "Frame victory (triumph) with strong composition",
+      "titleLatin": [
+        "victory",
+        "triumph",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 814,
+      "code": "STY-00814",
+      "file": "quests_storytelling.json",
+      "titleRu": "Подобрать кадрирование: defeat (resignation, rule of thirds)",
+      "titleEn": "Frame defeat (resignation) with strong composition",
+      "titleLatin": [
+        "defeat",
+        "resignation",
+        "rule",
+        "of",
+        "thirds"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 790,
+      "code": "STY-00790",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать простой макет сцены: boredom (waiting in line) (2–3 панели)",
+      "titleEn": "Lay out a simple sequence: boredom (waiting in line)",
+      "titleLatin": [
+        "boredom",
+        "waiting",
+        "in",
+        "line"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 794,
+      "code": "STY-00794",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать простой макет сцены: boredom (waiting in line) (2–3 панели)",
+      "titleEn": "Lay out a simple sequence: boredom (waiting in line)",
+      "titleLatin": [
+        "boredom",
+        "waiting",
+        "in",
+        "line"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 812,
+      "code": "STY-00812",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: reunion after long separation",
+      "titleEn": "Design a readable reunion after long separation silhouette",
+      "titleLatin": [
+        "reunion",
+        "after",
+        "long",
+        "separation"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 890,
+      "code": "STY-00890",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать простой макет сцены: hope (dawn after darkness) (2–3 панели)",
+      "titleEn": "Lay out a simple sequence: hope (dawn after darkness)",
+      "titleLatin": [
+        "hope",
+        "dawn",
+        "after",
+        "darkness"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 935,
+      "code": "STY-00935",
+      "file": "quests_storytelling.json",
+      "titleRu": "Визуальный ритм: hope (dawn after darkness) (чередование планов)",
+      "titleEn": "Visual rhythm: hope (dawn after darkness) (shot alternation)",
+      "titleLatin": [
+        "hope",
+        "dawn",
+        "after",
+        "darkness"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 970,
+      "code": "STY-00970",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать простой макет сцены: anticipation (calm before storm) (2–3 панели)",
+      "titleEn": "Lay out a simple sequence: anticipation (calm before storm)",
+      "titleLatin": [
+        "anticipation",
+        "calm",
+        "before",
+        "storm"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 11028,
+      "code": "ANM-11028",
+      "file": "quests_animation.json",
+      "titleRu": "Маятник — slow in/out",
+      "titleEn": "Pendulum Slow In/Out",
+      "titleLatin": [
+        "slow",
+        "in",
+        "out"
+      ],
+      "descLatin": [
+        "spacing"
+      ],
+      "imperative": false
+    },
+    {
+      "id": 352,
+      "code": "ANM-00352",
+      "file": "quests_animation.json",
+      "titleRu": "Анимировать squash and stretch: вторичной анимации",
+      "titleEn": "Animate squash and stretch on secondary animation",
+      "titleLatin": [
+        "squash",
+        "and",
+        "stretch"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 470,
+      "code": "ANM-00470",
+      "file": "quests_animation.json",
+      "titleRu": "Анимировать squash and stretch: диалог",
+      "titleEn": "Animate squash and stretch on Dialogue",
+      "titleLatin": [
+        "squash",
+        "and",
+        "stretch"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 620,
+      "code": "ANM-00620",
+      "file": "quests_animation.json",
+      "titleRu": "Анимировать squash and stretch: эмоциональной реакции",
+      "titleEn": "Animate squash and stretch on emotional reaction",
+      "titleLatin": [
+        "squash",
+        "and",
+        "stretch"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 958,
+      "code": "ANM-00958",
+      "file": "quests_animation.json",
+      "titleRu": "Анимировать squash and stretch: падения на спину",
+      "titleEn": "Animate squash and stretch on tripping",
+      "titleLatin": [
+        "squash",
+        "and",
+        "stretch"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 414,
+      "code": "STY-00414",
+      "file": "quests_storytelling.json",
+      "titleRu": "Dynamic camera movement эмоционального момента",
+      "titleEn": "Dynamic camera movement: emotional moment",
+      "titleLatin": [
+        "Dynamic",
+        "camera",
+        "movement"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 508,
+      "code": "STY-00508",
+      "file": "quests_storytelling.json",
+      "titleRu": "Тайминг аниматика эмоционального момента rhythm and pauses",
+      "titleEn": "Animatic timing: emotional moment (rhythm and pauses)",
+      "titleLatin": [
+        "rhythm",
+        "and",
+        "pauses"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 767,
+      "code": "STY-00767",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: command (authoritative gesture)",
+      "titleEn": "Design a readable command (authoritative gesture) silhouette",
+      "titleLatin": [
+        "command",
+        "authoritative",
+        "gesture"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 768,
+      "code": "STY-00768",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: secret note passing",
+      "titleEn": "Design a readable secret note passing silhouette",
+      "titleLatin": [
+        "secret",
+        "note",
+        "passing"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 777,
+      "code": "STY-00777",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: competition (finish line)",
+      "titleEn": "Design a readable competition (finish line) silhouette",
+      "titleLatin": [
+        "competition",
+        "finish",
+        "line"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 779,
+      "code": "STY-00779",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: rivalry (eye to eye)",
+      "titleEn": "Design a readable rivalry (eye to eye) silhouette",
+      "titleLatin": [
+        "rivalry",
+        "eye",
+        "to"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 783,
+      "code": "STY-00783",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать простой макет сцены: rivalry (eye to eye) (2–3 панели)",
+      "titleEn": "Lay out a simple sequence: rivalry (eye to eye)",
+      "titleLatin": [
+        "rivalry",
+        "eye",
+        "to"
+      ],
+      "descLatin": [],
+      "imperative": false
+    },
+    {
+      "id": 786,
+      "code": "STY-00786",
+      "file": "quests_storytelling.json",
+      "titleRu": "Сделать читаемый силуэт: loneliness in crowd",
+      "titleEn": "Design a readable loneliness in crowd silhouette",
+      "titleLatin": [
+        "loneliness",
+        "in",
+        "crowd"
+      ],
+      "descLatin": [],
+      "imperative": false
+    }
+  ]
+}

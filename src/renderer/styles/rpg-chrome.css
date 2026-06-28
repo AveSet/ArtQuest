@@ -1,0 +1,50 @@
+/* RPG — warm palette reskin; structure matches modern/light (layout.css). */
+
+[data-theme="rpg"] body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(
+      ellipse 100% 60% at 50% -12%,
+      color-mix(in srgb, var(--accent) 12%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 100% 100%,
+      color-mix(in srgb, var(--accent) 5%, transparent),
+      transparent 50%
+    );
+}
+
+[data-theme="rpg"] .app-main::before {
+  display: none;
+}
+
+[data-theme="rpg"] .card-fantasy::before,
+[data-theme="rpg"] .card-fantasy::after,
+[data-theme="rpg"] .panel-fantasy::before,
+[data-theme="rpg"] .panel-fantasy::after,
+[data-theme="rpg"] .quest-card::before,
+[data-theme="rpg"] .quest-card::after {
+  display: none;
+  content: none;
+}
+
+[data-theme="rpg"] .nav-ornament,
+[data-theme="rpg"] .nav-rpg-icon {
+  display: none;
+}
+
+[data-theme="rpg"] .rpg-parchment,
+[data-theme="rpg"] .quest-card-desc-wrap {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+[data-theme="rpg"] .bg-parchment,
+[data-theme="rpg"] .bg-wood-dark,
+[data-theme="rpg"] .bg-stone {
+  background-image: none;
+}

@@ -1,0 +1,25 @@
+/* Minimal studio theme — low chrome for deep practice */
+html.studio-theme {
+  --bg-deep: #0a0a0c;
+  --bg-primary: #121216;
+  --bg-secondary: #1a1a20;
+  --bg-tertiary: #222228;
+  --text-primary: #e8e8ec;
+  --text-secondary: #a0a0a8;
+  --text-muted: #686870;
+  --accent: #6b8afd;
+  --accent-hover: #8aa4ff;
+  --border-secondary: #2a2a32;
+}
+
+html.studio-theme .card-fantasy,
+html.studio-theme .panel-fantasy {
+  border-radius: 0.5rem;
+  box-shadow: none;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-primary);
+}
+
+html.studio-theme .navbar {
+  border-bottom: 1px solid var(--border-secondary);
+}

@@ -1,0 +1,70 @@
+ИНСТРУКЦИЯ: Создание сайта ArtQuest на Google Sites
+====================================================
+
+Нужно для Google Cloud OAuth (Privacy Policy URL и Terms of Service URL).
+
+ШАГ 1 — Войти в Google Sites
+-----------------------------
+1. Откройте https://sites.google.com
+2. Войдите в Google-аккаунт, который используете для Google Cloud / OAuth
+3. Нажмите «Создать» (или Blank / Пустой шаблон)
+
+ШАГ 2 — Настройки сайта
+------------------------
+1. Нажмите «Настройки» (шестерёнка) → «Настройки сайта»
+2. Название сайта: ArtQuest
+3. Описание: Gamified app for learning drawing and animation
+4. Сохраните
+
+ШАГ 3 — Главная страница (Home)
+--------------------------------
+1. Заголовок страницы: ArtQuest
+2. Вставьте текст из файла: home-page.txt
+3. Замените [УКАЖИТЕ ВАШ EMAIL] на ваш реальный email
+
+ШАГ 4 — Страница Privacy Policy
+--------------------------------
+1. В меню слева: «Страницы» → «+» → «Новая страница»
+2. Название: Privacy Policy
+3. Вставьте текст из файла: privacy-policy.txt
+4. Замените [YOUR EMAIL] на ваш email
+
+ШАГ 5 — Страница Terms of Service
+------------------------------------
+1. «Страницы» → «+» → «Новая страница»
+2. Название: Terms of Service
+3. Вставьте текст из файла: terms-of-service.txt
+4. Замените [YOUR EMAIL] на ваш email
+
+ШАГ 6 — Навигация (опционально)
+---------------------------------
+1. Вставьте блок «Навигация» или добавьте ссылки в подвал
+2. Ссылки: Home | Privacy Policy | Terms of Service
+
+ШАГ 7 — Опубликовать
+---------------------
+1. Нажмите «Опубликовать» (правый верхний угол)
+2. Адрес веб-сайта: artquest (или artquest-app) → получится:
+   https://sites.google.com/view/artquest
+3. Нажмите «Опубликовать»
+
+ШАГ 8 — URL для Google Cloud Console
+---------------------------------------
+В Google Cloud Console → APIs & Services → OAuth consent screen:
+
+  Application home page:
+    https://sites.google.com/view/artquest
+
+  Privacy Policy link:
+    https://sites.google.com/view/artquest/privacy-policy
+
+  Terms of Service link:
+    https://sites.google.com/view/artquest/terms-of-service
+
+(Замените «artquest» на ваш реальный slug, если выбрали другой.)
+
+ВАЖНО
+-----
+• Сайт должен быть опубликован (не черновик)
+• Email в Privacy Policy и Terms должен быть рабочим
+• Для верификации OAuth Google может проверить, что страницы доступны

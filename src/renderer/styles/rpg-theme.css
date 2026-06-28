@@ -1,0 +1,22 @@
+/* RPG theme — button accent only; layout matches modern/light. */
+
+[data-theme="rpg"] .btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent-hover) 35%, transparent);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--accent-muted);
+}
+
+[data-theme="rpg"] .btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow: var(--shadow-md), 0 0 20px var(--accent-muted);
+}
+
+[data-theme="rpg"] .shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+}

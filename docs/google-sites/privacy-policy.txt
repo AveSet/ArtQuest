@@ -1,0 +1,54 @@
+Privacy Policy — ArtQuest
+
+Last updated: June 8, 2026
+
+1. Introduction
+ArtQuest ("we", "our", or "the app") is a desktop application for gamified drawing and animation practice. This Privacy Policy explains how ArtQuest handles information when you use the application, including the optional Google Drive sync feature.
+
+2. Data stored locally
+By default, ArtQuest stores all data on your device, including:
+• Quest progress, skill levels, and achievements
+• App settings and preferences
+• Gallery metadata and local gallery files
+• Practice statistics and session history
+
+This data is not transmitted to our servers. ArtQuest does not operate a backend service that collects user data.
+
+3. Optional Google Drive sync
+If you choose to connect your Google account, ArtQuest uses the Google Drive API with the drive.file scope to:
+• Create and access a folder at My Drive/ArtQuest/Gallery
+• Upload, download, and manage gallery image and video files that you save through the app
+• Store file metadata (file name, checksum, gallery item ID) as Google Drive app properties
+
+ArtQuest does not access other files in your Google Drive. You can disconnect Google Drive at any time in the app settings.
+
+4. Google account information
+When you sign in with Google, ArtQuest receives OAuth tokens to access Google Drive on your behalf. We do not receive or store your Google password. OAuth tokens are stored locally on your device and are used only for Drive sync operations you initiate.
+
+5. Data we do not collect
+ArtQuest does not:
+• Collect personal information on external servers
+• Use third-party analytics or advertising trackers
+• Sell or share your data with third parties
+• Access your Google Drive files outside the ArtQuest/Gallery folder created by the app
+
+6. Third-party services
+Google Drive sync is subject to Google's Privacy Policy: https://policies.google.com/privacy
+
+External links in the app (e.g., YouTube, Pinterest for learning materials) open in your browser and are governed by those services' own policies.
+
+7. Data security
+Gallery files and progress data are stored on your local device. When Google Drive sync is enabled, files are transmitted to your Google account over encrypted connections (HTTPS). You are responsible for securing your device and Google account.
+
+8. Data deletion
+• Local data: You can delete progress and gallery files through the app settings or by uninstalling ArtQuest.
+• Google Drive: Files uploaded to My Drive/ArtQuest/Gallery remain in your Google Drive until you delete them. Disconnecting Google Drive in the app does not delete files already uploaded.
+
+9. Children's privacy
+ArtQuest is not directed at children under 13. We do not knowingly collect personal information from children.
+
+10. Changes to this policy
+We may update this Privacy Policy from time to time. The "Last updated" date at the top will reflect any changes. Continued use of the app after changes constitutes acceptance of the updated policy.
+
+11. Contact
+If you have questions about this Privacy Policy, contact us at: [YOUR EMAIL]

@@ -1,0 +1,6 @@
+/* RPG / light / modern share layout.css, navbar.css, quest-card.css.
+   RPG differs only via variables.css [data-theme="rpg"] plus rpg-chrome.css / rpg-theme.css. */
+
+html.light .micro-challenge-preview__row {
+  background: var(--bg-secondary);
+}

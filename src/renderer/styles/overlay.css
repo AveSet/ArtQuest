@@ -1,0 +1,312 @@
+html[data-overlay-window='1'],
+html[data-overlay-window='1'] body,
+html[data-overlay-window='1'] #root {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 0;
+  background: var(--bg-primary);
+  background-image: none;
+  overflow: hidden;
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+.quest-overlay-shell {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.quest-overlay-card {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.45rem 0.55rem 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border-secondary));
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+}
+
+.quest-overlay-card--reference {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--border-secondary));
+  box-shadow: var(--shadow-md), 0 0 18px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.quest-overlay-card--paused {
+  opacity: 0.92;
+}
+
+.quest-overlay-card--practice {
+  gap: 0.14rem;
+  padding: 0.42rem 0.52rem 0.5rem;
+}
+
+.quest-overlay-card--practice .quest-overlay-phase {
+  min-height: 0;
+  -webkit-line-clamp: 1;
+  margin-bottom: 0;
+}
+
+.quest-overlay-card--practice .quest-overlay-time {
+  margin-top: 0.08rem;
+  font-size: clamp(1.3rem, 10vw, 1.75rem);
+}
+
+.quest-overlay-card--refs-open {
+  gap: 0.18rem;
+  padding-bottom: 0.5rem;
+}
+
+.quest-overlay-card--refs-open .quest-overlay-time {
+  font-size: clamp(1.2rem, 9vw, 1.55rem);
+  margin-top: 0.05rem;
+}
+
+.quest-overlay-card--refs-open .quest-overlay-ref-grid button {
+  font-size: 0.54rem;
+  padding: 0.32rem 0.18rem;
+  line-height: 1.12;
+}
+
+.quest-overlay-card--expired .quest-overlay-time {
+  color: var(--status-warning-text, var(--danger));
+}
+
+.quest-overlay-drag {
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.quest-overlay-kicker {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.quest-overlay-close,
+.quest-overlay-actions button,
+.quest-overlay-empty button,
+.quest-overlay-refs-toggle,
+.quest-overlay-ref-grid button {
+  -webkit-app-region: no-drag;
+  box-sizing: border-box;
+}
+
+.quest-overlay-close:focus-visible,
+.quest-overlay-actions button:focus-visible,
+.quest-overlay-empty button:focus-visible,
+.quest-overlay-refs-toggle:focus-visible,
+.quest-overlay-ref-grid button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.quest-overlay-close {
+  border: 0;
+  border-radius: 50%;
+  width: 1.35rem;
+  height: 1.35rem;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--text-heading);
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.quest-overlay-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  flex-shrink: 0;
+}
+
+.quest-overlay-phase {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 0;
+  color: var(--text-secondary);
+  font-size: 0.63rem;
+  line-height: 1.22;
+}
+
+.quest-overlay-phase--primary {
+  -webkit-line-clamp: 3;
+  color: var(--text-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.28;
+  margin-bottom: 0.08rem;
+  flex-shrink: 0;
+}
+
+.quest-overlay-card--refs-open .quest-overlay-phase {
+  -webkit-line-clamp: 1;
+}
+
+.quest-overlay-time {
+  margin-top: 0.06rem;
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: clamp(1.4rem, 10vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-hover);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.quest-overlay-time--paused {
+  opacity: 0.55;
+}
+
+.quest-overlay-paused-hint,
+.quest-overlay-grace-hint {
+  margin: 0;
+  font-size: 0.58rem;
+  line-height: 1.2;
+  color: var(--text-muted);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.quest-overlay-grace-hint {
+  color: var(--status-warning-text, var(--text-secondary));
+}
+
+.quest-overlay-refs-toggle {
+  width: 100%;
+  border: 1px dashed color-mix(in srgb, var(--accent) 46%, var(--border-secondary));
+  border-radius: 12px;
+  padding: 0.3rem 0.36rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--accent-hover);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.quest-overlay-ref-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.22rem;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.quest-overlay-ref-grid button {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border-secondary);
+  border-radius: 10px;
+  padding: 0.32rem 0.2rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quest-overlay-ref-grid button:hover {
+  border-color: color-mix(in srgb, var(--accent) 68%, var(--border-secondary));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.quest-overlay-ref-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.quest-overlay-time--expired {
+  color: var(--danger);
+}
+
+.quest-overlay-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.22rem;
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 0.12rem;
+}
+
+.quest-overlay-actions button,
+.quest-overlay-empty button {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid var(--border-secondary);
+  border-radius: 10px;
+  padding: 0.34rem 0.24rem;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quest-overlay-actions button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.quest-overlay-actions__primary {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-secondary));
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent-hover);
+}
+
+.quest-overlay-actions__danger {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border-secondary));
+  color: var(--danger);
+}
+
+.quest-overlay-actions__wide {
+  grid-column: 1 / -1;
+}
+
+.quest-overlay-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.quest-overlay-empty p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+

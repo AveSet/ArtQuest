@@ -1,0 +1,47 @@
+Terms of Service — ArtQuest
+
+Last updated: June 8, 2026
+
+1. Acceptance of terms
+By downloading, installing, or using ArtQuest ("the app"), you agree to these Terms of Service. If you do not agree, do not use the app.
+
+2. Description of service
+ArtQuest is a desktop application that provides gamified creative practice for drawing and animation. The app includes quests, a skill tree, daily challenges, a personal gallery, and optional cloud backup of gallery files via Google Drive.
+
+3. License
+We grant you a personal, non-exclusive, non-transferable, revocable license to use ArtQuest for your own creative practice on devices you own or control. You may not:
+• Reverse engineer, decompile, or disassemble the app except as permitted by law
+• Redistribute, sublicense, or sell the app or its components
+• Use the app for any unlawful purpose
+
+4. Your content
+You retain ownership of artwork and files you create and upload through ArtQuest. You are solely responsible for the content you store locally or sync to Google Drive. You represent that you have the right to use and store such content.
+
+5. Google Drive sync
+Google Drive integration is optional. By connecting your Google account, you authorize ArtQuest to access and manage files in the ArtQuest/Gallery folder on your Google Drive, as described in our Privacy Policy. Google Drive is provided by Google and subject to Google's Terms of Service: https://policies.google.com/terms
+
+You may disconnect Google Drive at any time. We are not responsible for data loss, sync failures, or changes to Google's services.
+
+6. Local-first data
+ArtQuest is designed to work primarily with local storage. You are responsible for backing up your data. We are not liable for loss of progress or gallery files due to device failure, uninstallation, or user error.
+
+7. Disclaimer of warranties
+ArtQuest is provided "as is" and "as available" without warranties of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, and non-infringement. We do not guarantee uninterrupted or error-free operation.
+
+8. Limitation of liability
+To the maximum extent permitted by law, ArtQuest and its developers shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, profits, or goodwill, arising from your use of the app or Google Drive sync.
+
+9. Updates
+We may release updates to improve functionality, fix bugs, or comply with platform requirements. Some updates may be required for continued use.
+
+10. Termination
+You may stop using ArtQuest at any time by uninstalling the app. We may discontinue or modify the app at any time without notice.
+
+11. Changes to terms
+We may update these Terms of Service. The "Last updated" date will reflect changes. Continued use after changes constitutes acceptance.
+
+12. Governing law
+These terms are governed by applicable local laws in your jurisdiction, without regard to conflict of law principles.
+
+13. Contact
+For questions about these Terms of Service, contact us at: [YOUR EMAIL]

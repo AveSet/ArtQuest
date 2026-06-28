@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="Effects reference">
+  <rect width="320" height="180" fill="#1a1f2e"/>
+  <circle cx="160" cy="90" r="40" fill="#a855f7" opacity="0.25"/>
+  <circle cx="160" cy="90" r="20" fill="#f472b6" opacity="0.5"/>
+  <path d="M160 50 L160 130 M130 70 L190 110 M190 70 L130 110" stroke="#c9a227" stroke-width="2" opacity="0.6"/>
+  <text x="160" y="24" fill="#94a3b8" font-size="12" text-anchor="middle" font-family="system-ui,sans-serif">Glow &amp; impact layers</text>
+</svg>
