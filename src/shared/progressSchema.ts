@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { QUEST_SESSION_SHORTCUT_COMMANDS } from './questSessionShortcuts'
 
 /** Bump when saved shape changes; migrateProgressPayload handles older versions. */
-export const CURRENT_PROGRESS_SCHEMA_VERSION = 22
+export const CURRENT_PROGRESS_SCHEMA_VERSION = 25
 
 const questCategorySchema = z.enum([
   'drawing',
@@ -203,6 +203,7 @@ const settingsSchema = z.object({
     fontScale: z.enum(['small', 'medium', 'large']),
     contrastBoost: z.boolean(),
     reduceMotion: z.boolean(),
+    disableSessionTimers: z.boolean().optional().default(false),
     hasSeenOnboarding: z.boolean(),
     materialFavoriteIds: z.array(z.string()),
     materialEngagement: z
@@ -226,13 +227,41 @@ const settingsSchema = z.object({
       .optional(),
     activityTrackingEnabled: z.boolean().optional(),
     trackedArtApps: z
-      .array(z.enum(['photoshop', 'clipstudio', 'sai', 'tvpaint', 'toonboom']))
+      .array(z.enum(['photoshop', 'clipstudio', 'sai', 'tvpaint', 'toonboom', 'custom']))
       .optional(),
+    /** User-selected .exe for custom art app tracking (Windows). */
+    customArtAppExecutablePath: z.string().max(500).optional(),
     artIdleTimeoutSec: z.int().min(10).max(600).optional(),
     experienceTier: z.enum(['beginner', 'intermediate', 'advanced']).optional().default('beginner'),
     preferredReferenceSource: referenceSourceSchema.optional().default('pinterest'),
     /** When true and Google Drive is connected, reference webviews use Google SSO with that account. */
     useGoogleForReferenceLogin: z.boolean().optional().default(false),
+    windowBounds: z
+      .object({
+        main: z
+          .object({
+            x: z.number(),
+            y: z.number(),
+            width: z.number().min(800),
+            height: z.number().min(720),
+          })
+          .optional(),
+        overlay: z
+          .object({
+            x: z.number(),
+            y: z.number(),
+          })
+          .optional(),
+        reference: z
+          .object({
+            x: z.number(),
+            y: z.number(),
+            width: z.number().min(320),
+            height: z.number().min(240),
+          })
+          .optional(),
+      })
+      .optional(),
   })
 
 const streakStateSchema = z.strictObject({
@@ -242,6 +271,8 @@ const streakStateSchema = z.strictObject({
     streakRecoveryDueDate: z.string().optional(),
     lastDailyRitualDate: z.string().optional(),
     streakRecoveryHintShownDate: z.string().optional(),
+    /** Set on first open after a 7+ day absence — streak preserved, reviews rescheduled. */
+    longAbsenceReturnDate: z.string().optional(),
   })
 
 const adaptiveWeightsSchema = z
@@ -376,6 +407,7 @@ const DEFAULT_SETTINGS: z.infer<typeof settingsSchema> = {
   fontScale: 'medium',
   contrastBoost: false,
   reduceMotion: false,
+  disableSessionTimers: false,
   hasSeenOnboarding: false,
   materialFavoriteIds: [],
   materialEngagement: {},
@@ -661,6 +693,9 @@ export function migrateProgressPayload(raw: unknown): Record<string, unknown> {
       : {}),
     ...(typeof partialStreak.streakRecoveryHintShownDate === 'string'
       ? { streakRecoveryHintShownDate: partialStreak.streakRecoveryHintShownDate }
+      : {}),
+    ...(typeof partialStreak.longAbsenceReturnDate === 'string'
+      ? { longAbsenceReturnDate: partialStreak.longAbsenceReturnDate }
       : {}),
   }
 

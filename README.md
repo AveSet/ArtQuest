@@ -46,6 +46,4 @@ No external analytics by default. Practice events stay on device. Google Drive s
 ArtQuest uses open quest progression (daily lineup, recommendations, skill tree, and spaced review).  
 Legacy campaign-map mode is removed from the current app flow.
 
-## Optional Rust module
-
-`crates/quest-metrics/` — native quest metrics estimator. Build with `npm run build:rust` when Rust toolchain is installed.
+Custom quest timing uses the JS estimator in `src/renderer/utils/questMetricsEstimator.ts`.

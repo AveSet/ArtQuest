@@ -97,6 +97,7 @@ describe('Dashboard page smoke', () => {
     )
 
     expect(document.querySelector('[data-onboarding="dashboard-dailies"]')).toBeTruthy()
+    expect(document.querySelector('[data-onboarding="dashboard-quests-panel"]')).toBeTruthy()
     expect(document.querySelector('[data-onboarding="dashboard-skills"]')).toBeTruthy()
     expect(document.querySelector('[data-onboarding="dashboard-next-action"]')).toBeTruthy()
     expect(screen.getAllByText('Perspective Basics').length).toBeGreaterThan(0)

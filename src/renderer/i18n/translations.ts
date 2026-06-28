@@ -422,6 +422,7 @@ export interface Translations {
     overtimeHint?: string
     overtimeXpNote?: string
     typicalTimeLabel?: string
+    lastCompletionTimeLabel?: string
     timeoutFailTitle?: string
     timeoutFailBody?: string
     timeoutFailCta?: string
@@ -546,6 +547,7 @@ export interface Translations {
     mistakeTagsLabel?: string
     compareVersions?: string
     practiceNext?: string
+    shareStory?: string
     whatWentWellPlaceholder?: string
     searchPlaceholder?: string
     searchAria?: string
@@ -592,6 +594,11 @@ export interface Translations {
     artAppsHint?: string
     artAppsHintOff?: string
     artAppsEnabled?: string
+    /** Shown on macOS/Linux — foreground detection is Windows-only */
+    artAppsPlatformNote?: string
+    artAppsCustom?: string
+    artAppsCustomPath?: string
+    artAppsCustomChange?: string
     artIdleTimeout?: string
     minimizeToTray?: string
     sessionWidgetMode?: string
@@ -608,6 +615,9 @@ export interface Translations {
     fontLarge?: string
     highContrast?: string
     reduceMotion?: string
+    disableSessionTimers?: string
+    disableSessionTimersHint?: string
+    tourAndResetSection?: string
     /** Re-show first-run welcome dialog */
     showWelcomeTipsAgain?: string
     /** Launch the full app tour from settings */
@@ -1251,7 +1261,7 @@ export const translations: Record<Language, any> = {
       overtimeHint: 'Extra time: {time}',
       overtimeXpNote: 'Quest track XP has a small penalty after the timer; skill node XP reflects your real practice time.',
       typicalTimeLabel: 'typ.',
-      timeoutFailTitle: 'Quest not completed in time',
+      lastCompletionTimeLabel: 'Last',
       timeoutFailBody:
         'Unfortunately you did not finish the quest in time. Only skill tree XP was saved. Good luck with the next quest!',
       timeoutFailCta: 'Back to dashboard',
@@ -1389,6 +1399,7 @@ export const translations: Record<Language, any> = {
       mistakeTagsLabel: 'What did not work:',
       compareVersions: 'Compare before / after',
       practiceNext: 'Next practice',
+      shareStory: 'Share story',
       whatWentWellPlaceholder: 'What went well…',
       searchPlaceholder: 'Search works, tags, notes',
       searchAria: 'Search gallery',
@@ -1435,6 +1446,11 @@ export const translations: Record<Language, any> = {
       artAppsHint: 'XP and session timers count only when a selected app is in the foreground and you are active.',
       artAppsHintOff: 'When off, time counts whenever ArtQuest is open (no art-app focus check).',
       artAppsEnabled: 'Enable art app tracking',
+      artAppsPlatformNote:
+        'Foreground art-app detection is only available on Windows. On macOS and Linux, practice time counts as active while ArtQuest is open.',
+      artAppsCustom: 'Other',
+      artAppsCustomPath: 'Selected application',
+      artAppsCustomChange: 'Change…',
       artIdleTimeout: 'Pause after idle',
       minimizeToTray: 'Keep running when closing window (taskbar tray)',
       sessionWidgetMode: 'Session widget mode',
@@ -1452,6 +1468,10 @@ export const translations: Record<Language, any> = {
       fontLarge: 'Large',
       highContrast: 'Higher contrast surfaces',
       reduceMotion: 'Reduce motion',
+      disableSessionTimers: 'Disable session timers',
+      disableSessionTimersHint:
+        'Pause countdown timers for quests and skill practice. Finish at your own pace without time pressure.',
+      tourAndResetSection: 'Tour & reset',
       showWelcomeTipsAgain: 'Show welcome tips again',
       fullAppTour: 'Full app tour',
       theme: 'Theme',
@@ -2200,6 +2220,7 @@ export const translations: Record<Language, any> = {
       overtimeHint: 'Доп. время: {time}',
       overtimeXpNote: 'XP трека квеста слегка снижается после таймера; XP узла навыка считается по реальному времени практики.',
       typicalTimeLabel: 'обыч.',
+      lastCompletionTimeLabel: 'Прошлый раз',
       timeoutFailTitle: 'Квест не выполнен вовремя',
       timeoutFailBody:
         'К сожалению, ты не успел выполнить квест. Будет получен опыт только в ячейку древа навыков. Удачи со следующим квестом!',
@@ -2338,6 +2359,7 @@ export const translations: Record<Language, any> = {
       mistakeTagsLabel: 'Что не получилось:',
       compareVersions: 'Сравнить до / после',
       practiceNext: 'Следующая практика',
+      shareStory: 'Поделиться (сторис)',
       whatWentWellPlaceholder: 'Что получилось…',
       searchPlaceholder: 'Поиск по работам, тегам, заметкам',
       searchAria: 'Поиск по галерее',
@@ -2384,6 +2406,11 @@ export const translations: Record<Language, any> = {
       artAppsHint: 'Опыт и таймер идут только когда выбранная программа активна и вы не бездействуете.',
       artAppsHintOff: 'Отключено: время идёт, пока приложение открыто (без проверки фокуса).',
       artAppsEnabled: 'Включить отслеживание',
+      artAppsPlatformNote:
+        'Определение активной art-программы доступно только в Windows. На macOS и Linux время практики засчитывается, пока открыт ArtQuest.',
+      artAppsCustom: 'Другое',
+      artAppsCustomPath: 'Выбранное приложение',
+      artAppsCustomChange: 'Изменить…',
       artIdleTimeout: 'Пауза при бездействии',
       minimizeToTray: 'Оставаться в фоне при закрытии окна (значок в трее)',
       sessionWidgetMode: 'Режим виджета',
@@ -2401,6 +2428,10 @@ export const translations: Record<Language, any> = {
       fontLarge: 'Крупный',
       highContrast: 'Повышенный контраст поверхностей',
       reduceMotion: 'Уменьшить анимации',
+      disableSessionTimers: 'Отключить таймеры',
+      disableSessionTimersHint:
+        'Остановить обратный отсчёт в квестах и тренировках навыков. Завершайте практику в своём темпе.',
+      tourAndResetSection: 'Тур и сброс',
       showWelcomeTipsAgain: 'Показать приветствие снова',
       fullAppTour: 'Полный тур по приложению',
       theme: 'Тема',

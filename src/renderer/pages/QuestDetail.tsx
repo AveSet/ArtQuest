@@ -19,6 +19,7 @@ import {
   useQuestSessionStore,
   getSessionPracticeMinutes,
   sessionHasPhases,
+  sessionInOvertime,
 } from '@/store/useQuestSessionStore'
 import { getQuestDisplayMinutes } from '@/utils/questSessionPlan'
 import { usePersonalizedQuestMinutes } from '@/utils/usePersonalizedQuestMinutes'
@@ -33,6 +34,10 @@ import {
   isSubmitReflectionValid,
   pruneReflectionOnDifficultyChange,
 } from '@/utils/questSubmitReflection'
+import {
+  shouldUseFullReflection,
+  isSubmitReflectionValidCompact,
+} from '@/utils/questSubmitReflectionSampling'
 import type { QuestFeedbackCriterion } from '@/store/models'
 import {
   getFundamentalsExerciseSteps,
@@ -121,6 +126,9 @@ const QuestDetail = () => {
   const expireSoundPlayedRef = useRef(false)
   const { submitQuest, isSubmitting, submitError, clearSubmitError } = useQuestSubmit()
   const sessionQuestId = useQuestSessionStore((s) => s.session?.questId ?? null)
+  const sessionForReflection = useQuestSessionStore((s) =>
+    s.session?.questId === Number(id) ? s.session : null,
+  )
   const sessionPhaseKey = useQuestSessionStore((s) => {
     const session = s.session
     if (!session || session.questId !== Number(id)) return ''
@@ -162,6 +170,27 @@ const QuestDetail = () => {
   const personalizedMinutes = usePersonalizedQuestMinutes(quest ?? null)
 
   const isThisQuestSession = sessionQuestId === quest?.id
+
+  const useFullReflection = useMemo(() => {
+    if (!quest) return true
+    const practiceMinutes =
+      sessionForReflection && sessionForReflection.questId === quest.id
+        ? getSessionPracticeMinutes(sessionForReflection)
+        : quest.estimatedTime
+    const isSpeedRun =
+      quest.estimatedTime > 0 &&
+      practiceMinutes > 0 &&
+      practiceMinutes < quest.estimatedTime / 2
+    const isOvertime =
+      !!sessionForReflection &&
+      (sessionForReflection.isExpired || sessionInOvertime(sessionForReflection))
+    return shouldUseFullReflection({
+      completedQuestCount: completedQuests.length,
+      isOvertime,
+      isSpeedRun,
+    })
+  }, [quest, sessionForReflection, completedQuests.length])
+
   const quickStartHandledRef = useRef(false)
 
   const resolvePracticeMinutes = useCallback(() => {
@@ -549,9 +578,13 @@ const QuestDetail = () => {
       ? t.quests.submitUploadFirstHint
       : isThisQuestSession && sessionHasPhasesActive && !sessionPhasesDone
         ? t.quests.sessionPhaseNext
-        : !isSubmitReflectionValid(quickDifficulty, mistakeTags)
-          ? t.quests.submitMistakeTagsRequired
-          : null
+        : !useFullReflection
+          ? !isSubmitReflectionValidCompact(quickDifficulty)
+            ? t.quests.quickDifficulty
+            : null
+          : !isSubmitReflectionValid(quickDifficulty, mistakeTags)
+            ? t.quests.submitMistakeTagsRequired
+            : null
   const sessionStageLabel = !isThisQuestSession
     ? (t.quests.startQuestNow ?? 'Start quest')
     : showSubmitModal
@@ -655,6 +688,7 @@ const QuestDetail = () => {
             sessionPhasesDone={sessionPhasesDone}
             commentLabel={focusCopy.commentLabel}
             commentPlaceholder={focusCopy.commentPlaceholder}
+            useFullReflection={useFullReflection}
           />
         </>
       )}

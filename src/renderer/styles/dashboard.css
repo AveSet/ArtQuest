@@ -31,43 +31,27 @@
 }
 
 .dashboard-right-swap {
-  position: relative;
-  min-height: 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
 }
 
 .dashboard-right-swap__best,
 .dashboard-right-swap__daily {
-  transition: opacity 0.38s ease, transform 0.38s ease;
+  transition: opacity 0.28s ease;
 }
 
-.dashboard-right-swap__best {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+.dashboard-right-swap__best[aria-hidden='true'],
+.dashboard-right-swap__daily[aria-hidden='true'] {
+  display: none;
 }
 
-.dashboard-right-swap__daily {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transform: translateY(0.75rem);
-  pointer-events: none;
-}
-
-.dashboard-right-swap--daily .dashboard-right-swap__best {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-}
-
-.dashboard-right-swap--daily .dashboard-right-swap__daily {
-  position: relative;
-  inset: auto;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+.dashboard-quests-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
 }
 
 @media (min-width: 1024px) {
@@ -75,38 +59,66 @@
     overflow: hidden;
   }
 
+  body:has(.dashboard-page) > #root > .min-h-screen {
+    display: flex;
+    flex-direction: column;
+    height: var(--app-vh, 100dvh);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  body:has(.dashboard-page) .app-main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 1rem;
+  }
+
   .dashboard-page {
     display: flex;
     flex-direction: column;
-    max-height: calc(var(--app-vh, 100dvh) - 5rem);
+    flex: 1;
     min-height: 0;
+    overflow: hidden;
+    width: 100%;
+    padding-bottom: 0.75rem;
   }
 
   .dashboard-layout__body {
     display: grid;
     grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     gap: 1.5rem;
-    align-items: start;
+    align-items: stretch;
     flex: 1;
     min-height: 0;
     overflow: hidden;
   }
 
   .dashboard-layout__side {
-    position: sticky;
-    top: calc(5rem + env(safe-area-inset-top, 0px));
-    align-self: start;
-    max-height: 100%;
+    min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    min-height: 0;
+    scrollbar-gutter: stable;
   }
 
   .dashboard-layout__main {
     min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: 1rem;
+  }
+
+  .dashboard-quests-scroll {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    min-height: 0;
+    scrollbar-gutter: stable;
   }
 }
 

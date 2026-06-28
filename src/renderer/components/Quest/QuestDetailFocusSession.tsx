@@ -60,6 +60,7 @@ export type QuestDetailFocusSessionProps = {
   sessionPhasesDone: boolean
   commentLabel: string
   commentPlaceholder: string
+  useFullReflection?: boolean
 }
 
 export default function QuestDetailFocusSession({
@@ -105,6 +106,7 @@ export default function QuestDetailFocusSession({
   sessionPhasesDone,
   commentLabel,
   commentPlaceholder,
+  useFullReflection = true,
 }: QuestDetailFocusSessionProps) {
   const useSessionHeroLayout = hasFundamentalsMedia || (isThisQuestSession && !isFundamentalsQuest)
 
@@ -182,7 +184,14 @@ export default function QuestDetailFocusSession({
         ) : null}
         {!hasFundamentalsMedia ? (
           <div className="flex flex-wrap justify-center gap-3 text-fantasy mb-8">
-            <span className={`difficulty-badge ${quest.difficulty}`}>
+            <span
+              className={`difficulty-badge ${quest.difficulty}`}
+              role="status"
+              aria-label={t.a11y.difficultyBadge.replace(
+                '{label}',
+                getDifficultyLabel(quest.difficulty, lang),
+              )}
+            >
               {getDifficultyLabel(quest.difficulty, lang)}
             </span>
             <span className="xp-gold">
@@ -254,6 +263,7 @@ export default function QuestDetailFocusSession({
             sessionPhasesDone={sessionPhasesDone}
             commentLabel={commentLabel}
             commentPlaceholder={commentPlaceholder}
+            useFullReflection={useFullReflection}
           />
         )}
       </div>

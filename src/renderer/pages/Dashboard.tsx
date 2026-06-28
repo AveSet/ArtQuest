@@ -492,16 +492,15 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {dailyPanelOpen && (fundamentalsPathActive || fundamentalsProgress.completedIds.length > 0) && (
-            <FundamentalsProgressCard
-              experienceTier={experienceTier}
-              fundamentalsProgress={fundamentalsProgress}
-            />
-          )}
+          <div className="dashboard-quests-scroll" data-onboarding="dashboard-quests-panel">
+            {dailyPanelOpen && (fundamentalsPathActive || fundamentalsProgress.completedIds.length > 0) && (
+              <FundamentalsProgressCard
+                experienceTier={experienceTier}
+                fundamentalsProgress={fundamentalsProgress}
+              />
+            )}
 
-          <div
-            className={`dashboard-right-swap${dailyPanelOpen ? ' dashboard-right-swap--daily' : ''}`}
-          >
+            <div className="dashboard-right-swap">
             <div
               className="dashboard-right-swap__best"
               aria-hidden={dailyPanelOpen || undefined}
@@ -576,6 +575,7 @@ const Dashboard = () => {
 
               {!gateDailies && <WeeklyChallengeCard variant="default" requireAllDailies showTeaser />}
             </div>
+          </div>
           </div>
         </div>
 

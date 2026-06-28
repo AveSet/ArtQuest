@@ -5,6 +5,7 @@ import { useSkillPracticeStore } from '@/store/useSkillPracticeStore'
 import { useQuestSessionStore } from '@/store/useQuestSessionStore'
 import { syncSessionTickActive } from '@/utils/sessionTickBridge'
 import { syncSessionOverlayTimerOnly } from '@/utils/sessionOverlaySync'
+import { syncTaskbarProgress } from '@/utils/syncTaskbarProgress'
 import { useI18n } from '@/i18n'
 
 /** Syncs foreground art-app / idle state from main process. */
@@ -42,6 +43,7 @@ export function SessionTickBridge() {
         useSkillPracticeStore.getState().tickActiveSecond()
       }
       syncSessionOverlayTimerOnly(language, t)
+      syncTaskbarProgress()
     })
     return () => unsub?.()
   }, [language, t])

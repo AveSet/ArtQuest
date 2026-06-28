@@ -139,6 +139,15 @@ export function rebuildProgressFromChunks(): Record<string, unknown> | null {
   return rebuildProgressFromChunksWithMeta().merged
 }
 
+function writeProgressChunks(
+  chunks: Record<string, Record<string, unknown>>,
+  createdAtMs: number,
+): void {
+  for (const [key, data] of Object.entries(chunks)) {
+    saveProgressChunk(key, data, createdAtMs)
+  }
+}
+
 export function syncProgressChunksFromFull(
   payload: Record<string, unknown>,
   createdAtMs?: number,
@@ -146,9 +155,20 @@ export function syncProgressChunksFromFull(
   const chunks = splitProgressIntoChunks(payload)
   const ms = createdAtMs ?? Date.now()
   runTransaction(() => {
-    for (const [key, data] of Object.entries(chunks)) {
-      saveProgressChunk(key, data, ms)
-    }
+    writeProgressChunks(chunks, ms)
+  })
+}
+
+/** Atomically write all chunks and the snapshot in a single transaction. */
+export function saveFullProgressAtomic(
+  payload: Record<string, unknown>,
+  createdAtMs?: number,
+): void {
+  const chunks = splitProgressIntoChunks(payload)
+  const ms = createdAtMs ?? Date.now()
+  runTransaction(() => {
+    writeProgressChunks(chunks, ms)
+    saveProgressSnapshot(payload)
   })
 }
 
@@ -160,8 +180,4 @@ export function persistProgressChunkBatch(
       saveProgressChunk(entry._chunkKey, entry.data, entry._createdAtMs)
     }
   })
-}
-
-export function runProgressTransaction(fn: () => void): void {
-  runTransaction(fn)
 }

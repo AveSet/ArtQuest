@@ -4,12 +4,19 @@ import {
   FUNDAMENTALS_ADVANCED_ID_MAX,
   FUNDAMENTALS_ADVANCED_ID_MIN,
   FUNDAMENTALS_EXERCISES,
+  FUNDAMENTALS_NOVICE_PART_A_COUNT,
+  FUNDAMENTALS_NOVICE_PART_B_COUNT,
+  FUNDAMENTALS_NOVICE_PHASE_COUNT,
   FUNDAMENTALS_TRACK_MEDIUM_ID,
+  FUNDAMENTALS_TRACK_NOVICE_B_ID,
   FUNDAMENTALS_TRACK_NOVICE_ID,
   getFundamentalsQuestById,
   getFundamentalsTrackKind,
   getFundamentalsTrackPhaseCount,
   isFundamentalsAdvancedId,
+  isFundamentalsNovicePartAId,
+  isFundamentalsNovicePartBId,
+  isFundamentalsQuestId,
   isFundamentalsTrackId,
   type FundamentalsExercise,
   type FundamentalsTrackKind,
@@ -58,8 +65,9 @@ function migrateLegacyFundamentalsProgress(
 
   for (const id of completedIds) {
     if (id >= LEGACY_FUNDAMENTALS_ID_MIN && id <= 96008) {
-      nextPhases.novice = getFundamentalsTrackPhaseCount('novice')
+      nextPhases.novice = FUNDAMENTALS_NOVICE_PHASE_COUNT
       nextIds.add(FUNDAMENTALS_TRACK_NOVICE_ID)
+      nextIds.add(FUNDAMENTALS_TRACK_NOVICE_B_ID)
       continue
     }
     if (id >= 96009 && id <= 96017) {
@@ -80,6 +88,41 @@ function migrateLegacyFundamentalsProgress(
   return { completedIds: [...nextIds], trackPhaseDone: nextPhases }
 }
 
+function migrateNoviceSplitProgress(
+  completedIds: number[],
+  trackPhaseDone: Partial<Record<FundamentalsTrackKind, number>>,
+): { completedIds: number[]; trackPhaseDone: Partial<Record<FundamentalsTrackKind, number>> } {
+  const nextIds = new Set(completedIds)
+  let nextPhases = { ...trackPhaseDone }
+
+  const legacyNoviceCount = completedIds.filter((id) => id >= 96001 && id <= 96008).length
+  if (legacyNoviceCount >= 8) {
+    nextPhases = { ...nextPhases, novice: FUNDAMENTALS_NOVICE_PHASE_COUNT }
+    nextIds.add(FUNDAMENTALS_TRACK_NOVICE_ID)
+    nextIds.add(FUNDAMENTALS_TRACK_NOVICE_B_ID)
+    return { completedIds: [...nextIds], trackPhaseDone: nextPhases }
+  }
+
+  const noviceDone = nextPhases.novice ?? 0
+
+  if (noviceDone >= FUNDAMENTALS_NOVICE_PART_A_COUNT) {
+    nextIds.add(FUNDAMENTALS_TRACK_NOVICE_ID)
+  }
+  if (noviceDone >= FUNDAMENTALS_NOVICE_PHASE_COUNT) {
+    nextIds.add(FUNDAMENTALS_TRACK_NOVICE_B_ID)
+  }
+
+  if (
+    nextIds.has(FUNDAMENTALS_TRACK_NOVICE_ID) &&
+    noviceDone >= FUNDAMENTALS_NOVICE_PHASE_COUNT &&
+    !nextIds.has(FUNDAMENTALS_TRACK_NOVICE_B_ID)
+  ) {
+    nextIds.add(FUNDAMENTALS_TRACK_NOVICE_B_ID)
+  }
+
+  return { completedIds: [...nextIds], trackPhaseDone: nextPhases }
+}
+
 export function normalizeFundamentalsProgress(
   raw: Partial<FundamentalsProgress> | undefined | null,
 ): FundamentalsProgress {
@@ -92,24 +135,40 @@ export function normalizeFundamentalsProgress(
     for (const kind of ['novice', 'medium'] as const) {
       const v = raw.trackPhaseDone[kind]
       if (typeof v === 'number' && Number.isFinite(v) && v >= 0) {
-        trackPhaseDone[kind] = Math.min(v, getFundamentalsTrackPhaseCount(kind))
+        const max =
+          kind === 'novice'
+            ? FUNDAMENTALS_NOVICE_PHASE_COUNT
+            : getFundamentalsTrackPhaseCount('medium')
+        trackPhaseDone[kind] = Math.min(v, max)
       }
     }
   }
 
   const migrated = migrateLegacyFundamentalsProgress(completedIds, trackPhaseDone)
+  const split = migrateNoviceSplitProgress(migrated.completedIds, migrated.trackPhaseDone)
   return {
-    completedIds: [...new Set(migrated.completedIds)],
-    trackPhaseDone: migrated.trackPhaseDone,
+    completedIds: [...new Set(split.completedIds)],
+    trackPhaseDone: split.trackPhaseDone,
     lastCompletedDate: typeof raw.lastCompletedDate === 'string' ? raw.lastCompletedDate : '',
   }
 }
 
-export function isNoviceTrackComplete(progress: FundamentalsProgress): boolean {
+export function isNovicePartAComplete(progress: FundamentalsProgress): boolean {
   return (
     progress.completedIds.includes(FUNDAMENTALS_TRACK_NOVICE_ID) ||
-    (progress.trackPhaseDone?.novice ?? 0) >= getFundamentalsTrackPhaseCount('novice')
+    (progress.trackPhaseDone?.novice ?? 0) >= FUNDAMENTALS_NOVICE_PART_A_COUNT
   )
+}
+
+export function isNovicePartBComplete(progress: FundamentalsProgress): boolean {
+  return (
+    progress.completedIds.includes(FUNDAMENTALS_TRACK_NOVICE_B_ID) ||
+    (progress.trackPhaseDone?.novice ?? 0) >= FUNDAMENTALS_NOVICE_PHASE_COUNT
+  )
+}
+
+export function isNoviceTrackComplete(progress: FundamentalsProgress): boolean {
+  return isNovicePartBComplete(progress)
 }
 
 export function isMediumTrackComplete(progress: FundamentalsProgress): boolean {
@@ -129,14 +188,15 @@ export function getAdvancedCompletedCount(progress: FundamentalsProgress): numbe
 
 export function getFundamentalsCompletedCount(progress: FundamentalsProgress): number {
   let count = getAdvancedCompletedCount(progress)
-  if (isNoviceTrackComplete(progress)) count += 1
+  if (isNovicePartAComplete(progress)) count += 1
+  if (isNovicePartBComplete(progress)) count += 1
   if (isMediumTrackComplete(progress)) count += 1
   return count
 }
 
 /** True after the user completes at least one fundamentals exercise (any track phase or advanced quest). */
 export function hasCompletedFundamentalsExercise(progress: FundamentalsProgress): boolean {
-  if (getAdvancedCompletedCount(progress) > 0) return true
+  if (progress.completedIds.some((id) => isFundamentalsQuestId(id))) return true
   if ((progress.trackPhaseDone?.novice ?? 0) > 0) return true
   if ((progress.trackPhaseDone?.medium ?? 0) > 0) return true
   return false
@@ -176,22 +236,17 @@ export function shouldPrioritizeFundamentalsAction(
   return shouldGateDailiesForBeginner(experienceTier, progress)
 }
 
-function pickActiveTrack(progress: FundamentalsProgress): FundamentalsTrackKind {
-  const noviceStarted = (progress.trackPhaseDone?.novice ?? 0) > 0
-  const mediumStarted = (progress.trackPhaseDone?.medium ?? 0) > 0
-  if (mediumStarted && !noviceStarted && !isMediumTrackComplete(progress)) return 'medium'
-  if (!isNoviceTrackComplete(progress)) return 'novice'
-  if (!isMediumTrackComplete(progress)) return 'medium'
-  return 'novice'
-}
-
 export function getNextFundamentalsExercise(
   progress: FundamentalsProgress,
 ): FundamentalsExercise | undefined {
-  if (!isFundamentalsTrackComplete(progress)) {
-    const kind = pickActiveTrack(progress)
-    const trackId = kind === 'novice' ? FUNDAMENTALS_TRACK_NOVICE_ID : FUNDAMENTALS_TRACK_MEDIUM_ID
-    return FUNDAMENTALS_EXERCISES.find((ex) => ex.id === trackId)
+  if (!isNovicePartAComplete(progress)) {
+    return FUNDAMENTALS_EXERCISES.find((ex) => ex.id === FUNDAMENTALS_TRACK_NOVICE_ID)
+  }
+  if (!isNoviceTrackComplete(progress)) {
+    return FUNDAMENTALS_EXERCISES.find((ex) => ex.id === FUNDAMENTALS_TRACK_NOVICE_B_ID)
+  }
+  if (!isMediumTrackComplete(progress)) {
+    return FUNDAMENTALS_EXERCISES.find((ex) => ex.id === FUNDAMENTALS_TRACK_MEDIUM_ID)
   }
   if (getAdvancedCompletedCount(progress) < FUNDAMENTALS_ADVANCED_GATE_COUNT) {
     return FUNDAMENTALS_EXERCISES.find(
@@ -204,13 +259,28 @@ export function getNextFundamentalsExercise(
 export function getFundamentalsTrackPhaseStartIndex(
   progress: FundamentalsProgress,
   trackKind: FundamentalsTrackKind,
+  questId?: number,
 ): number {
-  if (progress.completedIds.includes(
-    trackKind === 'novice' ? FUNDAMENTALS_TRACK_NOVICE_ID : FUNDAMENTALS_TRACK_MEDIUM_ID,
-  )) {
-    return getFundamentalsTrackPhaseCount(trackKind)
+  const globalDone = progress.trackPhaseDone?.[trackKind] ?? 0
+
+  if (trackKind === 'novice' && questId === FUNDAMENTALS_TRACK_NOVICE_B_ID) {
+    if (progress.completedIds.includes(FUNDAMENTALS_TRACK_NOVICE_B_ID)) {
+      return FUNDAMENTALS_NOVICE_PART_B_COUNT
+    }
+    return Math.max(0, Math.min(FUNDAMENTALS_NOVICE_PART_B_COUNT, globalDone - FUNDAMENTALS_NOVICE_PART_A_COUNT))
   }
-  return progress.trackPhaseDone?.[trackKind] ?? 0
+
+  if (trackKind === 'novice') {
+    if (progress.completedIds.includes(FUNDAMENTALS_TRACK_NOVICE_ID)) {
+      return FUNDAMENTALS_NOVICE_PART_A_COUNT
+    }
+    return Math.min(FUNDAMENTALS_NOVICE_PART_A_COUNT, globalDone)
+  }
+
+  if (progress.completedIds.includes(FUNDAMENTALS_TRACK_MEDIUM_ID)) {
+    return getFundamentalsTrackPhaseCount('medium')
+  }
+  return globalDone
 }
 
 /** Phased session plan for novice/medium fundamentals tracks (resume or restart). */
@@ -223,7 +293,7 @@ export function resolveFundamentalsTrackSessionStart(
   const kind = getFundamentalsTrackKind(questId)
   if (!exercise || !kind) return undefined
 
-  let startIndex = getFundamentalsTrackPhaseStartIndex(progress, kind)
+  let startIndex = getFundamentalsTrackPhaseStartIndex(progress, kind, questId)
   let phasesOverride = buildFundamentalsTrackSessionPhases(exercise, startIndex)
   if (phasesOverride.length === 0) {
     startIndex = 0
@@ -246,7 +316,8 @@ export function canCompleteFundamentalsExercise(
   if (isFundamentalsTrackId(questId)) {
     const kind = getFundamentalsTrackKind(questId)
     if (!kind) return false
-    if (kind === 'novice' && isNoviceTrackComplete(progress)) return true
+    if (isFundamentalsNovicePartAId(questId) && isNovicePartAComplete(progress)) return true
+    if (isFundamentalsNovicePartBId(questId) && isNoviceTrackComplete(progress)) return true
     if (kind === 'medium' && isMediumTrackComplete(progress)) return true
     return true
   }
@@ -261,12 +332,23 @@ export function getFundamentalsUnlockState(
   if (isFundamentalsAdvancedId(exercise.id)) {
     return { unlocked: true, missingPrerequisiteIds: [] }
   }
-  if (isFundamentalsTrackId(exercise.id)) {
-    const kind = getFundamentalsTrackKind(exercise.id)
-    if (kind === 'medium' && isMediumTrackComplete(progress)) {
+  if (isFundamentalsNovicePartBId(exercise.id)) {
+    if (isNoviceTrackComplete(progress)) {
       return { unlocked: false, missingPrerequisiteIds: [] }
     }
-    if (kind === 'novice' && isNoviceTrackComplete(progress)) {
+    if (!isNovicePartAComplete(progress)) {
+      return { unlocked: false, missingPrerequisiteIds: [FUNDAMENTALS_TRACK_NOVICE_ID] }
+    }
+    return { unlocked: true, missingPrerequisiteIds: [] }
+  }
+  if (isFundamentalsNovicePartAId(exercise.id)) {
+    if (isNovicePartAComplete(progress) && isNoviceTrackComplete(progress)) {
+      return { unlocked: false, missingPrerequisiteIds: [] }
+    }
+    return { unlocked: true, missingPrerequisiteIds: [] }
+  }
+  if (exercise.id === FUNDAMENTALS_TRACK_MEDIUM_ID) {
+    if (isMediumTrackComplete(progress)) {
       return { unlocked: false, missingPrerequisiteIds: [] }
     }
     return { unlocked: true, missingPrerequisiteIds: [] }
@@ -278,15 +360,44 @@ export function applyFundamentalsTrackSessionComplete(
   progress: FundamentalsProgress,
   trackKind: FundamentalsTrackKind,
   phasesCompletedInSession: number,
+  questId?: number,
 ): FundamentalsProgress {
+  const completedIds = [...progress.completedIds]
+  const prevGlobal = progress.trackPhaseDone?.[trackKind] ?? 0
+
+  if (trackKind === 'novice' && questId === FUNDAMENTALS_TRACK_NOVICE_ID) {
+    const startIndex = getFundamentalsTrackPhaseStartIndex(progress, trackKind, questId)
+    const nextGlobal = Math.min(
+      FUNDAMENTALS_NOVICE_PHASE_COUNT,
+      Math.max(prevGlobal, startIndex + Math.max(0, phasesCompletedInSession)),
+    )
+    const trackPhaseDone = { ...progress.trackPhaseDone, novice: nextGlobal }
+    if (nextGlobal >= FUNDAMENTALS_NOVICE_PART_A_COUNT && !completedIds.includes(FUNDAMENTALS_TRACK_NOVICE_ID)) {
+      completedIds.push(FUNDAMENTALS_TRACK_NOVICE_ID)
+    }
+    return { ...progress, trackPhaseDone, completedIds: [...new Set(completedIds)] }
+  }
+
+  if (trackKind === 'novice' && questId === FUNDAMENTALS_TRACK_NOVICE_B_ID) {
+    const startIndex = getFundamentalsTrackPhaseStartIndex(progress, trackKind, questId)
+    const globalStart = FUNDAMENTALS_NOVICE_PART_A_COUNT + startIndex
+    const nextGlobal = Math.min(
+      FUNDAMENTALS_NOVICE_PHASE_COUNT,
+      Math.max(prevGlobal, globalStart + Math.max(0, phasesCompletedInSession)),
+    )
+    const trackPhaseDone = { ...progress.trackPhaseDone, novice: nextGlobal }
+    if (nextGlobal >= FUNDAMENTALS_NOVICE_PHASE_COUNT && !completedIds.includes(FUNDAMENTALS_TRACK_NOVICE_B_ID)) {
+      completedIds.push(FUNDAMENTALS_TRACK_NOVICE_B_ID)
+    }
+    return { ...progress, trackPhaseDone, completedIds: [...new Set(completedIds)] }
+  }
+
   const total = getFundamentalsTrackPhaseCount(trackKind)
-  const prev = getFundamentalsTrackPhaseStartIndex(progress, trackKind)
+  const prev = getFundamentalsTrackPhaseStartIndex(progress, trackKind, questId)
   const nextDone = Math.min(total, prev + Math.max(0, phasesCompletedInSession))
   const trackPhaseDone = { ...progress.trackPhaseDone, [trackKind]: nextDone }
-  const completedIds = [...progress.completedIds]
-  const trackId = trackKind === 'novice' ? FUNDAMENTALS_TRACK_NOVICE_ID : FUNDAMENTALS_TRACK_MEDIUM_ID
-  if (nextDone >= total && !completedIds.includes(trackId)) {
-    completedIds.push(trackId)
+  if (nextDone >= total && !completedIds.includes(FUNDAMENTALS_TRACK_MEDIUM_ID)) {
+    completedIds.push(FUNDAMENTALS_TRACK_MEDIUM_ID)
   }
   return { ...progress, trackPhaseDone, completedIds: [...new Set(completedIds)] }
 }

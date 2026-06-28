@@ -235,6 +235,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
       console.warn('syncDesktopSettings:', err);
     }
   },
+  pickArtAppExecutable: async (): Promise<{ success: boolean; path?: string; canceled?: boolean; error?: unknown }> => {
+    try {
+      return await ipcRenderer.invoke('pick-art-app-exe') as { success: boolean; path?: string; canceled?: boolean; error?: unknown };
+    } catch (err) {
+      return { success: false, error: err };
+    }
+  },
   showTestNotification: async (payload: { title: string; body: string }): Promise<{ success: boolean }> => {
     try {
       return (await ipcRenderer.invoke('show-test-notification', payload)) as { success: boolean };
@@ -397,6 +404,40 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   setSessionTickActive: (active: boolean): Promise<{ success: boolean }> =>
     ipcRenderer.invoke('artquest:v1:session:set-tick-active', active) as Promise<{ success: boolean }>,
+  setTaskbarProgress: (payload: {
+    progress: number
+    mode?: 'normal' | 'paused' | 'error' | 'none' | 'indeterminate'
+  }): Promise<{ success: boolean; error?: unknown }> =>
+    ipcRenderer.invoke('artquest:v1:taskbar:set-progress', payload) as Promise<{
+      success: boolean
+      error?: unknown
+    }>,
+  applyWindowBounds: (bounds: {
+    main?: { x: number; y: number; width: number; height: number }
+    overlay?: { x: number; y: number }
+    reference?: { x: number; y: number; width: number; height: number }
+  }): Promise<{ success: boolean; error?: unknown }> =>
+    ipcRenderer.invoke('artquest:v1:window-bounds:apply', bounds) as Promise<{
+      success: boolean
+      error?: unknown
+    }>,
+  onWindowBoundsReport: (
+    handler: (bounds: {
+      main?: { x: number; y: number; width: number; height: number }
+      overlay?: { x: number; y: number }
+      reference?: { x: number; y: number; width: number; height: number }
+    }) => void,
+  ): (() => void) => {
+    const listener = (_event: unknown, bounds: unknown) => {
+      try {
+        if (bounds && typeof bounds === 'object') handler(bounds as Parameters<typeof handler>[0])
+      } catch (err) {
+        console.error('onWindowBoundsReport handler failed:', err)
+      }
+    }
+    ipcRenderer.on('artquest:v1:window-bounds:report', listener)
+    return () => ipcRenderer.removeListener('artquest:v1:window-bounds:report', listener)
+  },
   onNavigate: (handler: (route: string) => void): (() => void) => {
     const listener = (_event: unknown, route: string) => {
       try {
@@ -609,4 +650,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
       return { success: false, error: String(err) }
     }
   },
+  /** True when the main process can detect foreground art apps (Windows only). */
+  activityTrackingNative: process.platform === 'win32',
 });

@@ -405,7 +405,7 @@ const Settings = () => {
             </div>
           </SettingsSection>
 
-          <SettingsSection title={`🎯 ${t.settings.favoriteCategories}`} defaultOpen={false}>
+          <SettingsSection title={`🎯 ${t.settings.favoriteCategories}`}>
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-[var(--text-muted)]">{t.settings.selectUpToThree}</p>
               <button
@@ -449,7 +449,7 @@ const Settings = () => {
             </div>
           </SettingsSection>
 
-          <SettingsSection title={`🌐 ${t.settings.language}`} defaultOpen={false}>
+          <SettingsSection title={`🌐 ${t.settings.language}`}>
             <div className="flex gap-2 flex-wrap">
               {LANGUAGES.map(lang => {
                 const meta = LANGUAGE_LABELS[lang]
@@ -504,8 +504,6 @@ const Settings = () => {
             setSettings={setSettings}
             saveProgress={saveProgress}
             t={t}
-            googleConnected={googleAccount.connected}
-            googleAccountEmail={googleAccount.accountEmail}
             referenceSourceLabels={referenceSourceLabels}
           />
         </div>
@@ -714,15 +712,15 @@ const Settings = () => {
             </SettingsSection>
 
           <SettingsSection
-            title={`🧭 ${t.settings.fullAppTour ?? t.settings.showWelcomeTipsAgain}`}
-            collapsible={false}
-            defaultOpen={false}
+            title={`🧭 ${t.settings.tourAndResetSection ?? t.settings.fullAppTour ?? 'Tour & reset'}`}
+            defaultOpen
           >
-              <p className="text-xs text-[var(--text-muted)]">{t.settings.showWelcomeTipsAgain}</p>
+            <p className="text-xs text-[var(--text-muted)]">{t.settings.showWelcomeTipsAgain}</p>
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 type="button"
                 data-onboarding="full-tour-button"
-                className="btn-secondary text-xs px-3 py-1.5 w-full sm:w-auto"
+                className="btn-secondary text-xs px-3 py-1.5 flex-1"
                 onClick={() => {
                   playUiClick()
                   useUIStore.getState().requestFullOnboarding()
@@ -730,6 +728,18 @@ const Settings = () => {
               >
                 {t.settings.fullAppTour ?? t.settings.showWelcomeTipsAgain}
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  playUiClick()
+                  setShowResetConfirm(true)
+                }}
+                className="btn-primary btn-danger text-xs px-3 py-1.5 flex-1"
+                aria-label={t.common.resetProgress}
+              >
+                ⚠️ {t.common.resetProgress}
+              </button>
+            </div>
           </SettingsSection>
 
           {typeof window !== 'undefined' && window.electronAPI && (
@@ -857,6 +867,33 @@ const Settings = () => {
             </div>
 
             <div className="settings-toggle-row">
+              <div className="flex-1 min-w-0">
+                <label htmlFor="disable-session-timers" className="settings-row-label">
+                  {t.settings.disableSessionTimers ?? 'Disable session timers'}
+                </label>
+                <p className="text-xs text-[var(--text-muted)] mt-1">
+                  {t.settings.disableSessionTimersHint ??
+                    'Pause countdown timers for quests and skill practice. You can finish at your own pace.'}
+                </p>
+              </div>
+              <button
+                id="disable-session-timers"
+                type="button"
+                role="switch"
+                aria-checked={Boolean(settings.disableSessionTimers)}
+                aria-label={t.settings.disableSessionTimers ?? 'Disable session timers'}
+                onClick={() => {
+                  playUiClick()
+                  setSettings({ disableSessionTimers: !settings.disableSessionTimers })
+                  void saveProgress()
+                }}
+                className={`relative w-9 h-5 rounded-full shrink-0 transition-colors ${settings.disableSessionTimers ? 'bg-[var(--gold-primary)]' : 'bg-[var(--bg-secondary)]'}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--text-primary)] rounded-full transition-transform ${settings.disableSessionTimers ? 'translate-x-4' : 'translate-x-0'}`} />
+              </button>
+            </div>
+
+            <div className="settings-toggle-row">
               <label htmlFor="high-contrast" className="settings-row-label">{t.settings.highContrast}</label>
               <button
                 id="high-contrast"
@@ -894,21 +931,6 @@ const Settings = () => {
               </button>
             </div>
           </SettingsSection>
-
-          <div className="card-fantasy border-red-900/40 flex items-center justify-between py-2 px-3">
-            <span className="text-sm font-semibold" style={{ color: 'var(--status-danger-text)' }}>⚠️ {t.common.resetProgress}</span>
-            <button
-              type="button"
-              onClick={() => {
-                playUiClick()
-                setShowResetConfirm(true)
-              }}
-              className="btn-primary btn-danger text-xs px-3 py-1.5"
-              aria-label={t.common.resetProgress}
-            >
-              🗑️
-            </button>
-          </div>
 
           {import.meta.env.DEV && (
             <details className="card-fantasy border-yellow-700/40 opacity-60 hover:opacity-100 transition-opacity">

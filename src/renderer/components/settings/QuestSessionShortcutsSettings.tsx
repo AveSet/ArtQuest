@@ -14,14 +14,17 @@ import { pushDesktopIntegrationSync } from '@/utils/desktopIntegration'
 import SettingsSection from '@/components/settings/SettingsSection'
 import ShortcutCaptureButton from '@/components/settings/ShortcutCaptureButton'
 
+const VISIBLE_SHORTCUT_COMMANDS = QUEST_SESSION_SHORTCUT_COMMANDS.filter(
+  (cmd) => cmd !== 'showMainWindow',
+)
+
 const COMMAND_LABEL_KEYS: Record<
-  QuestSessionShortcutCommand,
-  'shortcutAdvance' | 'shortcutOverlay' | 'shortcutOpenReferences' | 'shortcutShowMain'
+  Exclude<QuestSessionShortcutCommand, 'showMainWindow'>,
+  'shortcutAdvance' | 'shortcutOverlay' | 'shortcutOpenReferences'
 > = {
   advancePhase: 'shortcutAdvance',
   toggleOverlay: 'shortcutOverlay',
   openReferences: 'shortcutOpenReferences',
-  showMainWindow: 'shortcutShowMain',
 }
 
 export default function QuestSessionShortcutsSettings() {
@@ -60,7 +63,7 @@ export default function QuestSessionShortcutsSettings() {
       testId="quest-shortcuts-section"
     >
       <p className="text-xs text-[var(--text-muted)]">{labels.questShortcutsHint}</p>
-      {QUEST_SESSION_SHORTCUT_COMMANDS.map((cmd) => (
+      {VISIBLE_SHORTCUT_COMMANDS.map((cmd) => (
         <div key={cmd} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
           <span className="text-sm font-medium text-[var(--text-secondary)] sm:w-44 shrink-0">
             {labels[COMMAND_LABEL_KEYS[cmd]] ?? cmd}

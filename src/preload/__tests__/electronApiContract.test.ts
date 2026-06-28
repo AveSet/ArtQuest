@@ -23,7 +23,7 @@ describe('electronAPI contract', () => {
     const interfaceBlock = typesSrc.match(/export interface ElectronAPI \{([\s\S]*?)\n\}/)?.[1]
     expect(interfaceBlock).toBeTruthy()
 
-    const typeKeys = [...interfaceBlock!.matchAll(/^\s{2}(\w+):\s*\(/gm)].map((m) => m[1])
+    const typeKeys = [...interfaceBlock!.matchAll(/^\s{2}(\w+):/gm)].map((m) => m[1])
 
     for (const key of typeKeys) {
       expect(preloadKeys, `missing preload method: ${key}`).toContain(key)

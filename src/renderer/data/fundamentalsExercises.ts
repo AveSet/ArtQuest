@@ -3,16 +3,19 @@ import type { Quest } from '@/store/models'
 import { getFundamentalsBookPagesForOrder } from '@/data/fundamentalsBookPages'
 
 export const FUNDAMENTALS_TRACK_NOVICE_ID = 96001
+export const FUNDAMENTALS_TRACK_NOVICE_B_ID = 96011
 export const FUNDAMENTALS_TRACK_MEDIUM_ID = 96002
 export const FUNDAMENTALS_ADVANCED_ID_MIN = 96003
 export const FUNDAMENTALS_ADVANCED_ID_MAX = 96010
 export const FUNDAMENTALS_QUEST_ID_MIN = FUNDAMENTALS_TRACK_NOVICE_ID
-export const FUNDAMENTALS_QUEST_ID_MAX = FUNDAMENTALS_ADVANCED_ID_MAX
-/** Total catalog entries: 2 phased tracks + 8 advanced quests. */
-export const FUNDAMENTALS_EXERCISE_COUNT =
-  FUNDAMENTALS_QUEST_ID_MAX - FUNDAMENTALS_QUEST_ID_MIN + 1
+export const FUNDAMENTALS_QUEST_ID_MAX = FUNDAMENTALS_TRACK_NOVICE_B_ID
+/** Total catalog entries: 2 novice parts + medium track + 8 advanced quests. */
+export const FUNDAMENTALS_EXERCISE_COUNT = 11
 export const FUNDAMENTALS_ADVANCED_GATE_COUNT = 3
-export const FUNDAMENTALS_NOVICE_PHASE_COUNT = 8
+export const FUNDAMENTALS_NOVICE_PART_A_COUNT = 6
+export const FUNDAMENTALS_NOVICE_PART_B_COUNT = 2
+export const FUNDAMENTALS_NOVICE_PHASE_COUNT =
+  FUNDAMENTALS_NOVICE_PART_A_COUNT + FUNDAMENTALS_NOVICE_PART_B_COUNT
 export const FUNDAMENTALS_MEDIUM_PHASE_COUNT = 9
 
 export type BookTier = 'beginner' | 'intermediate' | 'advanced'
@@ -881,20 +884,22 @@ function buildFundamentalsExercises(): FundamentalsExercise[] {
   const advancedSpecs = SPECS.filter((s) => s.bookTier === 'advanced')
 
   const novicePhases = noviceSpecs.map((spec, i) => buildTrackPhase(spec, i))
+  const novicePartAPhases = novicePhases.slice(0, FUNDAMENTALS_NOVICE_PART_A_COUNT)
+  const novicePartBPhases = novicePhases.slice(FUNDAMENTALS_NOVICE_PART_A_COUNT)
   const mediumPhases = mediumSpecs.map((spec, i) => buildTrackPhase(spec, i))
 
-  const noviceTrack: FundamentalsExercise = {
+  const noviceTrackPartA: FundamentalsExercise = {
     id: FUNDAMENTALS_TRACK_NOVICE_ID,
-    code: 'FUN-NOVICE',
-    title: { en: 'Fundamentals — Novice', ru: 'Основы — Новичок' },
+    code: 'FUN-NOVICE-A',
+    title: { en: 'Fundamentals — Novice (Part 1)', ru: 'Основы — Новичок (Часть 1)' },
     category: 'drawing',
     difficulty: 'novice',
     description: {
-      en: 'Eight sequential phases: line control through cylinders.',
-      ru: 'Восемь фаз подряд: контроль линии и цилиндры.',
+      en: 'Phases 1–6: line control through form extrusion.',
+      ru: 'Фазы 1–6: контроль линии и экструзия форм.',
     },
-    xp: novicePhases.reduce((sum, p) => sum + p.xp, 0),
-    estimatedTime: novicePhases.reduce((sum, p) => sum + p.estimatedTime, 0),
+    xp: novicePartAPhases.reduce((sum, p) => sum + p.xp, 0),
+    estimatedTime: novicePartAPhases.reduce((sum, p) => sum + p.estimatedTime, 0),
     source: SOURCE,
     icon: '📘',
     color: '#8b5cf6',
@@ -907,7 +912,34 @@ function buildFundamentalsExercises(): FundamentalsExercise[] {
     streak_bonus: 1,
     bookTier: 'beginner',
     trackKind: 'novice',
-    trackPhases: novicePhases,
+    trackPhases: novicePartAPhases,
+  }
+
+  const noviceTrackPartB: FundamentalsExercise = {
+    id: FUNDAMENTALS_TRACK_NOVICE_B_ID,
+    code: 'FUN-NOVICE-B',
+    title: { en: 'Fundamentals — Novice (Part 2)', ru: 'Основы — Новичок (Часть 2)' },
+    category: 'drawing',
+    difficulty: 'novice',
+    description: {
+      en: 'Phases 7–8: cube grid and cylinders.',
+      ru: 'Фазы 7–8: сетка кубов и цилиндры.',
+    },
+    xp: novicePartBPhases.reduce((sum, p) => sum + p.xp, 0),
+    estimatedTime: novicePartBPhases.reduce((sum, p) => sum + p.estimatedTime, 0),
+    source: SOURCE,
+    icon: '📘',
+    color: '#8b5cf6',
+    min_level: 1,
+    tags: ['fundamentals', 'book-25', 'track', 'novice'],
+    prerequisites: [FUNDAMENTALS_TRACK_NOVICE_ID],
+    medium: 'both',
+    is_repeatable: true,
+    review_after_days: 0,
+    streak_bonus: 1,
+    bookTier: 'beginner',
+    trackKind: 'novice',
+    trackPhases: novicePartBPhases,
   }
 
   const mediumTrack: FundamentalsExercise = {
@@ -939,7 +971,6 @@ function buildFundamentalsExercises(): FundamentalsExercise[] {
 
   const advancedQuests: FundamentalsExercise[] = advancedSpecs.map((spec, index) => {
     const id = FUNDAMENTALS_ADVANCED_ID_MIN + index
-    const topicTags = fundamentalsTopicTags(spec.tags)
     return {
       id,
       code: `FUN-${String(spec.bookOrder).padStart(5, '0')}`,
@@ -967,7 +998,7 @@ function buildFundamentalsExercises(): FundamentalsExercise[] {
     }
   })
 
-  return [noviceTrack, mediumTrack, ...advancedQuests]
+  return [noviceTrackPartA, noviceTrackPartB, mediumTrack, ...advancedQuests]
 }
 
 export const FUNDAMENTALS_EXERCISES: FundamentalsExercise[] = buildFundamentalsExercises()
@@ -979,7 +1010,19 @@ export function isFundamentalsQuestId(questId: number): boolean {
 }
 
 export function isFundamentalsTrackId(questId: number): boolean {
-  return questId === FUNDAMENTALS_TRACK_NOVICE_ID || questId === FUNDAMENTALS_TRACK_MEDIUM_ID
+  return (
+    questId === FUNDAMENTALS_TRACK_NOVICE_ID ||
+    questId === FUNDAMENTALS_TRACK_NOVICE_B_ID ||
+    questId === FUNDAMENTALS_TRACK_MEDIUM_ID
+  )
+}
+
+export function isFundamentalsNovicePartAId(questId: number): boolean {
+  return questId === FUNDAMENTALS_TRACK_NOVICE_ID
+}
+
+export function isFundamentalsNovicePartBId(questId: number): boolean {
+  return questId === FUNDAMENTALS_TRACK_NOVICE_B_ID
 }
 
 export function isFundamentalsAdvancedId(questId: number): boolean {
@@ -987,13 +1030,20 @@ export function isFundamentalsAdvancedId(questId: number): boolean {
 }
 
 export function getFundamentalsTrackKind(questId: number): FundamentalsTrackKind | undefined {
-  if (questId === FUNDAMENTALS_TRACK_NOVICE_ID) return 'novice'
+  if (questId === FUNDAMENTALS_TRACK_NOVICE_ID || questId === FUNDAMENTALS_TRACK_NOVICE_B_ID) {
+    return 'novice'
+  }
   if (questId === FUNDAMENTALS_TRACK_MEDIUM_ID) return 'medium'
   return undefined
 }
 
-export function getFundamentalsTrackPhaseCount(kind: FundamentalsTrackKind): number {
-  return kind === 'novice' ? FUNDAMENTALS_NOVICE_PHASE_COUNT : FUNDAMENTALS_MEDIUM_PHASE_COUNT
+export function getFundamentalsTrackPhaseCount(
+  kind: FundamentalsTrackKind,
+  questId?: number,
+): number {
+  if (kind === 'medium') return FUNDAMENTALS_MEDIUM_PHASE_COUNT
+  if (questId === FUNDAMENTALS_TRACK_NOVICE_B_ID) return FUNDAMENTALS_NOVICE_PART_B_COUNT
+  return FUNDAMENTALS_NOVICE_PART_A_COUNT
 }
 
 export function getFundamentalsTrackPhase(

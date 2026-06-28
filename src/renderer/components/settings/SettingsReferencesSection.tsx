@@ -11,8 +11,6 @@ type Props = {
   setSettings: (patch: Partial<Settings>) => void
   saveProgress: () => Promise<void>
   t: Translations
-  googleConnected: boolean
-  googleAccountEmail: string | null
   referenceSourceLabels: Record<ReferenceSource, string>
 }
 
@@ -21,8 +19,6 @@ export default function SettingsReferencesSection({
   setSettings,
   saveProgress,
   t,
-  googleConnected,
-  googleAccountEmail,
   referenceSourceLabels,
 }: Props) {
   return (
@@ -30,7 +26,7 @@ export default function SettingsReferencesSection({
       <h2 className="settings-group-heading">{t.settings.referencesSection ?? 'References & materials'}</h2>
       <SettingsSection
         title={`🔎 ${t.settings.referenceSourceTitle ?? 'Default reference source'}`}
-        defaultOpen
+        defaultOpen={false}
       >
         <p className="text-xs text-[var(--text-muted)] mb-2">
           {t.settings.referenceSourceHint ??
@@ -57,39 +53,6 @@ export default function SettingsReferencesSection({
           })}
         </div>
       </SettingsSection>
-
-      {googleConnected && googleAccountEmail ? (
-        <SettingsSection
-          title={`🔐 ${t.settings.useGoogleForReferenceLogin ?? 'Use Google account for reference sites'}`}
-          defaultOpen={false}
-        >
-          <p className="text-xs text-[var(--text-muted)] mb-2">
-            {(t.settings.useGoogleForReferenceLoginHint ?? '').replace('{email}', googleAccountEmail)}
-          </p>
-          <div className="settings-toggle-row">
-            <span className="settings-row-label text-sm">{googleAccountEmail}</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={Boolean(settings.useGoogleForReferenceLogin)}
-              onClick={() => {
-                playUiClick()
-                setSettings({ useGoogleForReferenceLogin: !settings.useGoogleForReferenceLogin })
-                void saveProgress()
-              }}
-              className={`relative w-9 h-5 rounded-full shrink-0 transition-colors ${
-                settings.useGoogleForReferenceLogin ? 'bg-[var(--gold-primary)]' : 'bg-[var(--bg-secondary)]'
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--text-primary)] rounded-full transition-transform ${
-                  settings.useGoogleForReferenceLogin ? 'translate-x-4' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-        </SettingsSection>
-      ) : null}
     </div>
   )
 }

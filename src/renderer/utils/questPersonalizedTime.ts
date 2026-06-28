@@ -102,3 +102,19 @@ export function getPersonalizedQuestMinutes(
     isPersonalized: false,
   }
 }
+
+/** Last successful completion time for a quest (most recent log, excluding timeouts). */
+export function getLastQuestCompletionMinutes(
+  questId: number,
+  completionLogs: QuestCompletionLog[],
+): number | null {
+  for (let i = completionLogs.length - 1; i >= 0; i--) {
+    const log = completionLogs[i]!
+    if (log.questId !== questId) continue
+    if (log.status === 'timeout') continue
+    if (typeof log.practiceMinutes === 'number' && log.practiceMinutes > 0) {
+      return roundQuestMinutes(log.practiceMinutes)
+    }
+  }
+  return null
+}

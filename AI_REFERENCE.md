@@ -19,7 +19,7 @@
 7. **Tests** — co-located `__tests__/`; run `npm test` or targeted `npm test -- path/to/file.test.ts`.
 8. **Builds** — default `dist-build/`; isolated builds: `--config.directories.output=dist-build-YYYY-MM-DD-vN`.
 
-**Last synced:** 2026-06-28 (v1.0.3, schema v20, stack upgrade: Vite 8, RR 8, Tailwind 4, Zod 4, Vitest 4).
+**Last synced:** 2026-06-28 (v1.0.3, schema v22, stack upgrade: Vite 8, RR 8, Tailwind 4, Zod 4, Vitest 4).
 
 ---
 
@@ -65,9 +65,6 @@ artquest/
 │   ├── generate-mmo-quests.ts, generate-youtube-quest-pack.ts
 │   ├── curate-node-youtube-resources.ts, dedupe-youtube-resources.ts
 │   ├── generate-sfx-wav.mjs, generate-portrait-assets.mjs, build-windows-icon.mjs
-│   └── build-rust.mjs
-│
-├── crates/quest-metrics/       # Rust native addon (quest timing estimation)
 │
 ├── src/
 │   ├── main/                   # Electron main process
@@ -85,7 +82,7 @@ artquest/
 │   │   └── ipcTypes.ts
 │   │
 │   ├── shared/                 # Shared main ↔ renderer (no Electron/React)
-│   │   ├── progressSchema.ts   # Zod schema v20, normalize/migrate/parse
+│   │   ├── progressSchema.ts   # Zod schema v22, normalize/migrate/parse
 │   │   ├── progressChunkMerge.ts
 │   │   ├── progressLogCompression.ts
 │   │   ├── storageMode.ts      # "local" | "local_and_cloud" | "cloud_only"
@@ -194,7 +191,7 @@ Key interfaces:
 
 ### SQLite (`src/main/localDb.ts`)
 
-Database file: `{userData}/artquest.sqlite` (local DB schema version **3**, separate from progress JSON schema v20).
+Database file: `{userData}/artquest.sqlite` (local DB schema version **3**, separate from progress JSON schema v22).
 
 | Table | Purpose |
 |-------|---------|
@@ -350,7 +347,7 @@ Session commands: `advancePhase`, `toggleOverlay`, `openReferences`, `showMainWi
 | Static recalibration | `scripts/recalculate-quest-times.ts` | Reads export `questCompletionLogs`, median per `questId` (n≥5), shrinkage 0.7/0.3, rescales micro-challenges; `--dry-run` / `--write` |
 | Pure helpers | `questTimeCalibration.ts` | Median, anomaly filter (1–300 min), shrinkage, MC rescale — shared by script + tests |
 
-**Rust `crates/quest-metrics/`:** not wired in renderer (wellness model only). JS estimator is the live path for custom quests.
+**Custom quest timing:** JS estimator is the live path — `questMetricsEstimator.ts`. Catalog timing: JSON + optional `recalculate-quest-times.ts` + runtime personalization (`questPersonalizedTime.ts`).
 
 **Recommendations / energy mode:** `recommendedQuest.ts` and `soloChapters.ts` accept optional `resolveMinutes()` (wired from `nextBestAction.ts` via `getPersonalizedQuestMinutes`).
 
@@ -427,6 +424,7 @@ Defined in `models.ts` (`HIDDEN_ACHIEVEMENTS`). Checked deterministically in `us
 When `settings.activityTrackingEnabled`:
 - Main process polls foreground window every **1s** (`startActivityTimer` in `main.ts`)
 - `activityTracker.ts` runs PowerShell on Windows (process name + idle seconds); non-Windows returns always-active stub
+- Settings → Art Apps shows `artAppsPlatformNote` when `electronAPI.activityTrackingNative === false`
 - Internal cache refresh if stale > **900ms**
 - Matches process names against `artApps.ts` (photoshop, clipstudio, sai, tvpaint, toonboom, …)
 - Broadcasts `artquest:v1:activity:update` → `useActivityStore` → session XP counting via `shouldCountSessionTime`
@@ -511,20 +509,16 @@ Four themes via `useThemeStore`: `modern` (dark), `light`, `rpg` (fantasy), `stu
 
 ---
 
-## 15. Native Addon (Rust)
-
-`crates/quest-metrics/` — Rust crate built via `npm run build:rust` (`scripts/build-rust.mjs`). Exports wellness-style metrics (`time_required_minutes = estimated_time × difficulty_mult`). **Not imported** by renderer today. Live timing for **user-created quests**: `questMetricsEstimator.ts`. Catalog timing: JSON + optional `recalculate-quest-times.ts` + runtime personalization (`questPersonalizedTime.ts`).
-
----
-
-## 16. Testing
+## 15. Testing
 
 | Layer | Location | Command |
 |-------|----------|---------|
-| Unit | Co-located `__tests__/` (~107 files, 490+ tests) | `npm test` |
+| Unit | Co-located `__tests__/` (~500+ tests) | `npm test` |
 | Setup | `src/test/setup.ts` | mocks AudioContext + electronAPI |
 | Web e2e | `e2e/` | `npm run test:e2e` |
+| Visual regression | `e2e/visual-themes.spec.ts` | Dashboard, Gallery, Quest Session × 4 themes (`toHaveScreenshot`) |
 | Electron e2e | `e2e-electron/` | `npm run test:e2e:electron` |
+| Log perf guard | `src/shared/__tests__/progressLogPerformance.test.ts` | parse/stringify thresholds for 5k–10k logs |
 
 Vitest globals mode (`describe`/`it`/`expect` without import).
 
@@ -532,7 +526,7 @@ Key test areas: daily rotation, prerequisites, spaced review, next best action, 
 
 ---
 
-## 17. Build & Run Commands
+## 16. Build & Run Commands
 
 | Command | Description |
 |---------|-------------|
@@ -552,7 +546,6 @@ Key test areas: daily rotation, prerequisites, spaced review, next best action, 
 | `npm run generate:assets` | SFX wav + portrait assets |
 | `npm run validate:quests` | Validate quest JSON (incl. MC time sum = `estimatedTime`) |
 | `npx tsx scripts/recalculate-quest-times.ts --progress <export.json> --dry-run` | Preview catalog time recalibration from logs |
-| `npm run build:rust` | Build quest-metrics native addon |
 
 Windows signing (optional): `WIN_CSC_LINK` + `WIN_CSC_KEY_PASSWORD` before build.
 
@@ -622,7 +615,7 @@ Shared (not under utils): `src/shared/progressLogCompression.ts`, `progressChunk
 
 6. **Mistake tags → recommendations** — `updateAdaptiveWeights()` increases weight for tags in feedback `mistakeTags[]`.
 
-7. **Progress schema v20** — `campaign`/`learningPath` removed; `questCompletionLogs` unbounded; fields listed in §6.
+7. **Progress schema v22** — `campaign`/`learningPath` removed; `questCompletionLogs` unbounded; fields listed in §6.
 
 8. **Auto-save** — debounced incremental chunks (2s); full snapshot every 24 incrementals; chunk writes are stale-write guarded and schema-validated; `saveProgressSync()` on critical mutations; timer ticks do not save every second.
 

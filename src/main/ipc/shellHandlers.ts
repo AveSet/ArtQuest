@@ -1,8 +1,9 @@
-import { app, dialog, ipcMain, shell } from 'electron'
+import { app, dialog, ipcMain, shell, BrowserWindow } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { isManagedMediaPath } from '../localDb'
 import { validateExternalOpenUrl } from '../../shared/referenceUrlPolicy'
+import { normalizeCustomArtAppExecutablePath } from '../../shared/artApps'
 import {
   isValidExportPayload,
   isValidShareCardPayload,
@@ -82,6 +83,28 @@ export function registerShellIpcHandlers(): void {
       }
       fs.writeFileSync(result.filePath, rawPayload, 'utf8')
       return { success: true, path: result.filePath }
+    } catch (e) {
+      return { success: false, error: String(e) }
+    }
+  })
+
+  ipcMain.handle('pick-art-app-exe', async (event) => {
+    try {
+      const win = BrowserWindow.fromWebContents(event.sender)
+      const result = await dialog.showOpenDialog(win ?? undefined, {
+        title: 'Select art application',
+        filters: [{ name: 'Application', extensions: ['exe'] }],
+        properties: ['openFile'],
+      })
+      if (result.canceled || !result.filePaths[0]) {
+        return { success: false, canceled: true as const }
+      }
+      const filePath = result.filePaths[0]
+      const normalized = normalizeCustomArtAppExecutablePath(filePath)
+      if (!normalized || !fs.existsSync(normalized)) {
+        return { success: false, error: 'invalid exe' }
+      }
+      return { success: true, path: normalized }
     } catch (e) {
       return { success: false, error: String(e) }
     }

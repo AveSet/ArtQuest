@@ -425,6 +425,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
         progress,
         kind,
         session.phases.length,
+        questId,
       )
     } else if (isFundamentalsAdvancedId(questId) && !progress.completedIds.includes(questId)) {
       nextProgress = {

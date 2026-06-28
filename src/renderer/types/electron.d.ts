@@ -111,6 +111,8 @@ export type ReferenceWindowParams = {
 }
 
 export interface ElectronAPI {
+  /** True when foreground art-app / idle detection runs natively (Windows only). */
+  activityTrackingNative: boolean
   saveProgress: (data: string) => Promise<IpcResult>
   saveProgressSync: (data: string) => IpcResult
   loadProgress: () => Promise<LoadProgressResult>
@@ -129,6 +131,7 @@ export interface ElectronAPI {
   pickPortraitImage: () => Promise<{ success: boolean; dataUrl?: string; error?: unknown }>
   saveCustomAvatar: (base64: string) => Promise<IpcResult & { path?: string }>
   syncDesktopSettings: (payload: Record<string, unknown>) => Promise<void>
+  pickArtAppExecutable: () => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: unknown }>
   showTestNotification: (payload: { title: string; body: string }) => Promise<{ success: boolean }>
   dispatchQuestSessionCommand: (command: QuestSessionCommand) => Promise<IpcResult>
   onQuestSessionCommand: (handler: (command: QuestSessionCommand) => void) => () => void
@@ -171,6 +174,22 @@ export interface ElectronAPI {
   ) => () => void
   onSessionTick: (handler: () => void) => () => void
   setSessionTickActive: (active: boolean) => Promise<{ success: boolean }>
+  setTaskbarProgress: (payload: {
+    progress: number
+    mode?: 'normal' | 'paused' | 'error' | 'none' | 'indeterminate'
+  }) => Promise<{ success: boolean; error?: unknown }>
+  applyWindowBounds: (bounds: {
+    main?: { x: number; y: number; width: number; height: number }
+    overlay?: { x: number; y: number }
+    reference?: { x: number; y: number; width: number; height: number }
+  }) => Promise<{ success: boolean; error?: unknown }>
+  onWindowBoundsReport: (
+    handler: (bounds: {
+      main?: { x: number; y: number; width: number; height: number }
+      overlay?: { x: number; y: number }
+      reference?: { x: number; y: number; width: number; height: number }
+    }) => void,
+  ) => () => void
   onNavigate: (handler: (route: string) => void) => () => void
   showItemInFolder: (filePath: string) => Promise<void>
   openExternal: (url: string) => Promise<{ success: boolean; error?: unknown }>

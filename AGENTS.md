@@ -55,7 +55,7 @@
 ## Achievement Tracking
 - `questCompletionLogs` array is unbounded (was previously capped at 500)
 - Achievements count from `questCompletionLogs.length` — keep them all
-- Progress schema **v20** (`src/shared/progressSchema.ts`): `questReviewSchedule`, `feedbackStats`, `materialEngagement`, `lastExportAt`, `preferredReferenceSource`, etc. (campaign/learningPath removed)
+- Progress schema **v23** (`src/shared/progressSchema.ts`): `questReviewSchedule`, `feedbackStats`, `materialEngagement`, `lastExportAt`, `preferredReferenceSource`, `windowBounds`, `longAbsenceReturnDate`, etc. (campaign/learningPath removed)
 
 ## Quest unlock & review
 - Prerequisites: satisfied if quest id is in `completedQuests` **or** appears in `questCompletionLogs` (`getSatisfiedQuestIds` in `questPrerequisites.ts`)

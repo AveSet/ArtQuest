@@ -36,7 +36,7 @@
 | Сборка дистрибутива | **electron-builder 26** (portable `.exe` + NSIS-установщик) |
 | Тесты | **Vitest**, **Testing Library**, **Playwright** (e2e, опционально) |
 | Линтинг | **ESLint 9** + TypeScript ESLint |
-| Опционально | **Rust** (`crates/quest-metrics`) — нативная оценка метрик квестов; **sharp** — генерация иконок/портретов |
+| Опционально | **sharp** — генерация иконок/портретов |
 
 **Языки интерфейса:** русский и английский (i18n с deep-merge RU ← EN).
 

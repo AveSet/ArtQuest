@@ -20,6 +20,7 @@ type Props = {
   strengthRatings: StrengthRatings
   language: Language
   t: Translations
+  compact?: boolean
   onDifficultyChange: (n: DifficultyRating) => void
   onMistakeTagToggle: (tag: string) => void
   onStrengthRatingChange: (
@@ -34,12 +35,13 @@ export default function QuestSubmitReflection({
   strengthRatings,
   language,
   t,
+  compact = false,
   onDifficultyChange,
   onMistakeTagToggle,
   onStrengthRatingChange,
 }: Props) {
-  const showMistakes = shouldShowMistakeTags(difficulty)
-  const showQuality = shouldShowQualityRatings(difficulty)
+  const showMistakes = !compact && shouldShowMistakeTags(difficulty)
+  const showQuality = !compact && shouldShowQualityRatings(difficulty)
 
   return (
     <div className="quest-submit-reflection space-y-3">

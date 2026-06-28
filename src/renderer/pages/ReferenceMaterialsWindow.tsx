@@ -38,11 +38,11 @@ import { youtubeThumbnailUrl, youtubeWatchUrl } from '@/utils/youtubeLinks'
 import { buildCompositeMaterialSearchQuery } from '@/utils/materialTagSearchQueries'
 import type { Language } from '@/i18n/translations'
 import { initViewportHeightSync } from '@/utils/viewportHeight'
-import {
-  bindReferenceGoogleLoginOnDomReady,
-  triggerReferenceGoogleLogin,
-  type ReferenceWebviewEl,
-} from '@/utils/referenceGoogleLogin'
+import { bindReferencePinterestUiCleanupOnDomReady } from '@/utils/referencePinterestUiCleanup'
+
+type ReferenceWebviewEl = HTMLElement & {
+  executeJavaScript?: (code: string) => Promise<unknown>
+}
 
 const REFERENCE_WEBVIEW_PARTITION = 'persist:artquest-reference'
 
@@ -117,24 +117,6 @@ export default function ReferenceMaterialsWindow() {
   const [visitedSources, setVisitedSources] = useState<ReferenceSource[]>([initialSource])
   const [isPaneLoading, setIsPaneLoading] = useState(true)
   const webviewRefs = useRef<Partial<Record<ReferenceSource, ReferenceWebviewEl | null>>>({})
-  const useGoogleForReferenceLogin = useUIStore((s) => s.settings.useGoogleForReferenceLogin)
-  const [googleAccountEmail, setGoogleAccountEmail] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!useGoogleForReferenceLogin || !window.electronAPI?.getGoogleDriveStatus) return
-    let cancelled = false
-    void window.electronAPI.getGoogleDriveStatus().then((result) => {
-      if (cancelled) return
-      if (result?.success && result.account?.connected && result.account.accountEmail) {
-        setGoogleAccountEmail(result.account.accountEmail)
-      } else {
-        setGoogleAccountEmail(null)
-      }
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [useGoogleForReferenceLogin])
 
   useEffect(() => {
     setSelectedSource(initialSource)
@@ -279,12 +261,14 @@ export default function ReferenceMaterialsWindow() {
 
   const paneUrl = selectedSource === 'youtube' && playingId ? youtubeWatchUrl(playingId) : defaultSiteUrl
   const externalSiteOnly = selectedSource !== 'youtube'
-  const googleLoginEnabled = Boolean(useGoogleForReferenceLogin && googleAccountEmail)
 
   useEffect(() => {
     const webview = webviewRefs.current[selectedSource]
-    return bindReferenceGoogleLoginOnDomReady(webview, selectedSource, googleLoginEnabled)
-  }, [googleAccountEmail, googleLoginEnabled, selectedSource, paneUrl])
+    const cleanupPinterest = bindReferencePinterestUiCleanupOnDomReady(webview, selectedSource)
+    return () => {
+      cleanupPinterest()
+    }
+  }, [selectedSource, paneUrl])
 
   const selectSource = (source: ReferenceSource) => {
     if (source === selectedSource) return
@@ -344,22 +328,6 @@ export default function ReferenceMaterialsWindow() {
           >
             {t.resources.refWindowOpenExternal ?? 'Open externally'}
           </button>
-          {googleLoginEnabled && selectedSource === 'pinterest' ? (
-            <button
-              type="button"
-              className="btn-secondary reference-google-login-btn"
-              onClick={() =>
-                triggerReferenceGoogleLogin(
-                  webviewRefs.current.pinterest,
-                  'pinterest',
-                  googleLoginEnabled,
-                )
-              }
-            >
-              {t.settings.useGoogleForReferenceLoginBtn?.replace('{email}', googleAccountEmail ?? '') ??
-                `Google (${googleAccountEmail})`}
-            </button>
-          ) : null}
         </div>
       </header>
 

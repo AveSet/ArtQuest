@@ -108,11 +108,16 @@ export type StreakStateSlice = {
   current: number
   longest: number
   streakRecoveryDueDate?: string
+  longAbsenceReturnDate?: string
 }
+
+/** Calendar days away that triggers vacation freeze (streak preserved, reviews softened). */
+export const LONG_ABSENCE_VACATION_DAYS = 7
 
 /**
  * Reset daily streak when the player missed more than one calendar day without completing all dailies.
  * A single missed day is handled via streak recovery (4 dailies) — not reset here.
+ * A 7+ day gap freezes the streak instead of resetting it.
  */
 export function reconcileStreakOnDayRollover(
   streakState: StreakStateSlice,
@@ -123,11 +128,19 @@ export function reconcileStreakOnDayRollover(
   const gap = calendarDaysBetween(streakState.lastActiveDate, today)
   if (gap <= 1) return null
   if (gap === 2) return null
+  if (gap >= LONG_ABSENCE_VACATION_DAYS) {
+    return {
+      ...streakState,
+      longAbsenceReturnDate: today,
+      streakRecoveryDueDate: undefined,
+    }
+  }
 
   return {
     ...streakState,
     current: 0,
     streakRecoveryDueDate: undefined,
+    longAbsenceReturnDate: undefined,
   }
 }
 

@@ -1,4 +1,4 @@
-export type ArtAppId = 'photoshop' | 'clipstudio' | 'sai' | 'tvpaint' | 'toonboom'
+export type ArtAppId = 'photoshop' | 'clipstudio' | 'sai' | 'tvpaint' | 'toonboom' | 'custom'
 
 export type ArtAppDefinition = {
   id: ArtAppId
@@ -43,12 +43,29 @@ export const ART_APP_DEFINITIONS: ArtAppDefinition[] = [
 
 export const DEFAULT_TRACKED_ART_APPS: ArtAppId[] = ART_APP_DEFINITIONS.map((a) => a.id)
 
+const ALL_ART_APP_IDS = new Set<ArtAppId>([...ART_APP_DEFINITIONS.map((a) => a.id), 'custom'])
+
+/** Process name (no .exe) from a Windows executable path. */
+export function processNameFromExecutablePath(exePath: string): string {
+  const base = exePath.replace(/\\/g, '/').split('/').pop() ?? ''
+  return base.replace(/\.exe$/i, '').trim()
+}
+
+export function normalizeCustomArtAppExecutablePath(raw: unknown): string | undefined {
+  if (typeof raw !== 'string') return undefined
+  const trimmed = raw.trim()
+  if (!trimmed || trimmed.length > 500) return undefined
+  if (!/\.exe$/i.test(trimmed)) return undefined
+  const name = processNameFromExecutablePath(trimmed)
+  if (!name) return undefined
+  return trimmed
+}
+
 export function normalizeTrackedArtApps(raw: unknown): ArtAppId[] {
   if (!Array.isArray(raw)) return [...DEFAULT_TRACKED_ART_APPS]
-  const allowed = new Set(ART_APP_DEFINITIONS.map((a) => a.id))
   const out: ArtAppId[] = []
   for (const item of raw) {
-    if (typeof item === 'string' && allowed.has(item as ArtAppId) && !out.includes(item as ArtAppId)) {
+    if (typeof item === 'string' && ALL_ART_APP_IDS.has(item as ArtAppId) && !out.includes(item as ArtAppId)) {
       out.push(item as ArtAppId)
     }
   }
@@ -56,13 +73,30 @@ export function normalizeTrackedArtApps(raw: unknown): ArtAppId[] {
 }
 
 export function processMatchesArtApp(processName: string, appId: ArtAppId): boolean {
+  if (appId === 'custom') return false
   const def = ART_APP_DEFINITIONS.find((a) => a.id === appId)
   if (!def) return false
   const norm = processName.toLowerCase().replace(/\.exe$/i, '')
   return def.processNames.some((n) => norm.includes(n.toLowerCase().replace(/\.exe$/i, '')))
 }
 
-export function isTrackedArtProcess(processName: string, trackedApps: ArtAppId[]): boolean {
+export function processMatchesCustomArtApp(processName: string, customProcessName: string | undefined): boolean {
+  if (!customProcessName?.trim()) return false
+  const norm = processName.toLowerCase().replace(/\.exe$/i, '')
+  const target = customProcessName.toLowerCase().replace(/\.exe$/i, '')
+  return norm === target || norm.includes(target)
+}
+
+export function isTrackedArtProcess(
+  processName: string,
+  trackedApps: ArtAppId[],
+  customProcessName?: string,
+): boolean {
   if (!processName.trim()) return false
-  return trackedApps.some((id) => processMatchesArtApp(processName, id))
+  return trackedApps.some((id) => {
+    if (id === 'custom') {
+      return processMatchesCustomArtApp(processName, customProcessName)
+    }
+    return processMatchesArtApp(processName, id)
+  })
 }

@@ -196,6 +196,8 @@ export interface StreakState {
   lastDailyRitualDate?: string
   /** Last calendar day the missed-day shield hint was shown */
   streakRecoveryHintShownDate?: string
+  /** First calendar day back after 7+ inactive days (vacation freeze). */
+  longAbsenceReturnDate?: string
 }
 
 export interface FlowMetrics {
@@ -261,6 +263,8 @@ export interface Settings {
   fontScale: FontScale
   contrastBoost: boolean
   reduceMotion: boolean
+  /** Accessibility: pause session countdown timers for all quests/practice. */
+  disableSessionTimers?: boolean
   /** When false, shows first-run welcome modal until dismissed */
   hasSeenOnboarding: boolean
   /** Curated `VideoResource.id` values starred on Materials — listed first in the catalog */
@@ -286,6 +290,8 @@ export interface Settings {
   /** Count practice/quest time only when tracked art apps are focused */
   activityTrackingEnabled?: boolean
   trackedArtApps?: ArtAppId[]
+  /** Path to a custom .exe for activity tracking when `custom` is in trackedArtApps. */
+  customArtAppExecutablePath?: string
   /** Pause counting after this many seconds without input (default 60) */
   artIdleTimeoutSec?: number
   /** Self-assessed skill level — seeds fundamentals and quest difficulty */
@@ -296,6 +302,12 @@ export interface Settings {
   preferredReferenceSource?: ReferenceSource
   /** Use connected Google account for Google SSO on reference sites (Pinterest, etc.). */
   useGoogleForReferenceLogin?: boolean
+  /** Last known overlay / reference window positions (Electron). */
+  windowBounds?: {
+    main?: { x: number; y: number; width: number; height: number }
+    overlay?: { x: number; y: number }
+    reference?: { x: number; y: number; width: number; height: number }
+  }
   /** Ambient loop character */
   ambientPreset?: 'rain' | 'cafe' | 'fireplace' | 'studio' | 'quiet' | 'rpg'
   /** Solo chapter progress (personal arc) */
@@ -363,6 +375,7 @@ export const DEFAULT_SETTINGS: Settings = {
   fontScale: 'medium',
   contrastBoost: false,
   reduceMotion: false,
+  disableSessionTimers: false,
   hasSeenOnboarding: false,
   materialFavoriteIds: [],
   materialEngagement: {},

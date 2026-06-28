@@ -1,5 +1,5 @@
 import { app, ipcMain, Notification } from 'electron'
-import { normalizeTrackedArtApps, type ArtAppId } from '../../shared/artApps'
+import { normalizeTrackedArtApps, normalizeCustomArtAppExecutablePath, type ArtAppId } from '../../shared/artApps'
 import {
   parseQuestSessionShortcutBindings,
   type QuestSessionCommand,
@@ -24,6 +24,7 @@ export type DesktopSettingsSyncDeps = {
   setOpenAtLogin: (value: boolean) => void
   setActivityTrackingEnabled: (enabled: boolean) => void
   setTrackedArtApps: (apps: ArtAppId[]) => void
+  setCustomArtAppExecutablePath: (path: string | undefined) => void
   setArtIdleTimeoutSec: (sec: number) => void
   registerQuestGlobalShortcuts: (bindings: Array<[string, QuestSessionCommand]>) => void
   defaultQuestShortcutBindings: Array<[string, QuestSessionCommand]>
@@ -57,6 +58,11 @@ export function applyDesktopSettingsSync(raw: unknown, deps: DesktopSettingsSync
     }
     if (Array.isArray(o.trackedArtApps)) {
       deps.setTrackedArtApps(normalizeTrackedArtApps(o.trackedArtApps) as ArtAppId[])
+    }
+    if ('customArtAppExecutablePath' in o) {
+      deps.setCustomArtAppExecutablePath(
+        normalizeCustomArtAppExecutablePath(o.customArtAppExecutablePath),
+      )
     }
     if (typeof o.artIdleTimeoutSec === 'number') {
       deps.setArtIdleTimeoutSec(o.artIdleTimeoutSec)

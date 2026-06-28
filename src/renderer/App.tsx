@@ -33,6 +33,7 @@ import ReferencePanelToggle from './components/Quest/ReferencePanelToggle'
 import AppToastLayer from './components/AppToastLayer'
 import QuestSessionCommandBridge from './components/QuestSessionCommandBridge'
 import ActivityBridge, { NavigateBridge, SessionTickBridge } from './components/ActivityBridge'
+import WindowBoundsBridge, { applySavedWindowBounds } from './components/WindowBoundsBridge'
 import BreakReminderToast from './components/BreakReminderToast'
 import { initViewportHeightSync } from './utils/viewportHeight'
 import AnimatedRouteOutlet from './components/ui/AnimatedRouteOutlet'
@@ -114,6 +115,13 @@ function DesktopAccessibilityEffects() {
     })
   }, [isLoaded, language, settings, t.desktop.reminderTitle, t.desktop.reminderBody])
 
+  const windowBoundsAppliedRef = useRef(false)
+  useEffect(() => {
+    if (!isLoaded || windowBoundsAppliedRef.current) return
+    windowBoundsAppliedRef.current = true
+    applySavedWindowBounds(useUIStore.getState().settings.windowBounds)
+  }, [isLoaded])
+
   return null
 }
 
@@ -186,6 +194,7 @@ function AppShell({
         <QuestSessionCommandBridge />
         <ActivityBridge />
         <SessionTickBridge />
+        <WindowBoundsBridge />
         <NavigateBridge />
         <ScrollToTopOnRouteChange />
         <DesktopAccessibilityEffects />

@@ -29,6 +29,7 @@ if (typeof window.AudioContext === 'undefined' && typeof (window as any).webkitA
 // Mock electronAPI for tests
 const mockIpcResult = { success: true }
 const mockElectronAPI = {
+  activityTrackingNative: true,
   saveProgress: () => Promise.resolve(mockIpcResult),
   saveProgressSync: () => mockIpcResult,
   loadProgress: () => Promise.resolve({ status: 'empty' as const }),
@@ -44,6 +45,7 @@ const mockElectronAPI = {
   saveCustomAvatar: () => Promise.resolve({ success: true, path: '/mock/avatar.jpg' }),
   showItemInFolder: () => Promise.resolve(),
   syncDesktopSettings: () => Promise.resolve(),
+  pickArtAppExecutable: () => Promise.resolve({ success: true, path: 'C:\\Apps\\Krita\\krita.exe' }),
   showTestNotification: () => Promise.resolve({ success: true }),
   openExternal: () => Promise.resolve({ success: true }),
   getStorageMode: () => Promise.resolve({ success: true, mode: 'local' }),
@@ -68,6 +70,9 @@ const mockElectronAPI = {
   onAppBeforeQuit: () => () => {},
   onGallerySyncUpdated: () => () => {},
   setSessionTickActive: () => Promise.resolve({ success: true }),
+  setTaskbarProgress: () => Promise.resolve({ success: true }),
+  applyWindowBounds: () => Promise.resolve({ success: true }),
+  onWindowBoundsReport: () => () => {},
   onSessionTick: () => () => {},
 }
 Object.defineProperty(window, 'electronAPI', { value: mockElectronAPI, writable: true })

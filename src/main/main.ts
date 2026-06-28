@@ -11,6 +11,7 @@ import {
   sampleActivity,
   refreshActivitySnapshot,
   setActivityTrackerConfig,
+  setCustomArtAppExecutablePath,
   pauseActivityTracking,
 } from './activityTracker'
 import {
@@ -21,6 +22,8 @@ import {
 import { installIpcSenderGuards } from './ipcTrustedSender'
 import { registerGalleryIpcHandlers } from './ipc/galleryHandlers'
 import { registerSessionTickIpcHandlers } from './ipc/sessionTickHandlers'
+import { registerTaskbarProgressIpcHandlers } from './ipc/taskbarProgressHandlers'
+import { registerWindowBoundsIpcHandlers, type PersistedWindowBounds, clampWindowPoint, isFinitePoint, isFiniteRect, isFiniteMainRect, mergePersistedWindowBounds } from './ipc/windowBoundsHandlers'
 import { registerOverlayIpcHandlers } from './ipc/overlayHandlers'
 import { registerReferenceWindowIpcHandlers } from './ipc/referenceWindowHandlers'
 import {
@@ -473,6 +476,67 @@ type OverlayLayoutOpts = {
 /** Last layout from overlay UI — survives frequent payload IPC (timer ticks). */
 const overlayLayoutState: OverlayLayoutOpts = { refsOpen: false }
 
+let persistedWindowBounds: PersistedWindowBounds = {}
+/** Skip bounds IPC to renderer while applying saved bounds programmatically. */
+let suppressWindowBoundsReport = false
+
+function reportWindowBoundsToRenderer(partial: PersistedWindowBounds): void {
+  if (suppressWindowBoundsReport) return
+  persistedWindowBounds = mergePersistedWindowBounds(persistedWindowBounds, partial)
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('artquest:v1:window-bounds:report', partial)
+  }
+}
+
+function applyPersistedWindowBounds(bounds: PersistedWindowBounds): void {
+  suppressWindowBoundsReport = true
+  try {
+    if (mainWindow && !mainWindow.isDestroyed() && isFiniteMainRect(bounds.main)) {
+      const current = mainWindow.getBounds()
+      const next = clampWindowPoint(
+        { x: bounds.main.x, y: bounds.main.y },
+        bounds.main.width,
+        bounds.main.height,
+      )
+      const target = { ...bounds.main, x: next.x, y: next.y }
+      if (
+        current.x !== target.x ||
+        current.y !== target.y ||
+        current.width !== target.width ||
+        current.height !== target.height
+      ) {
+        mainWindow.setBounds(target)
+      }
+    }
+    if (overlayWindow && !overlayWindow.isDestroyed() && isFinitePoint(bounds.overlay)) {
+      const b = overlayWindow.getBounds()
+      const next = clampWindowPoint(bounds.overlay, b.width, b.height)
+      if (b.x !== next.x || b.y !== next.y) {
+        overlayWindow.setBounds({ ...b, x: next.x, y: next.y })
+      }
+    }
+    if (referenceWindow && !referenceWindow.isDestroyed() && isFiniteRect(bounds.reference)) {
+      const current = referenceWindow.getBounds()
+      const next = clampWindowPoint(
+        { x: bounds.reference.x, y: bounds.reference.y },
+        bounds.reference.width,
+        bounds.reference.height,
+      )
+      const target = { ...bounds.reference, x: next.x, y: next.y }
+      if (
+        current.x !== target.x ||
+        current.y !== target.y ||
+        current.width !== target.width ||
+        current.height !== target.height
+      ) {
+        referenceWindow.setBounds(target)
+      }
+    }
+  } finally {
+    suppressWindowBoundsReport = false
+  }
+}
+
 let cachedOverlayPayload: Record<string, unknown> = { hasSession: false }
 
 function pushOverlayPayloadToWindow(): void {
@@ -519,19 +583,26 @@ function applyOverlayWindowLayout(partial: OverlayLayoutOpts = {}): void {
   overlayWindow.setBounds({ ...bounds, width, height })
 }
 
+function defaultOverlayPosition(width: number): { x: number; y: number } {
+  const display = screen.getPrimaryDisplay().workArea
+  return {
+    x: Math.max(display.x + 16, display.x + display.width - width - OVERLAY_RIGHT_INSET),
+    y: display.y + 32,
+  }
+}
+
 function createOverlayWindow(): BrowserWindow {
   if (overlayWindow && !overlayWindow.isDestroyed()) return overlayWindow
-  const display = screen.getPrimaryDisplay().workArea
-  const overlayX = Math.max(
-    display.x + 16,
-    display.x + display.width - OVERLAY_WIDTH - OVERLAY_RIGHT_INSET,
-  )
+  const saved = persistedWindowBounds.overlay
+  const fallback = defaultOverlayPosition(OVERLAY_WIDTH)
+  const overlayX = typeof saved?.x === 'number' ? saved.x : fallback.x
+  const overlayY = typeof saved?.y === 'number' ? saved.y : fallback.y
   overlayWindow = new BrowserWindow({
     width: OVERLAY_WIDTH,
     height: OVERLAY_QUEST_HEIGHT,
     hasShadow: false,
     x: overlayX,
-    y: display.y + 32,
+    y: overlayY,
     minWidth: OVERLAY_WIDTH,
     minHeight: OVERLAY_QUEST_HEIGHT,
     maxWidth: OVERLAY_WIDTH,
@@ -556,6 +627,11 @@ function createOverlayWindow(): BrowserWindow {
   overlayWindow.setAlwaysOnTop(true, 'floating')
   overlayWindow.on('closed', () => {
     overlayWindow = null
+  })
+  overlayWindow.on('moved', () => {
+    if (!overlayWindow || overlayWindow.isDestroyed()) return
+    const { x, y } = overlayWindow.getBounds()
+    reportWindowBoundsToRenderer({ overlay: { x, y } })
   })
   overlayWindow.webContents.on('did-finish-load', () => {
     pushOverlayPayloadToWindow()
@@ -687,22 +763,27 @@ function getReferenceWindowSize(): { width: number; height: number } {
 
 function createReferenceWindow(params: ReferenceWindowOpenParams): BrowserWindow {
   const refSize = getReferenceWindowSize()
+  const saved = persistedWindowBounds.reference
   if (referenceWindow && !referenceWindow.isDestroyed()) {
     loadRendererRoute(referenceWindow, buildReferenceMaterialsRoute(params))
-    const bounds = referenceWindow.getBounds()
-    if (bounds.width < 720 || bounds.height < 540) {
-      referenceWindow.setBounds({ ...bounds, width: refSize.width, height: refSize.height })
-    }
-    referenceWindow.center()
     referenceWindow.show()
     referenceWindow.focus()
     return referenceWindow
   }
 
+  const initialBounds = isFiniteRect(saved)
+    ? saved
+    : { ...refSize, x: 0, y: 0 }
+  const positioned = isFiniteRect(saved)
+    ? clampWindowPoint({ x: saved.x, y: saved.y }, saved.width, saved.height)
+    : null
+
   referenceWindow = new BrowserWindow({
-    width: refSize.width,
-    height: refSize.height,
-    center: true,
+    width: initialBounds.width,
+    height: initialBounds.height,
+    x: positioned?.x,
+    y: positioned?.y,
+    center: !positioned,
     minWidth: 640,
     minHeight: 480,
     show: false,
@@ -717,9 +798,19 @@ function createReferenceWindow(params: ReferenceWindowOpenParams): BrowserWindow
   })
   applyAppDocumentCsp(referenceWindow.webContents.session)
   hardenReferenceWebviewContents(referenceWindow.webContents)
+  const reportReferenceBounds = () => {
+    if (!referenceWindow || referenceWindow.isDestroyed()) return
+    const b = referenceWindow.getBounds()
+    reportWindowBoundsToRenderer({
+      reference: { x: b.x, y: b.y, width: b.width, height: b.height },
+    })
+  }
+  referenceWindow.on('close', reportReferenceBounds)
   referenceWindow.on('closed', () => {
     referenceWindow = null
   })
+  referenceWindow.on('moved', reportReferenceBounds)
+  referenceWindow.on('resized', reportReferenceBounds)
   referenceWindow.once('ready-to-show', () => referenceWindow?.show())
   loadRendererRoute(referenceWindow, buildReferenceMaterialsRoute(params))
   return referenceWindow
@@ -920,14 +1011,23 @@ function getDefaultWindowSize(): { width: number; height: number } {
 function createWindow() {
   Menu.setApplicationMenu(null)
   const { width: winW, height: winH } = getDefaultWindowSize()
+  const savedMain = persistedWindowBounds.main
+  const initialWidth = isFiniteMainRect(savedMain) ? savedMain.width : winW
+  const initialHeight = isFiniteMainRect(savedMain) ? savedMain.height : winH
+  const mainPosition = isFiniteMainRect(savedMain)
+    ? clampWindowPoint({ x: savedMain.x, y: savedMain.y }, initialWidth, initialHeight)
+    : null
+
   mainWindow = new BrowserWindow({
-    width: winW,
-    height: winH,
+    width: initialWidth,
+    height: initialHeight,
+    x: mainPosition?.x,
+    y: mainPosition?.y,
     minWidth: 800,
     minHeight: 720,
     icon: loadWindowIcon(),
     show: true,
-    center: true,
+    center: !mainPosition,
     backgroundColor: '#0b0f19',
     webPreferences: {
       preload: resolvePreloadPath(),
@@ -988,7 +1088,18 @@ function createWindow() {
     }
   })
 
+  const reportMainBounds = () => {
+    if (!mainWindow || mainWindow.isDestroyed()) return
+    const b = mainWindow.getBounds()
+    reportWindowBoundsToRenderer({
+      main: { x: b.x, y: b.y, width: b.width, height: b.height },
+    })
+  }
+  mainWindow.on('moved', reportMainBounds)
+  mainWindow.on('resized', reportMainBounds)
+
   mainWindow.on('close', (event) => {
+    reportMainBounds()
     if (!isQuitting && minimizeToTraySetting) {
       event.preventDefault()
       mainWindow?.hide()
@@ -1158,6 +1269,19 @@ registerSessionTickIpcHandlers({
   stopSessionTickTimer,
 })
 
+registerTaskbarProgressIpcHandlers({
+  getMainWindow: () => mainWindow,
+})
+
+registerWindowBoundsIpcHandlers({
+  getMainWindow: () => mainWindow,
+  getPersistedBounds: () => persistedWindowBounds,
+  setPersistedBounds: (partial) => {
+    persistedWindowBounds = mergePersistedWindowBounds(persistedWindowBounds, partial)
+  },
+  applyPersistedBounds: applyPersistedWindowBounds,
+})
+
 registerOverlayIpcHandlers({
   getMainWindow: () => mainWindow,
   getOverlayWindow: () => overlayWindow,
@@ -1206,6 +1330,9 @@ registerDesktopSettingsIpcHandlers({
   },
   setTrackedArtApps: (apps) => {
     setActivityTrackerConfig({ trackedArtApps: apps })
+  },
+  setCustomArtAppExecutablePath: (exePath) => {
+    setCustomArtAppExecutablePath(exePath)
   },
   setArtIdleTimeoutSec: (sec) => {
     setActivityTrackerConfig({ idleTimeoutSec: sec })

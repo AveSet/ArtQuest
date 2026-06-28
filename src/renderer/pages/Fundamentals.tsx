@@ -4,8 +4,9 @@ import { useQuestStore } from '@/store/useQuestStore'
 import {
   FUNDAMENTALS_EXERCISES,
   FUNDAMENTALS_TRACK_MEDIUM_ID,
-  FUNDAMENTALS_TRACK_NOVICE_ID,
   isFundamentalsAdvancedId,
+  isFundamentalsNovicePartAId,
+  isFundamentalsNovicePartBId,
   isFundamentalsTrackId,
   type BookTier,
   type FundamentalsExercise,
@@ -15,7 +16,8 @@ import {
   getNextFundamentalsExercise,
   getFundamentalsUnlockState,
   isMediumTrackComplete,
-  isNoviceTrackComplete,
+  isNovicePartAComplete,
+  isNovicePartBComplete,
 } from '@/utils/fundamentalsProgress'
 import { resolveQuestTitle } from '@/utils/questDisplay'
 import { playUiClick } from '@/utils/sound'
@@ -52,13 +54,20 @@ export default function Fundamentals() {
   const trackPhaseProgress = (exercise: FundamentalsExercise): { done: number; total: number } => {
     if (!exercise.trackKind || !exercise.trackPhases) return { done: 0, total: 0 }
     const total = exercise.trackPhases.length
-    if (exercise.id === FUNDAMENTALS_TRACK_NOVICE_ID && isNoviceTrackComplete(fundamentalsProgress)) {
+    if (isFundamentalsNovicePartAId(exercise.id) && isNovicePartAComplete(fundamentalsProgress)) {
+      return { done: total, total }
+    }
+    if (isFundamentalsNovicePartBId(exercise.id) && isNovicePartBComplete(fundamentalsProgress)) {
       return { done: total, total }
     }
     if (exercise.id === FUNDAMENTALS_TRACK_MEDIUM_ID && isMediumTrackComplete(fundamentalsProgress)) {
       return { done: total, total }
     }
-    const done = getFundamentalsTrackPhaseStartIndex(fundamentalsProgress, exercise.trackKind)
+    const done = getFundamentalsTrackPhaseStartIndex(
+      fundamentalsProgress,
+      exercise.trackKind,
+      exercise.id,
+    )
     return { done, total }
   }
 
@@ -96,7 +105,8 @@ export default function Fundamentals() {
                 const unlock = getFundamentalsUnlockState(exercise, fundamentalsProgress)
                 const isDone = doneSet.has(exercise.id) || (
                   isFundamentalsTrackId(exercise.id) &&
-                  ((exercise.id === FUNDAMENTALS_TRACK_NOVICE_ID && isNoviceTrackComplete(fundamentalsProgress)) ||
+                  ((isFundamentalsNovicePartAId(exercise.id) && isNovicePartAComplete(fundamentalsProgress)) ||
+                    (isFundamentalsNovicePartBId(exercise.id) && isNovicePartBComplete(fundamentalsProgress)) ||
                     (exercise.id === FUNDAMENTALS_TRACK_MEDIUM_ID && isMediumTrackComplete(fundamentalsProgress)))
                 )
                 const isCurrent = nextExercise?.id === exercise.id

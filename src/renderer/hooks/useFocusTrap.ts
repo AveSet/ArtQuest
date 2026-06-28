@@ -45,7 +45,7 @@ export function useFocusTrap(active: boolean, rootRef: RefObject<HTMLElement | n
     root.addEventListener('keydown', onKeyDown)
     return () => {
       root.removeEventListener('keydown', onKeyDown)
-      if (prevActive && root.contains(prevActive)) {
+      if (prevActive?.isConnected) {
         prevActive.focus()
       }
     }

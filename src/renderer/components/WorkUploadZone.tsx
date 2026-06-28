@@ -96,6 +96,7 @@ export default function WorkUploadZone({
         multiple={multiple}
         disabled={disabled}
         className="hidden"
+        aria-label={t.upload.dropZoneLabel}
         onChange={(e) => {
           if (e.target.files && e.target.files.length > 0) emitFiles(e.target.files)
           e.target.value = ''

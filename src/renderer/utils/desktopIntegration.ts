@@ -22,6 +22,7 @@ export function buildDesktopIntegrationPayload(settings: Settings, copy?: Deskto
     questSessionShortcuts: questSessionShortcutBindings(normalizeQuestSessionShortcuts(settings.questSessionShortcuts)),
     activityTrackingEnabled: settings.activityTrackingEnabled !== false,
     trackedArtApps: settings.trackedArtApps ?? [],
+    customArtAppExecutablePath: settings.customArtAppExecutablePath,
     artIdleTimeoutSec: settings.artIdleTimeoutSec ?? 60,
   }
 }

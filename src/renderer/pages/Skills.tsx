@@ -27,6 +27,7 @@ import { cancelSkillPracticeSession } from '@/utils/skillPracticeCancel'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import { getLocalDateStr } from '@/utils/dailyQuests'
 import { getReferenceYoutubeButtonLabels } from '@/utils/referenceYtLabels'
+import { areSessionTimersDisabled } from '@/utils/sessionTimersPreference'
 
 /** Bottom tier of the drawing track (row 0 in layout) — for onboarding demo panel. */
 function pickDrawingTutorialNodeId(nodes: SkillNode[]): string | null {
@@ -269,24 +270,27 @@ const Skills = () => {
   const openClipTips = useCallback(() => openNodeRefs('clipTips'), [openNodeRefs])
   const openSketchfab = useCallback(() => openNodeRefs('sketchfab'), [openNodeRefs])
 
-  const practiceReadyToFinish = activePracticeElapsedSec >= 60
+  const practiceReadyToFinish =
+    areSessionTimersDisabled() || activePracticeElapsedSec >= 60
 
   const finishPractice = useCallback(() => {
     if (!selectedNode || practiceSession?.nodeId !== selectedNode.id) return
-    if (window.electronAPI) expandSessionToMainWindow()
     const result = finishSkillPracticeSession()
     if (!result) return
+    navigate('/skills')
+    if (window.electronAPI) expandSessionToMainWindow()
     setResultXp(result.xp)
     setShowResult(true)
     setTimeout(() => setShowResult(false), 3000)
-  }, [selectedNode, practiceSession?.nodeId])
+  }, [selectedNode, practiceSession?.nodeId, navigate])
 
   const cancelPractice = useCallback(() => {
     if (!selectedNode || practiceSession?.nodeId !== selectedNode.id) return
-    if (window.electronAPI) expandSessionToMainWindow()
     cancelSkillPracticeSession()
     setShowReferenceChoices(false)
-  }, [selectedNode, practiceSession?.nodeId])
+    navigate('/skills')
+    if (window.electronAPI) expandSessionToMainWindow()
+  }, [selectedNode, practiceSession?.nodeId, navigate])
 
   const dismissPanel = useCallback(() => {
     setSelectedNodeId(null)
@@ -305,23 +309,12 @@ const Skills = () => {
     return fresh ?? unlocked[0] ?? null
   }, [categoryNodes])
 
-  const categoryProgressSummary = useMemo(() => {
-    const total = categoryNodes.length
-    const unlocked = categoryNodes.filter((n) => n.isUnlocked).length
-    const mastered = categoryNodes.filter((n) => n.level >= NODE_MAX_LEVEL).length
-    return { total, unlocked, mastered }
-  }, [categoryNodes])
-
   const nextPracticeNodeId = useMemo(() => {
     const today = getLocalDateStr()
     const due = getNodesDueForReview(skillNodes, today).find((n) => n.nodeId.startsWith(activeCategory))
     if (due) return due.nodeId
     return nextUnlockNode?.id ?? null
   }, [skillNodes, activeCategory, nextUnlockNode])
-
-  const quickActionLabel = nextPracticeNodeId
-    ? (t.skills.nextPracticeHint ?? 'Recommended practice')
-    : (t.skills.start_practice ?? 'Start practice')
 
   return (
     <div className="min-h-screen" data-onboarding="page-skills">
@@ -355,50 +348,6 @@ const Skills = () => {
             ) : null}
           </div>
         ) : null}
-
-        <section className="card-fantasy mb-4 p-4 border border-[var(--border-secondary)]" aria-label="Skill branch summary">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                {t.skills.nextPracticeHint ?? 'Recommended practice'}
-              </p>
-              <h2 className="heading-4 text-[var(--text-heading)]">
-                {quickActionLabel}
-              </h2>
-              <p className="text-sm text-[var(--text-muted)] mt-1">
-                {categoryProgressSummary.unlocked}/{categoryProgressSummary.total} unlocked · {categoryProgressSummary.mastered} mastered
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {nextPracticeNodeId ? (
-                <button
-                  type="button"
-                  className="btn-primary text-sm px-4 py-2"
-                  onClick={() => {
-                    const target = categoryNodes.find((node) => node.id === nextPracticeNodeId)
-                    if (!target) return
-                    playUiClick()
-                    setSelectedNodeId(target.id)
-                    setPracticePanelMinimized(false)
-                    setShowResult(false)
-                  }}
-                >
-                  {t.skills.start_practice}
-                </button>
-              ) : null}
-              <button
-                type="button"
-                className="btn-secondary text-sm px-4 py-2"
-                onClick={() => {
-                  playUiClick()
-                  navigate('/resources?view=learn')
-                }}
-              >
-                {t.quests.needReferences}
-              </button>
-            </div>
-          </div>
-        </section>
 
         <div
           className="skills-tree-canvas flex flex-col-reverse items-center justify-center w-full min-h-[480px] p-6 sm:p-10 rounded-2xl relative overflow-visible border border-[var(--border-secondary)]"

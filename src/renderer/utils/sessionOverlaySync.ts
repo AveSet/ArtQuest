@@ -16,6 +16,7 @@ import { resolveQuestTitle } from '@/utils/questDisplay'
 import { resolveQuestById } from '@/utils/resolveQuestById'
 import { getCurrentPhaseLabel, getPhaseTimerSec } from '@/utils/sessionPhaseDisplay'
 import { hideSessionOverlay } from '@/utils/sessionOverlayActions'
+import { syncTaskbarProgress } from '@/utils/syncTaskbarProgress'
 import { SKILL_TREE_NODES } from '@/data/skillTree'
 import { getReferenceYoutubeButtonLabels } from '@/utils/referenceYtLabels'
 import type { Language, translations } from '@/i18n/translations'
@@ -230,10 +231,12 @@ export function syncSessionOverlayPayload(language: Language, t: TBundle): void 
     }
     hideSessionOverlay()
     void api.setSessionOverlayActive?.(false)
+    syncTaskbarProgress()
     return
   }
 
   void api.setSessionOverlayActive?.(true)
+  syncTaskbarProgress()
 
   const { timerLabel, ...stablePart } = payload
   const stableKey = JSON.stringify(stablePart)

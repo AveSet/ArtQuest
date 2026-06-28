@@ -13,6 +13,7 @@ import { expandSessionToMainWindow } from '@/utils/sessionOverlayActions'
 import { useUIStore } from '@/store/useUIStore'
 import { useSkillPracticeStore } from '@/store/useSkillPracticeStore'
 import { reconcileSessionMicroChallenges } from '@/utils/sessionPersistence'
+import { areSessionTimersDisabled } from '@/utils/sessionTimersPreference'
 import { useSessionRitualStore } from '@/store/useSessionRitualStore'
 import { inferPhaseTransitionKey } from '@/utils/phaseTransitionLabels'
 import { playSessionSound } from '@/utils/sound'
@@ -153,6 +154,7 @@ function moveToNextPhase(
 }
 
 export function formatSessionRemaining(sec: number): string {
+  if (areSessionTimersDisabled()) return '∞'
   const m = Math.floor(sec / 60)
   const s = sec % 60
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
@@ -325,6 +327,14 @@ export const useQuestSessionStore = create<QuestSessionState>((set, get) => ({
     const { session } = get()
     if (!session?.isRunning) return
     const counting = shouldCountSessionTime()
+
+    if (areSessionTimersDisabled()) {
+      const activeElapsedSec = (session.activeElapsedSec ?? 0) + (counting ? 1 : 0)
+      if (activeElapsedSec !== session.activeElapsedSec) {
+        set({ session: { ...session, activeElapsedSec } })
+      }
+      return
+    }
 
     if (session.isExpired) {
       const activeElapsedSec = (session.activeElapsedSec ?? 0) + (counting ? 1 : 0)

@@ -122,9 +122,19 @@ describe('dailyQuests', () => {
         ...base,
         current: 0,
         streakRecoveryDueDate: undefined,
+        longAbsenceReturnDate: undefined,
       })
       expect(reconcileStreakOnDayRollover(base, '2026-05-12')).toBeNull()
       expect(reconcileStreakOnDayRollover(base, '2026-05-11')).toBeNull()
+    })
+
+    it('reconcileStreakOnDayRollover freezes streak after 7+ day absence', () => {
+      const base = { lastActiveDate: '2026-05-01', current: 12, longest: 20 }
+      expect(reconcileStreakOnDayRollover(base, '2026-05-15')).toEqual({
+        ...base,
+        longAbsenceReturnDate: '2026-05-15',
+        streakRecoveryDueDate: undefined,
+      })
     })
 
     it('countConsecutiveCategoryDays counts calendar days not log entries', () => {
@@ -135,6 +145,29 @@ describe('dailyQuests', () => {
         { completedAt: '2026-05-13T10:00:00.000Z', category: 'drawing' },
       ]
       expect(countConsecutiveCategoryDays(logs, 'drawing')).toBe(2)
+    })
+
+    it('calendarDaysBetween stays stable across DST transition dates (US spring forward)', () => {
+      // Uses local noon — not wall-clock duration — so each adjacent calendar day is +1.
+      expect(calendarDaysBetween('2026-03-07', '2026-03-08')).toBe(1)
+      expect(calendarDaysBetween('2026-03-08', '2026-03-09')).toBe(1)
+      expect(calendarDaysBetween('2026-03-07', '2026-03-09')).toBe(2)
+    })
+
+    it('streak recovery uses calendar gap, not elapsed hours (DST weekend)', () => {
+      expect(shouldOfferStreakRecovery('2026-03-07', '2026-03-09', 4)).toBe(true)
+      expect(shouldOfferStreakRecovery('2026-03-08', '2026-03-09', 4)).toBe(false)
+    })
+
+    it('reconcileStreakOnDayRollover treats DST-adjacent dates as consecutive days', () => {
+      const base = { lastActiveDate: '2026-03-08', current: 5, longest: 10 }
+      expect(reconcileStreakOnDayRollover(base, '2026-03-09')).toBeNull()
+      expect(reconcileStreakOnDayRollover(base, '2026-03-10')).toBeNull()
+      expect(reconcileStreakOnDayRollover(base, '2026-03-11')).toEqual({
+        ...base,
+        current: 0,
+        streakRecoveryDueDate: undefined,
+      })
     })
   })
 

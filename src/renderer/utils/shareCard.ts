@@ -3,6 +3,8 @@ import artquestIconUrl from '@/assets/artquest-icon.png'
 import { getStreakTier, getStreakTierColor } from '@/utils/streakRewardVisual'
 import { DAILY_CHEST_STREAK_DAYS } from '@/utils/portraitChestProgress'
 
+export type ShareCardFormat = 'landscape' | 'story'
+
 export type ShareCardInput = {
   questTitle: string
   streak: number
@@ -11,10 +13,14 @@ export type ShareCardInput = {
   playerLevel?: number
   rankColor?: string
   chestProgress?: number
+  format?: ShareCardFormat
+  workImageUrl?: string
+  xpEarned?: number
+  categoryLabel?: string
 }
 
-const W = 1080
-const H = 608
+const LANDSCAPE = { w: 1080, h: 608 }
+const STORY = { w: 1080, h: 1920 }
 
 function resolveCssColor(raw?: string, fallback = '#7c6cff'): string {
   if (!raw) return fallback
@@ -111,10 +117,14 @@ function labels(language: Language) {
     tagline: ru ? 'Практика рисунка каждый день' : 'Daily art practice',
     reward: ru ? 'Награда' : 'Reward',
     days: ru ? 'дней' : 'days',
+    xp: ru ? 'XP' : 'XP',
+    share: ru ? 'Поделиться прогрессом' : 'Share progress',
   }
 }
 
 export async function generateShareCardPng(input: ShareCardInput): Promise<Blob | null> {
+  const format = input.format ?? 'landscape'
+  const { w: W, h: H } = format === 'story' ? STORY : LANDSCAPE
   const canvas = document.createElement('canvas')
   canvas.width = W
   canvas.height = H
@@ -124,6 +134,7 @@ export async function generateShareCardPng(input: ShareCardInput): Promise<Blob 
   await document.fonts.ready
 
   const icon = await loadImage(artquestIconUrl)
+  const workImage = input.workImageUrl ? await loadImage(input.workImageUrl) : null
   const tier = getStreakTier(input.streak)
   const tierColor = resolveCssColor(getStreakTierColor(tier), '#e8c040')
   const accent = resolveShareAccentColor(input.rankColor)
@@ -265,6 +276,46 @@ export async function generateShareCardPng(input: ShareCardInput): Promise<Blob 
   ctx.fillStyle = 'rgba(255,255,255,0.42)'
   ctx.font = '500 15px "Plus Jakarta Sans", system-ui, sans-serif'
   ctx.fillText('artquest.app', 84, H - 44)
+
+  if (workImage) {
+    const frameX = format === 'story' ? 72 : 520
+    const frameY = format === 'story' ? 360 : 170
+    const frameW = format === 'story' ? W - 144 : W - 580
+    const frameH = format === 'story' ? 920 : H - 220
+    roundRect(ctx, frameX, frameY, frameW, frameH, 20)
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'
+    ctx.fill()
+    ctx.save()
+    roundRect(ctx, frameX + 8, frameY + 8, frameW - 16, frameH - 16, 16)
+    ctx.clip()
+    const imgW = workImage.width
+    const imgH = workImage.height
+    const scale = Math.min((frameW - 16) / imgW, (frameH - 16) / imgH)
+    const drawW = imgW * scale
+    const drawH = imgH * scale
+    ctx.drawImage(
+      workImage,
+      frameX + (frameW - drawW) / 2,
+      frameY + (frameH - drawH) / 2,
+      drawW,
+      drawH,
+    )
+    ctx.restore()
+  }
+
+  if (input.xpEarned != null && input.xpEarned > 0) {
+    const xpY = format === 'story' ? 1320 : pillY + 120
+    ctx.fillStyle = tierColor
+    ctx.font = '700 28px "Plus Jakarta Sans", system-ui, sans-serif'
+    ctx.fillText(`+${input.xpEarned} ${copy.xp}`, 84, xpY)
+  }
+
+  if (input.categoryLabel) {
+    const catY = format === 'story' ? 1360 : pillY + 152
+    ctx.fillStyle = 'rgba(255,255,255,0.72)'
+    ctx.font = '600 18px "Plus Jakarta Sans", system-ui, sans-serif'
+    ctx.fillText(input.categoryLabel, 84, catY)
+  }
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob), 'image/png')

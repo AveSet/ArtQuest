@@ -1,5 +1,5 @@
 import { useQuestStore } from '@/store/useQuestStore'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import { useShallow } from 'zustand/react/shallow'
 import { useI18n } from '@/i18n'
@@ -23,6 +23,9 @@ import { useSkillStore } from '@/store/useSkillStore'
 import { useUIStore } from '@/store/useUIStore'
 import { useLearningFocusTags } from '@/utils/useLearningFocusTags'
 import { useDailyQuests } from '@/utils/useDailyQuests'
+import { generateShareCardPng, downloadShareCard, type ShareCardFormat } from '@/utils/shareCard'
+import { computePlayerLevel, getPlayerRankKey } from '@/utils/playerLevel'
+import { playUiClick } from '@/utils/sound'
 
 type ViewMode = 'grouped' | 'grid' | 'compact'
 type SortOrder = 'newest' | 'oldest'
@@ -79,7 +82,9 @@ const Gallery = () => {
   const [favoriteOnly, setFavoriteOnly] = useState(false)
   const { skillNodes } = useSkillStore(useShallow((s) => ({ skillNodes: s.skillNodes })))
   const dailyQuests = useDailyQuests()
-  const { adaptiveWeights } = useUIStore(useShallow((s) => ({ adaptiveWeights: s.adaptiveWeights })))
+  const { adaptiveWeights, streakState } = useUIStore(
+    useShallow((s) => ({ adaptiveWeights: s.adaptiveWeights, streakState: s.streakState })),
+  )
   const focusTags = useLearningFocusTags()
 
   useEffect(() => {
@@ -226,6 +231,48 @@ const Gallery = () => {
     quests,
     skillNodes,
   ])
+
+  const handleShareWork = useCallback(
+    async (format: ShareCardFormat) => {
+      if (!lightboxWork) return
+      playUiClick()
+      const playerLevel = computePlayerLevel(skillNodes)
+      const rankKey = getPlayerRankKey(playerLevel)
+      const rankTitles: Record<string, string> = {
+        master: t.character.master,
+        journeyman: t.character.journeyman,
+        apprentice: t.character.apprentice,
+        novice: t.character.novice,
+        legend: t.character.legend,
+      }
+      const rankColors: Record<string, string> = {
+        master: 'var(--rank-master)',
+        journeyman: 'var(--rank-journeyman)',
+        apprentice: 'var(--rank-apprentice)',
+        novice: 'var(--rank-novice)',
+        legend: 'var(--rank-legend)',
+      }
+      const completionLog = questCompletionLogs.find(
+        (log) => log.questId === lightboxWork.questId && log.completedAt === lightboxWork.date,
+      )
+      const blob = await generateShareCardPng({
+        questTitle: lightboxWork.questTitle,
+        streak: streakState.current,
+        rankLabel: rankTitles[rankKey] ?? t.character.novice,
+        language,
+        playerLevel,
+        rankColor: rankColors[rankKey],
+        format,
+        workImageUrl: lightboxWork.imageUrl,
+        xpEarned: completionLog?.xpEarned,
+        categoryLabel: getCategoryLabel(lightboxWork.category, language),
+      })
+      if (!blob) return
+      const suffix = format === 'story' ? 'story' : 'wide'
+      await downloadShareCard(blob, `artquest-gallery-${lightboxWork.questId}-${suffix}.png`)
+    },
+    [language, lightboxWork, questCompletionLogs, skillNodes, streakState.current, t.character],
+  )
 
   const filteredGroupedWorks = useMemo(() => {
     const today = getLocalDateStr()
@@ -622,6 +669,22 @@ const Gallery = () => {
               ? (t.gallery.favoriteOn ?? '★ Favorite')
               : (t.gallery.favoriteOff ?? '☆ Add favorite')}
           </button>
+          <div className="mt-2 flex flex-wrap justify-center gap-2">
+            <button
+              type="button"
+              className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold"
+              onClick={() => void handleShareWork('landscape')}
+            >
+              {t.dashboard.shareProgress ?? 'Share progress'}
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold"
+              onClick={() => void handleShareWork('story')}
+            >
+              {t.gallery.shareStory ?? 'Share story'}
+            </button>
+          </div>
           {lightboxWork.tags && lightboxWork.tags.length > 0 && (
             <div className="mt-2 flex flex-wrap justify-center gap-1">
               {lightboxWork.tags.map((tag) => (

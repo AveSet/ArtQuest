@@ -44,6 +44,20 @@ export default function LearningProfileModal({ open }: Props) {
   const [trackedApps, setTrackedApps] = useState<Set<ArtAppId>>(
     () => new Set(settings.trackedArtApps ?? DEFAULT_TRACKED_ART_APPS),
   )
+  const [customArtAppPath, setCustomArtAppPath] = useState(
+    () => settings.customArtAppExecutablePath ?? '',
+  )
+
+  const pickCustomApp = async () => {
+    const result = await window.electronAPI?.pickArtAppExecutable?.()
+    if (!result?.success || !result.path) return
+    setCustomArtAppPath(result.path)
+    setTrackedApps((prev) => {
+      const next = new Set(prev)
+      next.add('custom')
+      return next
+    })
+  }
 
   const chooseProfile = (profile: LearningProfile) => {
     setPendingProfile(profile)
@@ -81,6 +95,9 @@ export default function LearningProfileModal({ open }: Props) {
       experienceTier: pendingExperienceTier,
       favoriteCategories: getDefaultFavoriteCategories(pendingProfile),
       trackedArtApps,
+      customArtAppExecutablePath: trackedArtApps.includes('custom')
+        ? customArtAppPath || undefined
+        : undefined,
       activityTrackingEnabled: settings.activityTrackingEnabled !== false,
     }
     applyExperienceTierToStores(pendingExperienceTier)
@@ -190,7 +207,13 @@ export default function LearningProfileModal({ open }: Props) {
             </p>
             <ArtAppPicker
               tracked={trackedApps}
-              onChange={(ids) => setTrackedApps(new Set(ids))}
+              onPickCustom={() => void pickCustomApp()}
+              onChange={(ids) => {
+                setTrackedApps(new Set(ids))
+                if (!ids.includes('custom')) {
+                  setCustomArtAppPath('')
+                }
+              }}
             />
             <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <button type="button" className="btn-secondary text-xs" onClick={() => setStep('experience')}>

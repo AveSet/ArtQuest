@@ -18,6 +18,7 @@ function makeDeps() {
     setOpenAtLogin: vi.fn(),
     setActivityTrackingEnabled: vi.fn(),
     setTrackedArtApps: vi.fn(),
+    setCustomArtAppExecutablePath: vi.fn(),
     setArtIdleTimeoutSec: vi.fn(),
     registerQuestGlobalShortcuts: vi.fn(),
     defaultQuestShortcutBindings: defaultBindings,
@@ -37,7 +38,8 @@ describe('applyDesktopSettingsSync', () => {
         reminderTitle: 'Practice',
         reminderBody: 'Draw today',
         activityTrackingEnabled: true,
-        trackedArtApps: ['clipstudio'],
+        trackedArtApps: ['clipstudio', 'custom'],
+        customArtAppExecutablePath: 'C:\\Apps\\Krita\\krita.exe',
         artIdleTimeoutSec: 120,
       },
       deps,
@@ -53,6 +55,7 @@ describe('applyDesktopSettingsSync', () => {
     })
     expect(deps.setActivityTrackingEnabled).toHaveBeenCalledWith(true)
     expect(deps.setTrackedArtApps).toHaveBeenCalled()
+    expect(deps.setCustomArtAppExecutablePath).toHaveBeenCalledWith('C:\\Apps\\Krita\\krita.exe')
     expect(deps.setArtIdleTimeoutSec).toHaveBeenCalledWith(120)
   })
 

@@ -4,6 +4,8 @@ import {
   DEFAULT_TRACKED_ART_APPS,
   isTrackedArtProcess,
   normalizeTrackedArtApps,
+  normalizeCustomArtAppExecutablePath,
+  processNameFromExecutablePath,
   type ArtAppId,
 } from '../shared/artApps'
 
@@ -13,6 +15,8 @@ export type ActivityTrackerConfig = {
   enabled: boolean
   trackedArtApps: ArtAppId[]
   idleTimeoutSec: number
+  /** Process name derived from user-selected .exe (when custom app is tracked). */
+  customArtAppProcessName?: string
 }
 
 export type ActivitySnapshot = {
@@ -74,6 +78,10 @@ Write-Output ("{0}|{1}" -f $proc, [math]::Floor($idleMs / 1000))
 `.trim()
 
 export function setActivityTrackerConfig(partial: Partial<ActivityTrackerConfig>): void {
+  const customProcessName =
+    partial.customArtAppProcessName !== undefined
+      ? partial.customArtAppProcessName
+      : config.customArtAppProcessName
   config = {
     enabled: partial.enabled ?? config.enabled,
     trackedArtApps: partial.trackedArtApps
@@ -83,6 +91,15 @@ export function setActivityTrackerConfig(partial: Partial<ActivityTrackerConfig>
       typeof partial.idleTimeoutSec === 'number' && partial.idleTimeoutSec >= 10
         ? Math.min(600, Math.floor(partial.idleTimeoutSec))
         : config.idleTimeoutSec,
+    customArtAppProcessName: customProcessName,
+  }
+}
+
+export function setCustomArtAppExecutablePath(exePath: string | undefined): void {
+  const normalized = normalizeCustomArtAppExecutablePath(exePath)
+  config = {
+    ...config,
+    customArtAppProcessName: normalized ? processNameFromExecutablePath(normalized) : undefined,
   }
 }
 
@@ -107,7 +124,7 @@ function buildSnapshot(processName: string, idleSec: number): ActivitySnapshot {
     }
   }
 
-  const artAppActive = isTrackedArtProcess(processName, config.trackedArtApps)
+  const artAppActive = isTrackedArtProcess(processName, config.trackedArtApps, config.customArtAppProcessName)
   const userActive = idleSec < config.idleTimeoutSec
   const shouldCountTime = artAppActive && userActive
 

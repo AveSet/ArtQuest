@@ -8,6 +8,7 @@ import { isFundamentalsQuestId } from '@/data/fundamentalsExercises'
 import { isWarmupQuestId } from '@/data/warmupQuests'
 import { getQuestDisplayMinutes } from '@/utils/questSessionPlan'
 import { usePersonalizedQuestMinutes } from '@/utils/usePersonalizedQuestMinutes'
+import { useLastQuestCompletionMinutes } from '@/utils/useLastQuestCompletionMinutes'
 import { getQuestDescription, getDifficultyLabel } from '@/i18n'
 import { CATEGORY_INFO } from '@/data/skillTree'
 import FundamentalsBookPages from '@/components/Quest/FundamentalsBookPages'
@@ -66,6 +67,7 @@ export default function QuestDetailOverview({
   const isFundamentalsExercise = isFundamentals || isFundamentalsQuestId(quest.id)
   const isQuickSession = isWarmup || isFundamentalsExercise
   const personalized = usePersonalizedQuestMinutes(quest)
+  const lastCompletionMinutes = useLastQuestCompletionMinutes(quest.id)
   const displayMinutes = getQuestDisplayMinutes(quest, false, personalized?.minutes)
   const ytLabels = getReferenceYoutubeButtonLabels(lang)
   const fundamentalsExercise = isFundamentalsExercise
@@ -153,6 +155,14 @@ export default function QuestDetailOverview({
               </span>
             ) : null}
           </div>
+          {lastCompletionMinutes != null ? (
+            <div className="quest-detail-stat-pill panel-fantasy flex items-center gap-1.5 px-2.5 py-1.5 text-sm">
+              <span className="font-bold text-[var(--text-heading)]">{lastCompletionMinutes}</span>
+              <span className="meta-fantasy text-[10px]">
+                {t.quests.lastCompletionTimeLabel ?? 'Last'} {t.common.minutes}
+              </span>
+            </div>
+          ) : null}
           <details className="text-xs ml-auto">
             <summary className="cursor-pointer text-[var(--accent-hover)] font-medium">{t.quests.xpBreakdownTitle}</summary>
             <ul className="mt-1 space-y-0.5 text-[var(--text-muted)] list-disc pl-4 max-w-xs">

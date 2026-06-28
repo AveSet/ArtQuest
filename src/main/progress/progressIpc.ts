@@ -20,12 +20,11 @@ import { clearLocalUserData, getGalleryRoot } from '../localDb'
 import {
   rebuildProgressFromChunks,
   saveProgressSnapshot,
-  syncProgressChunksFromFull,
   loadProgressSnapshot,
   rebuildProgressFromChunksWithMeta,
   loadProgressChunksWithMeta,
   persistProgressChunkBatch,
-  runProgressTransaction,
+  saveFullProgressAtomic,
 } from '../db/progressRepository'
 import { backupCorruptProgress } from './corruptProgressBackup'
 import { isPathUnderRoot } from '../pathSafety'
@@ -195,10 +194,7 @@ function createWriteProgressFile(deps: ProgressIpcDeps) {
       }
 
       const saveAtMs = Date.now()
-      runProgressTransaction(() => {
-        syncProgressChunksFromFull(checked.data as Record<string, unknown>, saveAtMs)
-        saveProgressSnapshot(checked.data)
-      })
+      saveFullProgressAtomic(checked.data as Record<string, unknown>, saveAtMs)
       chunkSaveCount = 0
       lastFullSaveAtMs = saveAtMs
 
@@ -513,10 +509,7 @@ export function registerProgressIpcHandlers(deps: ProgressIpcDeps): void {
         return { success: false, error: 'Invalid progress file' }
       }
       const saveAtMs = Date.now()
-      runProgressTransaction(() => {
-        syncProgressChunksFromFull(checked.data as Record<string, unknown>, saveAtMs)
-        saveProgressSnapshot(checked.data)
-      })
+      saveFullProgressAtomic(checked.data as Record<string, unknown>, saveAtMs)
       return { success: true, data: pickLoadedProgressFields(checked.data) }
     } catch (e) {
       return { success: false, error: String(e) }

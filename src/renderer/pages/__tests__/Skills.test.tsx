@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { I18nProvider } from '@/i18n'
 import Skills from '../Skills'
@@ -26,8 +25,7 @@ beforeEach(() => {
 })
 
 describe('Skills page smoke', () => {
-  it('renders branch summary and canvas', async () => {
-    const user = userEvent.setup()
+  it('renders skill tree canvas without branch summary card', () => {
     render(
       <MemoryRouter>
         <I18nProvider>
@@ -36,9 +34,7 @@ describe('Skills page smoke', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getAllByText(/Recommended practice|Рекомендуемая тренировка/i).length).toBeGreaterThan(0)
     expect(document.querySelector('.skills-tree-canvas')).toBeTruthy()
-    expect(screen.getByRole('region', { name: 'Skill branch summary' })).toBeDefined()
-    await user.click(screen.getByRole('button', { name: /Need references\?|Нужны референсы\?/i }))
+    expect(screen.queryByRole('region', { name: 'Skill branch summary' })).toBeNull()
   })
 })

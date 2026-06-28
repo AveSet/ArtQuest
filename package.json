@@ -41,8 +41,7 @@
     "generate:micro-challenges": "tsx scripts/generate-micro-challenges.ts",
     "generate:mmo-quests": "tsx scripts/generate-mmo-quests.ts",
     "generate:youtube-quests": "tsx scripts/generate-youtube-quest-pack.ts",
-    "rebalance:mmo-quests": "tsx scripts/rebalance-mmo-quests.ts",
-    "build:rust": "node scripts/build-rust.mjs"
+    "rebalance:mmo-quests": "tsx scripts/rebalance-mmo-quests.ts"
   },
   "dependencies": {
     "react": "^19.2.7",

@@ -42,6 +42,7 @@ export type QuestDetailSubmitPanelProps = {
   sessionPhasesDone: boolean
   commentLabel: string
   commentPlaceholder: string
+  useFullReflection?: boolean
 }
 
 export default function QuestDetailSubmitPanel({
@@ -72,6 +73,7 @@ export default function QuestDetailSubmitPanel({
   sessionPhasesDone,
   commentLabel,
   commentPlaceholder,
+  useFullReflection = true,
 }: QuestDetailSubmitPanelProps) {
   return (
     <SubmitStepBackdrop open onDismiss={onDismiss}>
@@ -139,6 +141,7 @@ export default function QuestDetailSubmitPanel({
                   strengthRatings={strengthRatings}
                   language={language}
                   t={t}
+                  compact={!useFullReflection}
                   onDifficultyChange={onDifficultyChange}
                   onMistakeTagToggle={onMistakeTagToggle}
                   onStrengthRatingChange={onStrengthRatingChange}

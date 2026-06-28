@@ -46,6 +46,7 @@ const PRIVILEGED_IPC_CHANNELS = new Set([
   'artquest:v1:gallery:sync',
   'export-progress-file',
   'import-progress-file',
+  'pick-art-app-exe',
   'save-share-card-png',
   'app-before-quit-done',
   'artquest:v1:overlay:get-payload',

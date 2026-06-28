@@ -119,8 +119,6 @@ export default function QuestSessionCommandBridge() {
           navigate(`/quests/${activeSession.questId}`, {
             state: buildQuestDetailNavState(activeSession.questId),
           })
-        } else {
-          navigate('/')
         }
       }
     })

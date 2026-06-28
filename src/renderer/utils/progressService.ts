@@ -56,7 +56,11 @@ export async function saveProgressAsync(): Promise<ProgressSaveResult> {
   })
 }
 
-/** Blocking save — use only for beforeunload / app quit flush. */
+/**
+ * Blocking save — use only for beforeunload / app quit flush.
+ * Kept sync: progressLogPerformance benchmarks (5k–10k logs) stay under warn thresholds
+ * (see LOG_PERF_* in progressLogPerformance.test.ts).
+ */
 export function saveProgressSync(): ProgressSaveResult {
   try {
     const progressData = buildProgressData()

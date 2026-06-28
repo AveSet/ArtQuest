@@ -155,6 +155,7 @@ export default function QuestPhaseReferenceViewer({ questId, phaseKey }: Props) 
           accept="image/*"
           multiple
           className="sr-only"
+          aria-label={t.common.selectFile}
           onChange={(e) => {
             if (e.target.files?.length) void addFiles(e.target.files)
             e.target.value = ''
@@ -227,6 +228,7 @@ export default function QuestPhaseReferenceViewer({ questId, phaseKey }: Props) 
         accept="image/*"
         multiple
         className="sr-only"
+        aria-label={t.common.selectFile}
         onChange={(e) => {
           if (e.target.files?.length) void addFiles(e.target.files)
           e.target.value = ''
