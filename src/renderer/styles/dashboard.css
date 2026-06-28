@@ -76,6 +76,15 @@
     padding-bottom: 1rem;
   }
 
+  body:has(.dashboard-page) .app-main > .motion-page-enter,
+  body:has(.dashboard-page) .app-main > .motion-page-instant {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
   .dashboard-page {
     display: flex;
     flex-direction: column;

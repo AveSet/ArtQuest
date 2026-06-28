@@ -1050,7 +1050,17 @@ export function getFundamentalsTrackPhase(
   exercise: FundamentalsExercise,
   phaseIndex: number,
 ): FundamentalsTrackPhase | undefined {
-  return exercise.trackPhases?.[phaseIndex]
+  return findFundamentalsTrackPhase(exercise, phaseIndex)
+}
+
+function findFundamentalsTrackPhase(
+  exercise: Pick<FundamentalsExercise, 'trackPhases'>,
+  phaseIndex: number,
+): FundamentalsTrackPhase | undefined {
+  return (
+    exercise.trackPhases?.find((phase) => phase.phaseIndex === phaseIndex) ??
+    exercise.trackPhases?.[phaseIndex]
+  )
 }
 
 export function getFundamentalsQuestById(questId: number): FundamentalsExercise | undefined {
@@ -1072,7 +1082,7 @@ export function getFundamentalsPhaseSteps(
   phaseIndex: number,
   language: Language,
 ): string[] {
-  const phase = exercise.trackPhases?.[phaseIndex]
+  const phase = findFundamentalsTrackPhase(exercise, phaseIndex)
   if (!phase) return getFundamentalsExerciseSteps(exercise.id, language)
   return phase.steps.map((step) => pick(language, step))
 }
@@ -1090,7 +1100,7 @@ export function getFundamentalsBookPageNumbers(
   phaseIndex?: number,
 ): number[] {
   if (phaseIndex != null) {
-    const phase = exercise.trackPhases?.[phaseIndex]
+    const phase = findFundamentalsTrackPhase(exercise, phaseIndex)
     if (phase) return [...phase.bookPages]
   }
   return [...(exercise.bookPages ?? [])]

@@ -9,8 +9,8 @@ export const FUNDAMENTALS_BOOK_PAGES: Record<number, readonly number[]> = {
   4: [10], // 04. Parallel Ellipses
   5: [11], // 05. Ribbons
   6: [13], // 06. Extrusion
-  7: [15], // 07. Cube Grid
-  8: [18], // 08. Cylinders
+  7: [15, 16], // 07. Cube Grid + Expanded Cube Grid
+  8: [18, 19], // 08. Cylinders + Cylinder Variations
   9: [20], // 09. Rotating Forms
   10: [26], // 10. Box Stacking
   11: [28], // 11. Intersections
