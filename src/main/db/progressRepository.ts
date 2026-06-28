@@ -25,15 +25,37 @@ export function saveProgressSnapshot(payload: unknown): void {
   appendEvent('progress_saved', { updatedAt })
 }
 
-export function saveProgressChunk(chunkKey: string, data: Record<string, unknown>): void {
+export function getProgressChunkUpdatedAtMs(chunkKey: string): number | null {
+  const row = getDb()
+    .prepare('SELECT updated_at_ms FROM progress_chunk WHERE chunk_key = ?')
+    .get(chunkKey) as { updated_at_ms: number } | undefined
+  return row ? row.updated_at_ms : null
+}
+
+/** Returns true when the chunk was written; false when rejected as stale. */
+export function saveProgressChunk(
+  chunkKey: string,
+  data: Record<string, unknown>,
+  createdAtMs?: number,
+): boolean {
+  const updatedAtMs = createdAtMs ?? Date.now()
+  const existingMs = getProgressChunkUpdatedAtMs(chunkKey)
+  if (existingMs != null && updatedAtMs < existingMs) {
+    return false
+  }
   const updatedAt = nowIso()
   getDb()
     .prepare(
-      `INSERT INTO progress_chunk (chunk_key, payload_json, updated_at)
-       VALUES (?, ?, ?)
-       ON CONFLICT(chunk_key) DO UPDATE SET payload_json = excluded.payload_json, updated_at = excluded.updated_at`,
+      `INSERT INTO progress_chunk (chunk_key, payload_json, updated_at, updated_at_ms)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(chunk_key) DO UPDATE SET
+         payload_json = excluded.payload_json,
+         updated_at = excluded.updated_at,
+         updated_at_ms = excluded.updated_at_ms
+       WHERE excluded.updated_at_ms >= progress_chunk.updated_at_ms`,
     )
-    .run(chunkKey, JSON.stringify(data), updatedAt)
+    .run(chunkKey, JSON.stringify(data), updatedAt, updatedAtMs)
+  return true
 }
 
 export type ProgressChunksLoadResult = {
@@ -117,11 +139,29 @@ export function rebuildProgressFromChunks(): Record<string, unknown> | null {
   return rebuildProgressFromChunksWithMeta().merged
 }
 
-export function syncProgressChunksFromFull(payload: Record<string, unknown>): void {
+export function syncProgressChunksFromFull(
+  payload: Record<string, unknown>,
+  createdAtMs?: number,
+): void {
   const chunks = splitProgressIntoChunks(payload)
+  const ms = createdAtMs ?? Date.now()
   runTransaction(() => {
     for (const [key, data] of Object.entries(chunks)) {
-      saveProgressChunk(key, data)
+      saveProgressChunk(key, data, ms)
     }
   })
+}
+
+export function persistProgressChunkBatch(
+  entries: Array<{ _chunkKey: string; data: Record<string, unknown>; _createdAtMs?: number }>,
+): void {
+  runTransaction(() => {
+    for (const entry of entries) {
+      saveProgressChunk(entry._chunkKey, entry.data, entry._createdAtMs)
+    }
+  })
+}
+
+export function runProgressTransaction(fn: () => void): void {
+  runTransaction(fn)
 }

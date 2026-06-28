@@ -129,17 +129,17 @@ export function restoreQuestSession(
   if (isRunning) {
     const offlineSec = Math.floor((Date.now() - savedAtMs) / 1000)
 
-    if (!isExpired && !tracking && offlineSec > 0) {
+    if (!isExpired && offlineSec > 0) {
       const before = remainingSec
       remainingSec = Math.max(0, before - offlineSec)
-      if (session.phases.length > 0 && !session.phasesComplete) {
+      if (!tracking && session.phases.length > 0 && !session.phasesComplete) {
         session = applyOfflinePhases(session, offlineSec)
       }
       if (remainingSec <= 0) {
         remainingSec = 0
         isExpired = true
         const overflow = Math.max(0, offlineSec - before)
-        overtimeElapsedSec = overflow
+        overtimeElapsedSec += overflow
       }
     } else if (isExpired && offlineSec > 0) {
       overtimeElapsedSec += offlineSec

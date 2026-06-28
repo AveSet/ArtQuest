@@ -4,7 +4,7 @@ import { useUIStore } from '@/store/useUIStore'
 import { useQuestSessionStore, type QuestSession } from '@/store/useQuestSessionStore'
 import { useSkillPracticeStore, type SkillPracticeSession } from '@/store/useSkillPracticeStore'
 import { usePortraitStore } from '@/store/usePortraitStore'
-import { getDirtyChunks, markChunkDirty, saveDirtyChunks } from '@/utils/incrementalSave'
+import { markChunkDirty, saveDirtyChunks, clearDirtyChunks } from '@/utils/incrementalSave'
 import { questStoreSaveFingerprint } from '@/utils/questStoreSaveSlice'
 import { skillStoreSaveFingerprint } from '@/utils/skillStoreSaveSlice'
 import { uiStoreSaveFingerprint } from '@/utils/uiStoreSaveSlice'
@@ -54,10 +54,12 @@ function scheduleSave() {
       try {
         if (useFullSave) {
           await useUIStore.getState().saveProgress()
+          clearDirtyChunks()
         } else {
           const saved = await saveDirtyChunks()
           if (!saved) {
             await useUIStore.getState().saveProgress()
+            clearDirtyChunks()
           }
         }
       } catch (err) {
@@ -145,7 +147,6 @@ export function initAutoSave() {
       clearTimeout(saveTimer)
       saveTimer = null
     }
-    if (getDirtyChunks().length === 0) return
     try {
       useUIStore.getState().saveProgressSync()
     } catch (err) {
@@ -166,26 +167,13 @@ export function initAutoSave() {
     }
   }
 
-  const flushAsync = () => {
-    if (getDirtyChunks().length === 0) return
-    if (saveTimer) {
-      clearTimeout(saveTimer)
-      saveTimer = null
-    }
-    try {
-      void useUIStore.getState().saveProgress()
-    } catch (err) {
-      console.error('[autoSave] async flush failed:', err)
-    }
-  }
-
   const flushOnUnload = () => {
     flushSyncBeforeUnload()
   }
   window.addEventListener('beforeunload', flushOnUnload)
 
   const flushOnHidden = () => {
-    if (document.hidden) flushAsync()
+    if (document.hidden) flushSyncBeforeUnload()
   }
   document.addEventListener('visibilitychange', flushOnHidden)
 

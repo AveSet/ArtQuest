@@ -343,7 +343,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   closeQuestOverlay: async (): Promise<IpcResult> => {
     try {
-      return await ipcRenderer.invoke('artquest:v1:overlay:expand') as IpcResult;
+      return await ipcRenderer.invoke('artquest:v1:overlay:close') as IpcResult;
     } catch (err) {
       return { success: false, error: err };
     }

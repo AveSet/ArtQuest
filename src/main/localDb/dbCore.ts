@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 
-const CURRENT_SCHEMA_VERSION = 3
+const CURRENT_SCHEMA_VERSION = 4
 
 let db: DatabaseSync | null = null
 
@@ -133,9 +133,28 @@ function migrate(database: DatabaseSync): void {
     CREATE TABLE IF NOT EXISTS progress_chunk (
       chunk_key TEXT PRIMARY KEY,
       payload_json TEXT NOT NULL,
-      updated_at TEXT NOT NULL
+      updated_at TEXT NOT NULL,
+      updated_at_ms INTEGER NOT NULL DEFAULT 0
     );
   `)
+
+  if (current < 4) {
+    try {
+      database.exec('ALTER TABLE progress_chunk ADD COLUMN updated_at_ms INTEGER NOT NULL DEFAULT 0')
+    } catch {
+      // Column already exists.
+    }
+    const rows = database
+      .prepare('SELECT chunk_key, updated_at FROM progress_chunk')
+      .all() as { chunk_key: string; updated_at: string }[]
+    const updateMs = database.prepare(
+      'UPDATE progress_chunk SET updated_at_ms = ? WHERE chunk_key = ?',
+    )
+    for (const row of rows) {
+      const ms = Date.parse(row.updated_at)
+      updateMs.run(Number.isFinite(ms) ? ms : Date.now(), row.chunk_key)
+    }
+  }
 
   database
     .prepare(

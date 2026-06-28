@@ -6,12 +6,13 @@ export type CompressibleQuestCompletionLog = {
   nodeId: string
   practiceMinutes?: number
   notes?: string
+  status?: 'completed' | 'timeout'
 }
 
 /** Compact export format for large completion histories (import expands back to full logs). */
 export type CompressedCompletionLogsV1 = {
   v: 1
-  /** [questId, completedAt, xpEarned, difficulty, nodeId, practiceMinutes?, notes?] */
+  /** [questId, completedAt, xpEarned, difficulty, nodeId, practiceMinutes?, notes?, status?] */
   rows: Array<
     [
       number,
@@ -21,6 +22,7 @@ export type CompressedCompletionLogsV1 = {
       string,
       number?,
       string?,
+      ('completed' | 'timeout')?,
     ]
   >
 }
@@ -50,6 +52,7 @@ export function compressCompletionLogsForExport(
       log.nodeId,
       log.practiceMinutes,
       log.notes?.trim() ? log.notes : undefined,
+      log.status,
     ]),
   }
 }
@@ -70,7 +73,8 @@ export function expandCompressedCompletionLogs(
       typeof row[3] !== 'string' ||
       typeof row[4] !== 'string' ||
       (row[5] !== undefined && typeof row[5] !== 'number') ||
-      (row[6] !== undefined && typeof row[6] !== 'string')
+      (row[6] !== undefined && typeof row[6] !== 'string') ||
+      (row[7] !== undefined && row[7] !== 'completed' && row[7] !== 'timeout')
     ) {
       throw new Error('Malformed compressed completion log row')
     }
@@ -82,6 +86,7 @@ export function expandCompressedCompletionLogs(
       nodeId: row[4],
       practiceMinutes: typeof row[5] === 'number' ? row[5] : undefined,
       notes: typeof row[6] === 'string' ? row[6] : undefined,
+      status: row[7],
     })
   }
   return logs

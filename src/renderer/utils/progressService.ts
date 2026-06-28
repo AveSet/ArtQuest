@@ -7,6 +7,8 @@ import { devLog } from '@/utils/devLog'
 import { logProgressPayloadFootprint } from '@/utils/progressPayloadLog'
 import { buildProgressPayloadFromStores } from '@/utils/progressChunkBuilders'
 import { useQuestStore } from '@/store/useQuestStore'
+import { enqueueSave } from '@/utils/saveQueue'
+import { clearDirtyChunks } from '@/utils/incrementalSave'
 
 export type SaveErrorCode = 'save_failed' | 'storage_full' | 'invalid_data' | 'reset_failed'
 export type ProgressSaveResult = { ok: true } | { ok: false; error: SaveErrorCode }
@@ -28,26 +30,30 @@ export function buildProgressData(): ProgressPayload {
 }
 
 export async function saveProgressAsync(): Promise<ProgressSaveResult> {
-  try {
-    const progressData = buildProgressData()
-    logProgressPayloadFootprint('async', progressData)
+  return enqueueSave(async (): Promise<ProgressSaveResult> => {
+    try {
+      const progressData = buildProgressData()
+      logProgressPayloadFootprint('async', progressData)
 
-    if (window.electronAPI?.saveProgress) {
-      const result = await window.electronAPI.saveProgress(JSON.stringify(progressData))
-      if (result && !result.success) {
-        console.error('Failed to save progress:', result.error)
-        return { ok: false, error: 'save_failed' }
+      if (window.electronAPI?.saveProgress) {
+        const result = await window.electronAPI.saveProgress(JSON.stringify(progressData))
+        if (result && !result.success) {
+          console.error('Failed to save progress:', result.error)
+          return { ok: false, error: 'save_failed' }
+        }
+        clearDirtyChunks()
+        return { ok: true }
       }
+      if (!saveProgressToBrowser(progressData)) {
+        return { ok: false, error: 'storage_full' }
+      }
+      clearDirtyChunks()
       return { ok: true }
+    } catch (error) {
+      console.error('Failed to save progress:', error)
+      return { ok: false, error: 'save_failed' }
     }
-    if (!saveProgressToBrowser(progressData)) {
-      return { ok: false, error: 'storage_full' }
-    }
-    return { ok: true }
-  } catch (error) {
-    console.error('Failed to save progress:', error)
-    return { ok: false, error: 'save_failed' }
-  }
+  })
 }
 
 /** Blocking save — use only for beforeunload / app quit flush. */

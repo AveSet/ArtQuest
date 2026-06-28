@@ -8,4 +8,5 @@ export {
   pickLoadedProgressFields,
   progressPayloadSchema,
   LOADED_PROGRESS_FIELDS,
+  validateQuestCompletionLogsAppend,
 } from '../shared/progressSchema'

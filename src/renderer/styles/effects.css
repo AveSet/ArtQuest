@@ -693,8 +693,7 @@ html[data-motion='reduce'] .achievement-card--new-animate {
   cursor: grabbing;
 }
 
-.gallery-lightbox-zoom--panning .gallery-lightbox-zoom__stage img,
-.gallery-lightbox-zoom--panning .gallery-lightbox-zoom__stage video {
+.gallery-lightbox-zoom--dragging .gallery-lightbox-zoom__stage img {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;

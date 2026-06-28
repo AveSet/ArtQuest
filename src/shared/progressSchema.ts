@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { QUEST_SESSION_SHORTCUT_COMMANDS } from './questSessionShortcuts'
 
 /** Bump when saved shape changes; migrateProgressPayload handles older versions. */
-export const CURRENT_PROGRESS_SCHEMA_VERSION = 21
+export const CURRENT_PROGRESS_SCHEMA_VERSION = 22
 
 const questCategorySchema = z.enum([
   'drawing',
@@ -120,6 +120,7 @@ const questCompletionLogSchema = z.strictObject({
     category: z.string().optional(),
     notes: z.string().optional(),
     feedback: z.any().optional(),
+    status: z.enum(['completed', 'timeout']).optional(),
   })
 
 const materialCustomLinkSchema = z.strictObject({
@@ -507,6 +508,22 @@ function parseNestedPhaseMediaRecord(
   return out
 }
 
+function coerceCompletionLogStatuses(value: unknown): unknown {
+  if (!Array.isArray(value)) return value
+  return value.map((entry) => {
+    if (!isRecord(entry)) return entry
+    if (entry.status === 'timeout' || entry.status === 'completed') return entry
+    if (
+      entry.xpEarned === 0 &&
+      typeof entry.practiceMinutes === 'number' &&
+      entry.practiceMinutes > 0
+    ) {
+      return { ...entry, status: 'timeout' }
+    }
+    return entry
+  })
+}
+
 function parseMicroChallengesCompleted(value: unknown): Record<string, string[]> {
   if (!isRecord(value) || Array.isArray(value)) return {}
   const out: Record<string, string[]> = {}
@@ -614,7 +631,10 @@ export function migrateProgressPayload(raw: unknown): Record<string, unknown> {
   out.userQuests = parseArrayItems(raw.userQuests, userQuestSchema)
   out.questTitleOverrides = parseRecordItems(raw.questTitleOverrides, questTitleOverrideEntrySchema)
   out.completedWorks = parseArrayItems(raw.completedWorks, completedWorkSchema)
-  out.questCompletionLogs = parseArrayItems(raw.questCompletionLogs, questCompletionLogSchema)
+  out.questCompletionLogs = parseArrayItems(
+    coerceCompletionLogStatuses(raw.questCompletionLogs),
+    questCompletionLogSchema,
+  )
   out.microChallengesCompleted = parseMicroChallengesCompleted(raw.microChallengesCompleted)
   out.questSavedReferences = parseNestedReferenceRecord(raw.questSavedReferences)
   out.questPhaseMedia = parseNestedPhaseMediaRecord(raw.questPhaseMedia)
@@ -660,6 +680,19 @@ export function migrateProgressPayload(raw: unknown): Record<string, unknown> {
 export function parseProgressPayload(data: unknown) {
   const migrated = migrateProgressPayload(data)
   return progressPayloadSchema.safeParse(migrated)
+}
+
+/** Validate only newly appended completion logs (fast path for large histories). */
+export function validateQuestCompletionLogsAppend(
+  existing: unknown[],
+  incoming: unknown[],
+): boolean {
+  if (!Array.isArray(incoming) || incoming.length < existing.length) return false
+  for (let i = 0; i < existing.length; i++) {
+    if (JSON.stringify(existing[i]) !== JSON.stringify(incoming[i])) return false
+  }
+  const tail = incoming.slice(existing.length)
+  return tail.every((log) => questCompletionLogSchema.safeParse(log).success)
 }
 
 export type ProgressNormalizeFailureReason = 'invalid_input' | 'schema_failed'

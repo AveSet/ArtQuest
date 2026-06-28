@@ -10,7 +10,7 @@ import { computePlayerLevel, getPlayerRankKey } from '@/utils/playerLevel'
 
 import { generateShareCardPng, downloadShareCard } from '@/utils/shareCard'
 
-import { useMemo, useCallback, useRef, useState } from 'react'
+import { useMemo, useCallback, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { useI18n, getCategoryLabel } from '@/i18n'
@@ -165,7 +165,6 @@ const Dashboard = () => {
   const gateDailies = shouldGateDailiesForBeginner(experienceTier, fundamentalsProgress)
 
   const { action: nextBestAction, warmupAvailable, focusTags, weakestCriterion } = useNextBestAction()
-  const mainColumnRef = useRef<HTMLDivElement>(null)
   const [dailyPanelOpen, setDailyPanelOpen] = useState(true)
 
   const warmupQuest = useMemo(() => getWarmupQuestForDate(today), [today])
@@ -421,7 +420,7 @@ const Dashboard = () => {
           />
         </aside>
 
-        <div className="dashboard-layout__main" ref={mainColumnRef}>
+        <div className="dashboard-layout__main">
           <div className="lg:hidden">
             <DashboardProfilePanel
               variant="mobile"

@@ -256,7 +256,7 @@ export function finalizeQuestCompletion(input: FinalizeQuestCompletionInput): vo
     playSound('complete', input.rewardCategory)
   }
   runQuestCompletionEffects(input)
-  useUIStore.getState().saveProgressSync()
+  useUIStore.getState().saveProgress()
 }
 
 export type MicroChallengeCompletionOptions = {

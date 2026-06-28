@@ -1,8 +1,12 @@
 import { useUIStore } from '@/store/useUIStore'
 import { CURRENT_PROGRESS_SCHEMA_VERSION, parseProgressPayload } from '../../shared/progressSchema'
 import { mergeProgressChunks, type ProgressChunkKey } from '../../shared/progressChunkMerge'
-import { buildProgressChunkFromStores } from '@/utils/progressChunkBuilders'
+import {
+  buildProgressChunkFromSnapshot,
+  captureStoreSnapshot,
+} from '@/utils/progressChunkBuilders'
 import { saveProgressToBrowser, loadProgressFromBrowser } from '@/utils/browserProgress'
+import { enqueueSave } from '@/utils/saveQueue'
 
 export type ChunkKey = ProgressChunkKey
 
@@ -23,16 +27,12 @@ export function getDirtyChunks(): ChunkKey[] {
   return [...dirtyChunks]
 }
 
-function buildChunk(chunk: ChunkKey): Record<string, unknown> {
-  return buildProgressChunkFromStores(chunk)
-}
-
-function buildChunkPayload(chunk: ChunkKey, data: Record<string, unknown>): string {
+function buildChunkPayload(chunk: ChunkKey, data: Record<string, unknown>, createdAtMs: number): string {
   return JSON.stringify({
     _chunkKey: chunk,
     schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
     chunkVersion: 1,
-    _createdAtMs: Date.now(),
+    _createdAtMs: createdAtMs,
     data,
   })
 }
@@ -41,23 +41,28 @@ function reportChunkSaveError(): void {
   useUIStore.setState({ saveError: 'save_failed' })
 }
 
-export async function saveDirtyChunks(): Promise<boolean> {
+async function saveDirtyChunksInner(): Promise<boolean> {
   const chunks = getDirtyChunks()
   if (chunks.length === 0) return false
   const saveVersions = new Map(chunks.map((chunk) => [chunk, dirtyChunkVersions.get(chunk) ?? 0]))
   const createdAtMs = Date.now()
+  const snapshot = captureStoreSnapshot()
 
   const api = window.electronAPI
   if (api?.saveProgress) {
     const batch: Array<{ _chunkKey: ChunkKey; data: Record<string, unknown>; _createdAtMs: number }> = []
     for (const chunk of chunks) {
-      batch.push({ _chunkKey: chunk, data: buildChunk(chunk), _createdAtMs: createdAtMs })
+      batch.push({
+        _chunkKey: chunk,
+        data: buildProgressChunkFromSnapshot(chunk, snapshot),
+        _createdAtMs: createdAtMs,
+      })
     }
     if (batch.length === 0) return false
 
     const payload =
       batch.length === 1
-        ? buildChunkPayload(batch[0]!._chunkKey, batch[0]!.data)
+        ? buildChunkPayload(batch[0]!._chunkKey, batch[0]!.data, createdAtMs)
         : JSON.stringify({
             _chunkBatch: batch,
             schemaVersion: CURRENT_PROGRESS_SCHEMA_VERSION,
@@ -82,7 +87,7 @@ export async function saveDirtyChunks(): Promise<boolean> {
 
   const partial: Partial<Record<ChunkKey, Record<string, unknown>>> = {}
   for (const chunk of chunks) {
-    partial[chunk] = buildChunk(chunk)
+    partial[chunk] = buildProgressChunkFromSnapshot(chunk, snapshot)
   }
   const base = loadProgressFromBrowser() ?? {}
   const merged = mergeProgressChunks(partial, base)
@@ -103,4 +108,8 @@ export async function saveDirtyChunks(): Promise<boolean> {
   }
   useUIStore.setState({ saveError: null })
   return true
+}
+
+export function saveDirtyChunks(): Promise<boolean> {
+  return enqueueSave(() => saveDirtyChunksInner())
 }

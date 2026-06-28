@@ -6,6 +6,7 @@ import {
   normalizeProgressPayload,
   normalizeProgressPayloadResult,
   pickLoadedProgressFields,
+  validateQuestCompletionLogsAppend,
 } from '../progressSchema'
 import { mergeProgressChunks, splitProgressIntoChunks } from '../progressChunkMerge'
 
@@ -113,6 +114,75 @@ describe('progressSchema', () => {
     if (!parsed.success) return
     expect(parsed.data.skillNodes).toHaveLength(0)
     expect(parsed.data.questCompletionLogs).toHaveLength(0)
+  })
+
+  it('preserves timeout status on quest completion logs through save/load round-trip', () => {
+    const raw = {
+      questCompletionLogs: [
+        {
+          questId: 7,
+          nodeId: 'drawing_fundamentals',
+          completedAt: '2026-06-04T12:00:00.000Z',
+          xpEarned: 0,
+          difficulty: 'novice',
+          practiceMinutes: 12,
+          status: 'timeout',
+        },
+      ],
+    }
+    const parsed = parseProgressPayload(raw)
+    expect(parsed.success).toBe(true)
+    if (!parsed.success) return
+    expect(parsed.data.questCompletionLogs).toHaveLength(1)
+    expect(parsed.data.questCompletionLogs[0]?.status).toBe('timeout')
+  })
+
+  it('infers timeout status for legacy logs with zero xp and practice minutes', () => {
+    const raw = {
+      questCompletionLogs: [
+        {
+          questId: 7,
+          nodeId: 'drawing_fundamentals',
+          completedAt: '2026-06-04T12:00:00.000Z',
+          xpEarned: 0,
+          difficulty: 'novice',
+          practiceMinutes: 12,
+        },
+      ],
+    }
+    const parsed = parseProgressPayload(raw)
+    expect(parsed.success).toBe(true)
+    if (!parsed.success) return
+    expect(parsed.data.questCompletionLogs[0]?.status).toBe('timeout')
+  })
+
+  it('validateQuestCompletionLogsAppend accepts append-only tail', () => {
+    const existing = [
+      {
+        questId: 1,
+        nodeId: 'n1',
+        completedAt: '2026-06-01T12:00:00.000Z',
+        xpEarned: 10,
+        difficulty: 'novice' as const,
+      },
+    ]
+    const incoming = [
+      ...existing,
+      {
+        questId: 2,
+        nodeId: 'n2',
+        completedAt: '2026-06-02T12:00:00.000Z',
+        xpEarned: 5,
+        difficulty: 'novice' as const,
+      },
+    ]
+    expect(validateQuestCompletionLogsAppend(existing, incoming)).toBe(true)
+    expect(validateQuestCompletionLogsAppend(existing, existing)).toBe(true)
+    expect(
+      validateQuestCompletionLogsAppend(existing, [
+        { ...existing[0]!, xpEarned: 99 },
+      ]),
+    ).toBe(false)
   })
 
   it('preserves questSavedReferences through pickLoadedProgressFields', () => {

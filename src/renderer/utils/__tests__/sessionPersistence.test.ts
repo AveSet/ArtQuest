@@ -39,7 +39,7 @@ describe('sessionPersistence', () => {
     expect(restored?.isExpired).toBe(false)
   })
 
-  it('does not subtract offline time when activity tracking is enabled', () => {
+  it('subtracts offline elapsed time when activity tracking is enabled (matches live tick)', () => {
     useUIStore.setState({
       settings: { ...useUIStore.getState().settings, activityTrackingEnabled: true },
     } as Partial<ReturnType<typeof useUIStore.getState>>)
@@ -55,7 +55,7 @@ describe('sessionPersistence', () => {
       savedAtMs: savedAt,
       ...emptyPhases,
     })
-    expect(restored?.remainingSec).toBe(600)
+    expect(restored?.remainingSec).toBe(480)
   })
 
   it('enters overtime when offline time exceeds remaining (tracking off)', () => {

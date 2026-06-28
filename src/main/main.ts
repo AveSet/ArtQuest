@@ -1026,7 +1026,7 @@ function flushProgressBeforeQuit(): void {
     quitFlushTimeout = setTimeout(() => {
       console.warn('[quit] progress flush timed out — quitting anyway')
       completeQuitAfterFlush()
-    }, 3000)
+    }, 10_000)
   } catch (e) {
     console.warn('[quit] Failed to notify renderer before quit:', e)
     completeQuitAfterFlush()

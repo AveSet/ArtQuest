@@ -590,7 +590,9 @@ export const useQuestStore = create<QuestState>((set, get) => ({
       practiceMinutes,
       estimatedTime: quest.estimatedTime,
       isSpeedRun:
-        quest.estimatedTime > 0 && practiceMinutes < quest.estimatedTime / 2,
+        quest.estimatedTime > 0 &&
+        practiceMinutes > 0 &&
+        practiceMinutes < quest.estimatedTime / 2,
     })
     const skillXp = trackXp + nodeXp
     const logEntry = buildQuestTimeoutLogEntry(quest, questId, practiceMinutes, trackXp, nodeXp)

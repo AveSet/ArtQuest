@@ -70,4 +70,36 @@ describe('dailyQuestRotation', () => {
     expect(isBucketSaturated(logs, quests, bucketKey(quests[0]!))).toBe(true)
     expect(getDailyRotationWeight(quests[0]!, logs, quests)).toBe(1)
   })
+
+  it('timeout-only sibling does not saturate bucket or reset weights', () => {
+    const quests = [makeQuest(1), makeQuest(2), makeQuest(3)]
+    const logs: QuestCompletionLog[] = [
+      {
+        questId: 1,
+        nodeId: '',
+        completedAt: '2026-05-01T12:00:00.000Z',
+        xpEarned: 100,
+        difficulty: 'novice',
+      },
+      {
+        questId: 2,
+        nodeId: '',
+        completedAt: '2026-05-02T12:00:00.000Z',
+        xpEarned: 100,
+        difficulty: 'novice',
+      },
+      {
+        questId: 3,
+        nodeId: '',
+        completedAt: '2026-05-03T12:00:00.000Z',
+        xpEarned: 0,
+        difficulty: 'novice',
+        practiceMinutes: 15,
+        status: 'timeout',
+      },
+    ]
+    expect(isBucketSaturated(logs, quests, bucketKey(quests[0]!))).toBe(false)
+    expect(getDailyRotationWeight(quests[0]!, logs, quests)).toBe(0)
+    expect(getDailyRotationWeight(quests[2]!, logs, quests)).toBe(1)
+  })
 })

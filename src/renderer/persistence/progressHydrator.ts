@@ -155,7 +155,15 @@ export function hydrateStoresFromProgress(
   useQuestStore.setState(questPatch)
 
   if (data.completedQuests.length > 0) {
-    useQuestStore.setState({ completedQuests: data.completedQuests })
+    const catalog = useQuestStore.getState().catalogQuests
+    let completedQuests = data.completedQuests
+    if (catalog.length > 0) {
+      const repeatableIds = new Set(
+        catalog.filter((quest) => quest.is_repeatable).map((quest) => quest.id),
+      )
+      completedQuests = completedQuests.filter((id) => !repeatableIds.has(id))
+    }
+    useQuestStore.setState({ completedQuests })
   }
 
   const completedWorks = mergeGalleryWorks(data.completedWorks, savedImages)

@@ -68,6 +68,31 @@ describe('progressLogCompression', () => {
     ).toThrow(/both plain and compressed/)
   })
 
+  it('round-trips timeout status in compressed export logs', () => {
+    const logs = [
+      {
+        questId: 1,
+        nodeId: 'drawing_fundamentals',
+        completedAt: '2026-06-04T12:00:00.000Z',
+        xpEarned: 0,
+        difficulty: 'novice',
+        practiceMinutes: 10,
+        status: 'timeout' as const,
+      },
+    ]
+    const compressed = compressCompletionLogsForExport(logs)
+    const expanded = expandCompressedCompletionLogs(compressed)
+    expect(expanded[0]?.status).toBe('timeout')
+    const payload = expandPayloadCompletionLogs({
+      questCompletionLogsCompressed: compressed,
+      completedQuests: [],
+    })
+    const parsed = parseProgressPayload(payload)
+    expect(parsed.success).toBe(true)
+    if (!parsed.success) return
+    expect(parsed.data.questCompletionLogs[0]?.status).toBe('timeout')
+  })
+
   it('rejects unsupported compressed log versions', () => {
     expect(() =>
       expandPayloadCompletionLogs({

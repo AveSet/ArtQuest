@@ -14,16 +14,18 @@ import {
   normalizeProgressPayloadResult,
   parseProgressPayload,
   pickLoadedProgressFields,
+  validateQuestCompletionLogsAppend,
 } from '../progressSchema'
 import { clearLocalUserData, getGalleryRoot } from '../localDb'
 import {
   rebuildProgressFromChunks,
-  saveProgressChunk,
   saveProgressSnapshot,
   syncProgressChunksFromFull,
   loadProgressSnapshot,
   rebuildProgressFromChunksWithMeta,
   loadProgressChunksWithMeta,
+  persistProgressChunkBatch,
+  runProgressTransaction,
 } from '../db/progressRepository'
 import { backupCorruptProgress } from './corruptProgressBackup'
 import { isPathUnderRoot } from '../pathSafety'
@@ -115,13 +117,19 @@ function createWriteProgressFile(deps: ProgressIpcDeps) {
     }
 
     const { chunks: existingChunks } = loadProgressChunksWithMeta()
+    const snapshot = loadProgressSnapshot()
     const previewChunks: Partial<Record<ProgressChunkKey, Record<string, unknown>>> = {
       ...(existingChunks as Partial<Record<ProgressChunkKey, Record<string, unknown>>>),
     }
     for (const entry of freshEntries) {
       previewChunks[entry._chunkKey as ProgressChunkKey] = entry.data
     }
-    const preview = mergeProgressChunks(previewChunks, loadProgressSnapshot() ?? undefined)
+    const preview = mergeProgressChunks(previewChunks, snapshot ?? undefined)
+
+    if (tryFastValidateQuestsChunkAppend(freshEntries, existingChunks, snapshot)) {
+      return { success: true, entries: freshEntries }
+    }
+
     const checked = parseProgressPayload(preview)
     if (!checked.success) {
       const err = 'Invalid chunk merge (schema): ' + checked.error.message
@@ -138,9 +146,7 @@ function createWriteProgressFile(deps: ProgressIpcDeps) {
     if (!preview.success) return { success: false, error: preview.error }
     if (preview.entries.length === 0) return { success: true }
 
-    for (const entry of preview.entries) {
-      saveProgressChunk(entry._chunkKey, entry.data)
-    }
+    persistProgressChunkBatch(preview.entries)
     chunkSaveCount += preview.entries.length
     if (chunkSaveCount >= SNAPSHOT_EVERY_N_CHUNK_SAVES) {
       chunkSaveCount = 0
@@ -188,10 +194,13 @@ function createWriteProgressFile(deps: ProgressIpcDeps) {
         return { success: false, error: 'Data too large' }
       }
 
-      saveProgressSnapshot(checked.data)
+      const saveAtMs = Date.now()
+      runProgressTransaction(() => {
+        syncProgressChunksFromFull(checked.data as Record<string, unknown>, saveAtMs)
+        saveProgressSnapshot(checked.data)
+      })
       chunkSaveCount = 0
-      syncProgressChunksFromFull(checked.data as Record<string, unknown>)
-      lastFullSaveAtMs = Date.now()
+      lastFullSaveAtMs = saveAtMs
 
       const p = checked.data as Record<string, unknown>
       const debug = {
@@ -217,6 +226,58 @@ function createWriteProgressFile(deps: ProgressIpcDeps) {
       return { success: false, error: errMsg }
     }
   }
+}
+
+function tryFastValidateQuestsChunkAppend(
+  freshEntries: ProgressChunkWriteEntry[],
+  existingChunks: Record<string, Record<string, unknown>>,
+  snapshot: Record<string, unknown> | null,
+): boolean {
+  if (freshEntries.length !== 1) return false
+  const entry = freshEntries[0]
+  if (!entry || entry._chunkKey !== 'quests') return false
+
+  const existingQuests = existingChunks.quests ?? {}
+  const snapshotQuests = snapshot
+    ? {
+        userQuests: snapshot.userQuests,
+        deletedQuestIds: snapshot.deletedQuestIds,
+        questTitleOverrides: snapshot.questTitleOverrides,
+        completedQuests: snapshot.completedQuests,
+        questCompletionLogs: snapshot.questCompletionLogs,
+        microChallengesCompleted: snapshot.microChallengesCompleted,
+        questSavedReferences: snapshot.questSavedReferences,
+        questPhaseMedia: snapshot.questPhaseMedia,
+      }
+    : {}
+
+  const baseLogs = Array.isArray(existingQuests.questCompletionLogs)
+    ? existingQuests.questCompletionLogs
+    : Array.isArray(snapshotQuests.questCompletionLogs)
+      ? snapshotQuests.questCompletionLogs
+      : []
+
+  const incoming = entry.data
+  const questFieldKeys = [
+    'userQuests',
+    'deletedQuestIds',
+    'questTitleOverrides',
+    'completedQuests',
+    'questCompletionLogs',
+    'microChallengesCompleted',
+    'questSavedReferences',
+    'questPhaseMedia',
+  ] as const
+
+  for (const key of questFieldKeys) {
+    if (key === 'questCompletionLogs') continue
+    const existingVal = existingQuests[key] ?? snapshotQuests[key]
+    if (JSON.stringify(incoming[key]) !== JSON.stringify(existingVal)) return false
+  }
+
+  const incomingLogs = incoming.questCompletionLogs
+  if (!Array.isArray(incomingLogs)) return false
+  return validateQuestCompletionLogsAppend(baseLogs, incomingLogs)
 }
 
 export function registerProgressIpcHandlers(deps: ProgressIpcDeps): void {
@@ -451,8 +512,11 @@ export function registerProgressIpcHandlers(deps: ProgressIpcDeps): void {
       if (!checked.success) {
         return { success: false, error: 'Invalid progress file' }
       }
-      saveProgressSnapshot(checked.data)
-      syncProgressChunksFromFull(checked.data as Record<string, unknown>)
+      const saveAtMs = Date.now()
+      runProgressTransaction(() => {
+        syncProgressChunksFromFull(checked.data as Record<string, unknown>, saveAtMs)
+        saveProgressSnapshot(checked.data)
+      })
       return { success: true, data: pickLoadedProgressFields(checked.data) }
     } catch (e) {
       return { success: false, error: String(e) }
