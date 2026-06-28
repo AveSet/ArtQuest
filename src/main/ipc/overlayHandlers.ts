@@ -115,9 +115,25 @@ export function registerOverlayIpcHandlers(deps: OverlayIpcDeps): void {
       raw === null ||
       (raw as { hideMain?: boolean }).hideMain !== false
     const mainWindow = deps.getMainWindow()
-    if (mainWindow && !mainWindow.isDestroyed()) {
+    const cached = deps.getCachedPayload()
+    const cacheHasSession = cached.hasSession === true
+
+    if (!cacheHasSession && mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('artquest:v1:overlay:request-sync')
+      await new Promise<void>((resolve) => {
+        const timeout = setTimeout(resolve, 450)
+        const check = setInterval(() => {
+          if (deps.getCachedPayload().hasSession === true) {
+            clearInterval(check)
+            clearTimeout(timeout)
+            resolve()
+          }
+        }, 16)
+        setTimeout(() => clearInterval(check), 460)
+      })
     }
+
+    deps.pushPayload()
     deps.showOverlay(hideMain)
     deps.pushPayload()
     return { success: true }

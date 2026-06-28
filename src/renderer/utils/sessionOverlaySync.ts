@@ -275,6 +275,29 @@ export function resetSessionOverlaySyncCache(): void {
   lastSyncFingerprint = ''
 }
 
+/** Force-push full overlay payload (bypasses fingerprint dedup). Use before manual collapse. */
+export async function forceSyncSessionOverlayPayload(
+  language: Language,
+  t: TBundle,
+): Promise<boolean> {
+  const api = window.electronAPI
+  if (!api?.setQuestOverlayPayload) return false
+
+  resetSessionOverlaySyncCache()
+  lastSyncFingerprint = sessionOverlaySyncFingerprint()
+
+  const payload = buildSessionOverlayPayload(language, t)
+  if (!payload.hasSession) return false
+
+  const { timerLabel, ...stablePart } = payload
+  lastStableKey = JSON.stringify(stablePart)
+  lastTimerLabel = timerLabel ?? ''
+
+  void api.setSessionOverlayActive?.(true)
+  const result = await api.setQuestOverlayPayload(payload)
+  return result?.success !== false
+}
+
 export function sessionOverlayAutoExpandTarget(session: QuestSession | null): number | null {
   if (!session) return null
   const ready =

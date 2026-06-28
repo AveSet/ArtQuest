@@ -1,4 +1,5 @@
 import type { Quest, ReferenceSource } from '@/store/models'
+import { resolveQuestReferenceInput } from '@/utils/resolveQuestReferenceInput'
 
 export const REFERENCE_SOURCES: ReferenceSource[] = ['pinterest', 'youtube', 'artstation', 'google']
 
@@ -27,10 +28,12 @@ function stripReferenceIntent(query: string): string {
 }
 
 export function buildReferenceQuery(
-  quest: Pick<Quest, 'category' | 'tags' | 'referenceQuery'>,
+  quest: Pick<Quest, 'id' | 'category' | 'tags' | 'referenceQuery'>,
   source: ReferenceSource,
+  phaseIndex?: number,
 ): string {
-  const base = baseQuestTerms(quest)
+  const input = resolveQuestReferenceInput(quest, phaseIndex)
+  const base = baseQuestTerms(input)
   const subject = stripReferenceIntent(base) || base
 
   switch (source) {
@@ -39,10 +42,10 @@ export function buildReferenceQuery(
     case 'artstation':
       return normalizeQuery([subject, 'concept art illustration'])
     case 'google':
-      return quest.referenceQuery?.trim() || normalizeQuery([subject, 'art reference'])
+      return input.referenceQuery?.trim() || normalizeQuery([subject, 'art reference'])
     case 'pinterest':
     default:
-      return quest.referenceQuery?.trim() || normalizeQuery([subject, 'reference'])
+      return input.referenceQuery?.trim() || normalizeQuery([subject, 'reference'])
   }
 }
 

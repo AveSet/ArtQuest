@@ -658,6 +658,12 @@ export interface Translations {
     includeMediaExport?: string
     referenceSourceTitle?: string
     referenceSourceHint?: string
+    useGoogleForReferenceLogin?: string
+    useGoogleForReferenceLoginHint?: string
+    useGoogleForReferenceLoginBtn?: string
+    referencesSection?: string
+    appearanceSection?: string
+    dataSection?: string
   }
   onboarding: {
     welcomeTitle: string
@@ -1464,6 +1470,13 @@ export const translations: Record<Language, any> = {
       technicalSection: 'Technical',
       referenceSourceTitle: 'Default reference source',
       referenceSourceHint: 'The reference window opens with this source and remembers the last source you choose there.',
+      useGoogleForReferenceLogin: 'Use Google account for reference sites',
+      useGoogleForReferenceLoginHint:
+        'When Google Drive is connected, sign in to Pinterest and other reference sites with {email} via Google.',
+      useGoogleForReferenceLoginBtn: 'Sign in with Google ({email})',
+      referencesSection: 'References & materials',
+      appearanceSection: 'Appearance & sound',
+      dataSection: 'Data & sync',
       googleDrive: 'Google Drive',
       connectGoogle: 'Connect Google',
       disconnectGoogle: 'Disconnect',
@@ -2406,6 +2419,13 @@ export const translations: Record<Language, any> = {
       technicalSection: 'Технические настройки',
       referenceSourceTitle: 'Источник референсов по умолчанию',
       referenceSourceHint: 'Окно референсов открывается с этим источником и запоминает последний выбранный источник.',
+      useGoogleForReferenceLogin: 'Google-аккаунт для сайтов референсов',
+      useGoogleForReferenceLoginHint:
+        'Если Google Drive подключён, вход на Pinterest и другие сайты референсов через Google с аккаунтом {email}.',
+      useGoogleForReferenceLoginBtn: 'Войти через Google ({email})',
+      referencesSection: 'Референсы и материалы',
+      appearanceSection: 'Внешний вид и звук',
+      dataSection: 'Данные и синхронизация',
       googleDrive: 'Google Drive',
       connectGoogle: 'Подключить Google',
       disconnectGoogle: 'Отключить',

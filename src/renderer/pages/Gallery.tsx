@@ -324,88 +324,78 @@ const Gallery = () => {
   const visibleCount = flatWorks.length
   const toolbar = (
     <div className="gallery-toolbar card-fantasy px-4 py-3">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-              {t.nav.gallery}
-            </p>
-            <div className="text-xs text-[var(--text-muted)] lg:ml-2" aria-live="polite">
-              {visibleCount}
-            </div>
-          </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {(['grouped', 'grid', 'compact'] as ViewMode[]).map((mode) => {
+          const active = viewMode === mode
+          return (
+            <button
+              key={mode}
+              type="button"
+              className={`btn-primary text-xs py-1.5 px-3 ${active ? '' : 'opacity-70 hover:opacity-100'}`}
+              aria-pressed={active}
+              onClick={() => setViewMode(mode)}
+            >
+              {mode === 'grouped'
+                ? t.gallery.viewGrouped
+                : mode === 'grid'
+                  ? t.gallery.viewGrid
+                  : t.gallery.viewCompact}
+            </button>
+          )
+        })}
 
-          <div className="flex flex-wrap gap-2">
-            {(['grouped', 'grid', 'compact'] as ViewMode[]).map((mode) => {
-              const active = viewMode === mode
-              return (
-                <button
-                  key={mode}
-                  type="button"
-                  className={`btn-primary text-xs py-1.5 px-3 ${active ? '' : 'opacity-70 hover:opacity-100'}`}
-                  aria-pressed={active}
-                  onClick={() => setViewMode(mode)}
-                >
-                  {mode === 'grouped'
-                    ? t.gallery.viewGrouped
-                    : mode === 'grid'
-                      ? t.gallery.viewGrid
-                      : t.gallery.viewCompact}
-                </button>
-              )
-            })}
-          </div>
-        </div>
+        <div className="hidden sm:block w-px h-6 bg-[var(--border-secondary)] mx-1" aria-hidden />
 
-        <div className="flex flex-wrap gap-2 lg:justify-end">
-          <input
-            type="search"
-            className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-3 py-1.5 min-w-[12rem] flex-1 sm:flex-none"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t.gallery.searchPlaceholder ?? 'Search works, tags, notes'}
-            aria-label={t.gallery.searchAria ?? 'Search gallery'}
-          />
-          <button
-            type="button"
-            className={`text-xs rounded-lg border px-3 py-1.5 ${favoriteOnly ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent-hover)]' : 'border-[var(--border-secondary)] text-[var(--text-secondary)]'}`}
-            aria-pressed={favoriteOnly}
-            onClick={() => setFavoriteOnly((v) => !v)}
-          >
-            {t.gallery.favoritesOnly ?? 'Favorites'}
-          </button>
-          <select
-            className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-2 py-1.5"
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value as 'all' | QuestCategory)}
-            aria-label={t.gallery.filterAllCategories}
-          >
-            <option value="all">{t.gallery.filterAllCategories}</option>
-            {(Object.keys(CATEGORY_INFO) as QuestCategory[]).map((cat) => (
-              <option key={cat} value={cat}>
-                {getCategoryLabel(cat, language)}
-              </option>
-            ))}
-          </select>
-          <select
-            className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-2 py-1.5"
-            value={sortScope}
-            onChange={(e) => setSortScope(e.target.value as SortScope)}
-            aria-label={t.gallery.scopeAllTime}
-          >
-            <option value="all">{t.gallery.scopeAllTime}</option>
-            <option value="day">{t.gallery.scopeToday}</option>
-          </select>
-          <select
-            className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-2 py-1.5"
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-            aria-label={t.gallery.sortNewest}
-          >
-            <option value="newest">{t.gallery.sortNewest}</option>
-            <option value="oldest">{t.gallery.sortOldest}</option>
-          </select>
-        </div>
+        <input
+          type="search"
+          className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-3 py-1.5 min-w-[10rem] flex-1 sm:flex-none sm:min-w-[12rem]"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t.gallery.searchPlaceholder ?? 'Search works, tags, notes'}
+          aria-label={t.gallery.searchAria ?? 'Search gallery'}
+        />
+        <button
+          type="button"
+          className={`text-xs rounded-lg border px-3 py-1.5 ${favoriteOnly ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent-hover)]' : 'border-[var(--border-secondary)] text-[var(--text-secondary)]'}`}
+          aria-pressed={favoriteOnly}
+          onClick={() => setFavoriteOnly((v) => !v)}
+        >
+          {t.gallery.favoritesOnly ?? 'Favorites'}
+        </button>
+        <select
+          className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-2 py-1.5"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value as 'all' | QuestCategory)}
+          aria-label={t.gallery.filterAllCategories}
+        >
+          <option value="all">{t.gallery.filterAllCategories}</option>
+          {(Object.keys(CATEGORY_INFO) as QuestCategory[]).map((cat) => (
+            <option key={cat} value={cat}>
+              {getCategoryLabel(cat, language)}
+            </option>
+          ))}
+        </select>
+        <select
+          className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-2 py-1.5"
+          value={sortScope}
+          onChange={(e) => setSortScope(e.target.value as SortScope)}
+          aria-label={t.gallery.scopeAllTime}
+        >
+          <option value="all">{t.gallery.scopeAllTime}</option>
+          <option value="day">{t.gallery.scopeToday}</option>
+        </select>
+        <select
+          className="text-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-2 py-1.5"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+          aria-label={t.gallery.sortNewest}
+        >
+          <option value="newest">{t.gallery.sortNewest}</option>
+          <option value="oldest">{t.gallery.sortOldest}</option>
+        </select>
+        <span className="text-xs text-[var(--text-muted)] ml-auto" aria-live="polite">
+          {visibleCount}
+        </span>
       </div>
     </div>
   )

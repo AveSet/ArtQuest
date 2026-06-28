@@ -669,7 +669,7 @@ const Skills = () => {
                           {window.electronAPI && isSessionWidgetModeEnabled() ? (
                             <button
                               type="button"
-                              onClick={() => collapseSessionToOverlay()}
+                              onClick={() => void collapseSessionToOverlay()}
                               className="btn-secondary w-full py-2 text-sm"
                             >
                               {t.skills.collapseToWidget}

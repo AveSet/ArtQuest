@@ -54,7 +54,8 @@ describe('Settings page smoke', () => {
       </I18nProvider>,
     )
 
-    await user.click(await screen.findByText('🗑️'))
+    await user.click(await screen.findByRole('tab', { name: /Technical/i }))
+    await user.click(await screen.findByRole('button', { name: /Reset Progress/i }))
 
     expect(await screen.findByRole('alertdialog')).toBeDefined()
     expect(await screen.findByText(/reset all progress\?/i)).toBeDefined()

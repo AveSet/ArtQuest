@@ -18,7 +18,7 @@
 
 .nav-fantasy-inner {
   width: 100%;
-  max-width: 1200px;
+  max-width: min(96vw, 1400px);
   margin: 0 auto;
   display: flex;
   align-items: center;

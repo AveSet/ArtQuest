@@ -26,6 +26,7 @@
 @import './theme-unified-layout.css';
 @import './portrait.css';
 @import './dashboard.css';
+@import './reference-materials.css';
 @import './studio-theme.css';
 @import './ritual-effects.css';
 
@@ -91,12 +92,18 @@ html[data-motion='reduce'] {
 }
 
 .app-main {
-  max-width: 1200px;
+  max-width: min(96vw, 1400px);
   margin: 0 auto;
   padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 1.25rem;
   padding-bottom: max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 3.25rem));
+}
+
+@media (min-width: 1600px) {
+  .app-main {
+    max-width: min(94vw, 1600px);
+  }
 }
 
 @media (min-width: 640px) {

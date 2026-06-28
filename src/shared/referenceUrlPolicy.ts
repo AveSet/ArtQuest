@@ -7,6 +7,8 @@ export const REFERENCE_ALLOWED_HOST_SUFFIXES = [
   'artstation.com',
   'google.com',
   'googleusercontent.com',
+  'accounts.google.com',
+  'gstatic.com',
   'sketchfab.com',
   'clip-studio.com',
 ] as const

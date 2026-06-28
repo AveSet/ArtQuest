@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { SKILL_TREE_NODES, type QuestCategory } from '@/data/skillTree'
 import {
@@ -37,6 +37,14 @@ function excludeShortsFromLongCatalog(rows: VideoResource[]): VideoResource[] {
 import { youtubeThumbnailUrl, youtubeWatchUrl } from '@/utils/youtubeLinks'
 import { buildCompositeMaterialSearchQuery } from '@/utils/materialTagSearchQueries'
 import type { Language } from '@/i18n/translations'
+import { initViewportHeightSync } from '@/utils/viewportHeight'
+import {
+  bindReferenceGoogleLoginOnDomReady,
+  triggerReferenceGoogleLogin,
+  type ReferenceWebviewEl,
+} from '@/utils/referenceGoogleLogin'
+
+const REFERENCE_WEBVIEW_PARTITION = 'persist:artquest-reference'
 
 const REFERENCE_SOURCE_STORAGE_KEY = 'artquest:preferredReferenceSource'
 
@@ -108,6 +116,25 @@ export default function ReferenceMaterialsWindow() {
   const [sourceUrls, setSourceUrls] = useState<Partial<Record<ReferenceSource, string>>>({})
   const [visitedSources, setVisitedSources] = useState<ReferenceSource[]>([initialSource])
   const [isPaneLoading, setIsPaneLoading] = useState(true)
+  const webviewRefs = useRef<Partial<Record<ReferenceSource, ReferenceWebviewEl | null>>>({})
+  const useGoogleForReferenceLogin = useUIStore((s) => s.settings.useGoogleForReferenceLogin)
+  const [googleAccountEmail, setGoogleAccountEmail] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!useGoogleForReferenceLogin || !window.electronAPI?.getGoogleDriveStatus) return
+    let cancelled = false
+    void window.electronAPI.getGoogleDriveStatus().then((result) => {
+      if (cancelled) return
+      if (result?.success && result.account?.connected && result.account.accountEmail) {
+        setGoogleAccountEmail(result.account.accountEmail)
+      } else {
+        setGoogleAccountEmail(null)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [useGoogleForReferenceLogin])
 
   useEffect(() => {
     setSelectedSource(initialSource)
@@ -155,12 +182,14 @@ export default function ReferenceMaterialsWindow() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-reference-window', '1')
+    const stopVh = initViewportHeightSync()
     const unsub = window.electronAPI?.onReferenceWindowNavigate?.((url) => {
       setPlayingId(null)
       setSourceUrls((prev) => ({ ...prev, [selectedSource]: url }))
     })
     return () => {
       document.documentElement.removeAttribute('data-reference-window')
+      stopVh()
       unsub?.()
     }
   }, [selectedSource])
@@ -250,6 +279,12 @@ export default function ReferenceMaterialsWindow() {
 
   const paneUrl = selectedSource === 'youtube' && playingId ? youtubeWatchUrl(playingId) : defaultSiteUrl
   const externalSiteOnly = selectedSource !== 'youtube'
+  const googleLoginEnabled = Boolean(useGoogleForReferenceLogin && googleAccountEmail)
+
+  useEffect(() => {
+    const webview = webviewRefs.current[selectedSource]
+    return bindReferenceGoogleLoginOnDomReady(webview, selectedSource, googleLoginEnabled)
+  }, [googleAccountEmail, googleLoginEnabled, selectedSource, paneUrl])
 
   const selectSource = (source: ReferenceSource) => {
     if (source === selectedSource) return
@@ -262,13 +297,10 @@ export default function ReferenceMaterialsWindow() {
   }
 
   return (
-    <div className="reference-materials-window min-h-screen flex flex-col bg-[var(--bg-deep)] text-[var(--text-primary)]">
-      <header className="shrink-0 px-4 py-2.5 border-b border-[var(--border-secondary)] bg-[var(--bg-secondary)]">
-        <h1 className="text-base font-bold text-[var(--text-heading)]">
-          {t.resources.refWindowTitle ?? 'Materials'} — {sourceLabel[selectedSource]}
-        </h1>
+    <div className="reference-materials-window">
+      <header className="reference-toolbar">
         <div
-          className="mt-2 flex gap-1.5 overflow-x-auto pb-1"
+          className="reference-toolbar__sources"
           role="tablist"
           aria-label={t.resources.referenceSourceSelector ?? 'Reference source'}
         >
@@ -278,7 +310,7 @@ export default function ReferenceMaterialsWindow() {
               type="button"
               role="tab"
               aria-selected={selectedSource === source}
-              className={`btn-secondary shrink-0 text-xs px-2.5 py-1.5 transition-opacity ${
+              className={`btn-secondary reference-toolbar__source-btn transition-opacity ${
                 selectedSource === source ? 'border-[var(--accent)] text-[var(--accent)]' : ''
               }`}
               onClick={() => selectSource(source)}
@@ -287,17 +319,17 @@ export default function ReferenceMaterialsWindow() {
             </button>
           ))}
         </div>
-        <div className="mt-2 flex gap-2">
+        <div className="reference-toolbar__search-row">
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t.resources.refWindowSearchPlaceholder ?? 'Search topic…'}
-            className="flex-1 min-w-0 rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-primary)] px-3 py-1.5 text-sm"
+            className="reference-toolbar__search"
           />
           <button
             type="button"
-            className="btn-secondary text-xs px-2.5 shrink-0"
+            className="btn-secondary reference-toolbar__action"
             onClick={() => {
               setPlayingId(null)
               setSourceUrls((prev) => ({ ...prev, [selectedSource]: defaultSiteUrl }))
@@ -307,31 +339,47 @@ export default function ReferenceMaterialsWindow() {
           </button>
           <button
             type="button"
-            className="btn-secondary text-xs px-2.5 shrink-0"
+            className="btn-secondary reference-toolbar__action"
             onClick={() => void window.electronAPI?.openExternal?.(paneUrl)}
           >
             {t.resources.refWindowOpenExternal ?? 'Open externally'}
           </button>
+          {googleLoginEnabled && selectedSource === 'pinterest' ? (
+            <button
+              type="button"
+              className="btn-secondary reference-google-login-btn"
+              onClick={() =>
+                triggerReferenceGoogleLogin(
+                  webviewRefs.current.pinterest,
+                  'pinterest',
+                  googleLoginEnabled,
+                )
+              }
+            >
+              {t.settings.useGoogleForReferenceLoginBtn?.replace('{email}', googleAccountEmail ?? '') ??
+                `Google (${googleAccountEmail})`}
+            </button>
+          ) : null}
         </div>
-        {tagOptions.length > 0 ? (
-          <div className="mt-2">
-            <label className="flex flex-col gap-1 text-xs font-semibold text-[var(--text-muted)]">
-              {t.resources.refWindowTags ?? 'Tags'}
-              <TagFilterCombobox
-                value={activeTag}
-                options={tagOptions}
-                allTagsLabel={t.resources.refWindowAll ?? t.resources.allTags}
-                placeholder={t.resources.refWindowAll ?? t.resources.allTags}
-                onChange={setActiveTag}
-              />
-            </label>
-          </div>
-        ) : null}
       </header>
 
-      <div className={`flex flex-1 min-h-0 flex-col${externalSiteOnly ? '' : ' lg:flex-row'}`}>
+      <div
+        className={`reference-materials-body${externalSiteOnly ? '' : ' reference-materials-body--split'}`}
+      >
         {!externalSiteOnly ? (
-          <div className="w-full lg:w-[min(100%,380px)] shrink-0 overflow-y-auto border-b lg:border-b-0 lg:border-r border-[var(--border-secondary)] p-2 space-y-1.5 max-h-[38vh] lg:max-h-none">
+          <div className="reference-youtube-sidebar space-y-1.5">
+            {tagOptions.length > 0 ? (
+              <label className="flex flex-col gap-1 text-xs font-semibold text-[var(--text-muted)] mb-1">
+                {t.resources.refWindowTags ?? 'Tags'}
+                <TagFilterCombobox
+                  value={activeTag}
+                  options={tagOptions}
+                  allTagsLabel={t.resources.refWindowAll ?? t.resources.allTags}
+                  placeholder={t.resources.refWindowAll ?? t.resources.allTags}
+                  onChange={setActiveTag}
+                />
+              </label>
+            ) : null}
             {catalogLoading && ctx.mode === 'long' ? (
               <p className="text-sm text-[var(--text-muted)]">{t.resources.refWindowLoading ?? 'Loading…'}</p>
             ) : null}
@@ -371,15 +419,20 @@ export default function ReferenceMaterialsWindow() {
           </div>
         ) : null}
 
-        <div className={`flex-1 min-w-0 flex flex-col bg-[var(--bg-primary)]${externalSiteOnly ? ' min-h-0' : ' min-h-[42vh]'}`}>
+        <div className="reference-webview-pane">
           {paneUrl ? (
-            <div className="relative flex-1 min-h-[280px]">
+            <div className="reference-webview-pane__inner">
               {visitedSources.map((source) => {
                 const url = source === selectedSource ? paneUrl : sourceUrls[source]
                 if (!url) return null
                 return (
                   <webview
                     key={source}
+                    ref={(el) => {
+                      webviewRefs.current[source] = el as ReferenceWebviewEl | null
+                    }}
+                    // eslint-disable-next-line react/no-unknown-property -- Electron webview attribute
+                    partition={REFERENCE_WEBVIEW_PARTITION}
                     src={url}
                     className={`absolute inset-0 w-full h-full${source === selectedSource ? '' : ' hidden'}`}
                   />

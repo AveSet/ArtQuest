@@ -297,7 +297,8 @@ export async function connectGoogleDrive(): Promise<{ success: true; account: Cl
     if (!clientId) {
       return {
         success: false,
-        error: 'Google Drive OAuth is not configured. Set ARTQUEST_GOOGLE_CLIENT_ID for Windows builds.',
+        error:
+          'Google Drive OAuth is not configured. Copy .env.example to .env, set ARTQUEST_GOOGLE_CLIENT_ID (and secret for desktop clients), then rebuild the app.',
       }
     }
     if (!safeStorage.isEncryptionAvailable()) {

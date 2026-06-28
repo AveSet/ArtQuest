@@ -1,17 +1,20 @@
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { config as loadEnv } from 'dotenv'
 import { resolve } from 'path'
+
+loadEnv()
 
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
     define: {
       'process.env.ARTQUEST_GOOGLE_CLIENT_ID': JSON.stringify(
-        process.env.ARTQUEST_GOOGLE_CLIENT_ID ?? '',
+        process.env.ARTQUEST_GOOGLE_CLIENT_ID ?? process.env.VITE_ARTQUEST_GOOGLE_CLIENT_ID ?? '',
       ),
       'process.env.ARTQUEST_GOOGLE_CLIENT_SECRET': JSON.stringify(
-        process.env.ARTQUEST_GOOGLE_CLIENT_SECRET ?? '',
+        process.env.ARTQUEST_GOOGLE_CLIENT_SECRET ?? process.env.VITE_ARTQUEST_GOOGLE_CLIENT_SECRET ?? '',
       ),
     },
   },

@@ -1,7 +1,13 @@
 .container-fantasy {
-  max-width: 1120px;
+  max-width: min(96vw, 1400px);
   margin: 0 auto;
   padding: 0 1rem 2rem;
+}
+
+@media (min-width: 1600px) {
+  .container-fantasy {
+    max-width: min(94vw, 1600px);
+  }
 }
 
 @media (min-width: 640px) {

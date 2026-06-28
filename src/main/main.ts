@@ -677,9 +677,22 @@ function buildReferenceMaterialsRoute(params: ReferenceWindowOpenParams): string
   return `/reference-materials${qs ? `?${qs}` : ''}`
 }
 
+function getReferenceWindowSize(): { width: number; height: number } {
+  const { width: workW, height: workH } = screen.getPrimaryDisplay().workAreaSize
+  return {
+    width: Math.min(Math.max(640, Math.round(workW * 0.82)), workW - 24),
+    height: Math.min(Math.max(480, Math.round(workH * 0.85)), workH - 24),
+  }
+}
+
 function createReferenceWindow(params: ReferenceWindowOpenParams): BrowserWindow {
+  const refSize = getReferenceWindowSize()
   if (referenceWindow && !referenceWindow.isDestroyed()) {
     loadRendererRoute(referenceWindow, buildReferenceMaterialsRoute(params))
+    const bounds = referenceWindow.getBounds()
+    if (bounds.width < 720 || bounds.height < 540) {
+      referenceWindow.setBounds({ ...bounds, width: refSize.width, height: refSize.height })
+    }
     referenceWindow.center()
     referenceWindow.show()
     referenceWindow.focus()
@@ -687,8 +700,8 @@ function createReferenceWindow(params: ReferenceWindowOpenParams): BrowserWindow
   }
 
   referenceWindow = new BrowserWindow({
-    width: 960,
-    height: 720,
+    width: refSize.width,
+    height: refSize.height,
     center: true,
     minWidth: 640,
     minHeight: 480,
@@ -896,8 +909,8 @@ function getDefaultWindowSize(): { width: number; height: number } {
   const { width: workW, height: workH } = screen.getPrimaryDisplay().workAreaSize
   const marginX = 32
   const marginY = 12
-  const desiredWidth = 1280
-  const desiredHeight = 1180
+  const desiredWidth = Math.round(workW * 0.9)
+  const desiredHeight = Math.round(workH * 0.92)
   return {
     width: Math.min(desiredWidth, Math.max(800, workW - marginX)),
     height: Math.min(desiredHeight, Math.max(720, workH - marginY)),

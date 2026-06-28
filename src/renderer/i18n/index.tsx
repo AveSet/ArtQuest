@@ -13,7 +13,7 @@ const I18nContext = createContext<I18nContextType | null>(null)
 
 const translationCache = new Map<Language, Translations>()
 
-function createTranslationFallback(lang: Language): Translations {
+export function createTranslationFallback(lang: Language): Translations {
   const cached = translationCache.get(lang)
   if (cached) return cached
 
@@ -64,6 +64,12 @@ export function useI18n() {
     throw new Error('useI18n must be used within I18nProvider')
   }
   return context
+}
+
+/** Read current language + merged translations outside React render. */
+export function getI18nFromStore(): { language: Language; t: Translations } {
+  const language = (useUIStore.getState().settings.language || 'en') as Language
+  return { language, t: createTranslationFallback(language) }
 }
 
 export function getCategoryLabel(category: string, lang: Language): string {

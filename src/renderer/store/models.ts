@@ -294,6 +294,8 @@ export interface Settings {
   energyMode?: 'short' | 'medium' | 'long'
   /** Default source for the dedicated quest reference window. */
   preferredReferenceSource?: ReferenceSource
+  /** Use connected Google account for Google SSO on reference sites (Pinterest, etc.). */
+  useGoogleForReferenceLogin?: boolean
   /** Ambient loop character */
   ambientPreset?: 'rain' | 'cafe' | 'fireplace' | 'studio' | 'quiet' | 'rpg'
   /** Solo chapter progress (personal arc) */
@@ -376,6 +378,7 @@ export const DEFAULT_SETTINGS: Settings = {
   experienceTier: 'beginner',
   energyMode: 'medium',
   preferredReferenceSource: 'pinterest',
+  useGoogleForReferenceLogin: false,
   ambientPreset: 'rain',
   weeklyMinutesGoal: 120,
 }

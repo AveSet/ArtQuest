@@ -1,5 +1,6 @@
 import { app, shell, type Session, type WebContents } from 'electron'
 import { validateReferenceNavigationUrl } from '../shared/referenceUrlPolicy'
+import { getCloudAccount } from './localDb'
 
 function isDevSession(): boolean {
   return !app.isPackaged
@@ -55,7 +56,25 @@ export function hardenReferenceWebviewContents(parentContents: WebContents): voi
     })
 
     guest.on('will-navigate', (event, url) => {
-      const checked = validateReferenceNavigationUrl(url)
+      let targetUrl = url
+      try {
+        const parsed = new URL(url)
+        const host = parsed.hostname.toLowerCase()
+        if (host === 'accounts.google.com' || host.endsWith('.accounts.google.com')) {
+          const account = getCloudAccount('google')
+          if (account?.connected && account.accountEmail && !parsed.searchParams.has('login_hint')) {
+            parsed.searchParams.set('login_hint', account.accountEmail)
+            targetUrl = parsed.toString()
+            event.preventDefault()
+            void guest.loadURL(targetUrl)
+            return
+          }
+        }
+      } catch {
+        /* ignore malformed url */
+      }
+
+      const checked = validateReferenceNavigationUrl(targetUrl)
       if (!checked.ok) {
         event.preventDefault()
       }

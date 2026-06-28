@@ -25,10 +25,19 @@ describe('buildReferenceQuery', () => {
 
   it('uses explicit referenceQuery as the Pinterest query', () => {
     expect(buildReferenceQuery({
+      id: 1,
       category: 'drawing',
       tags: ['plants'],
       referenceQuery: 'flat color fill plants reference',
     }, 'pinterest')).toBe('flat color fill plants reference')
+  })
+
+  it('uses fundamentals phase reference query for track quests', () => {
+    expect(buildReferenceQuery({
+      id: 96001,
+      category: 'drawing',
+      tags: ['fundamentals', 'book-25', 'track', 'novice'],
+    }, 'google', 0)).toBe('Straights and Curves lines drawing reference')
   })
 
   it('builds source-specific URLs', () => {

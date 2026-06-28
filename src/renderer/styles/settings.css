@@ -2,10 +2,60 @@
 
 .settings-page {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  max-width: min(96vw, 900px) !important;
+}
+
+.settings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.settings-tab-btn {
+  flex: 1 1 10rem;
+  min-width: 0;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.settings-tab-btn:hover {
+  border-color: var(--gold-dark);
+}
+
+.settings-tab-btn--active {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.settings-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .settings-section.card-fantasy {
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 0.875rem;
 }
 
 .settings-group-heading {

@@ -111,7 +111,7 @@ export default function QuestDetailFocusSession({
   return (
     <div
       className={`container-fantasy mx-auto quest-session-page quest-session-page--active${
-        useSessionHeroLayout ? ' quest-session-page--fundamentals-media' : ' max-w-2xl'
+        useSessionHeroLayout ? ' quest-session-page--fundamentals-media' : ''
       }`}
     >
       <div

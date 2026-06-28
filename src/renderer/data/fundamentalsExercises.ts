@@ -27,6 +27,10 @@ export type FundamentalsTrackPhase = {
   bookPages: number[]
   estimatedTime: number
   xp: number
+  /** English search query for reference panels (phase title + topic tags). */
+  referenceQuery: string
+  /** Topic tags for reference search (excludes book/track meta tags). */
+  topicTags: string[]
 }
 
 export type FundamentalsExercise = Quest & {
@@ -54,6 +58,24 @@ type ExerciseSpec = {
 }
 
 const SOURCE = 'David Petrov — 25 Drawing Exercises'
+
+const FUNDAMENTALS_META_TAGS = new Set([
+  'fundamentals',
+  'book-25',
+  'track',
+  'novice',
+  'medium',
+  'drawing',
+])
+
+function fundamentalsTopicTags(tags: string[]): string[] {
+  return tags.filter((tag) => !FUNDAMENTALS_META_TAGS.has(tag))
+}
+
+function fundamentalsReferenceQuery(titleEn: string, tags: string[]): string {
+  const topicTags = fundamentalsTopicTags(tags)
+  return [titleEn, ...topicTags, 'drawing reference'].join(' ').replace(/\s+/g, ' ').trim()
+}
 
 const SPECS: ExerciseSpec[] = [
   {
@@ -838,6 +860,7 @@ function pick(lang: Language, row: I18n): string {
 }
 
 function buildTrackPhase(spec: ExerciseSpec, phaseIndex: number): FundamentalsTrackPhase {
+  const topicTags = fundamentalsTopicTags(spec.tags)
   return {
     phaseIndex,
     bookOrder: spec.bookOrder,
@@ -847,6 +870,8 @@ function buildTrackPhase(spec: ExerciseSpec, phaseIndex: number): FundamentalsTr
     bookPages: getFundamentalsBookPagesForOrder(spec.bookOrder),
     estimatedTime: spec.estimatedTime,
     xp: spec.xp,
+    referenceQuery: fundamentalsReferenceQuery(spec.title.en, spec.tags),
+    topicTags,
   }
 }
 
@@ -914,6 +939,7 @@ function buildFundamentalsExercises(): FundamentalsExercise[] {
 
   const advancedQuests: FundamentalsExercise[] = advancedSpecs.map((spec, index) => {
     const id = FUNDAMENTALS_ADVANCED_ID_MIN + index
+    const topicTags = fundamentalsTopicTags(spec.tags)
     return {
       id,
       code: `FUN-${String(spec.bookOrder).padStart(5, '0')}`,
@@ -928,6 +954,7 @@ function buildFundamentalsExercises(): FundamentalsExercise[] {
       color: '#8b5cf6',
       min_level: 1,
       tags: spec.tags,
+      referenceQuery: fundamentalsReferenceQuery(spec.title.en, spec.tags),
       prerequisites: [],
       medium: 'both',
       is_repeatable: true,

@@ -474,7 +474,7 @@ const QuestDetail = () => {
 
   const handleCollapseToWidget = useCallback(() => {
     playUiClick()
-    collapseSessionToOverlay()
+    void collapseSessionToOverlay()
   }, [])
 
   const handleAppendUploadedFiles = useCallback((fileArr: File[]) => {

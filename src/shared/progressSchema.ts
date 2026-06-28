@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { QUEST_SESSION_SHORTCUT_COMMANDS } from './questSessionShortcuts'
 
 /** Bump when saved shape changes; migrateProgressPayload handles older versions. */
-export const CURRENT_PROGRESS_SCHEMA_VERSION = 20
+export const CURRENT_PROGRESS_SCHEMA_VERSION = 21
 
 const questCategorySchema = z.enum([
   'drawing',
@@ -230,6 +230,8 @@ const settingsSchema = z.object({
     artIdleTimeoutSec: z.int().min(10).max(600).optional(),
     experienceTier: z.enum(['beginner', 'intermediate', 'advanced']).optional().default('beginner'),
     preferredReferenceSource: referenceSourceSchema.optional().default('pinterest'),
+    /** When true and Google Drive is connected, reference webviews use Google SSO with that account. */
+    useGoogleForReferenceLogin: z.boolean().optional().default(false),
   })
 
 const streakStateSchema = z.strictObject({
@@ -383,6 +385,7 @@ const DEFAULT_SETTINGS: z.infer<typeof settingsSchema> = {
   theme: 'light',
   experienceTier: 'beginner',
   preferredReferenceSource: 'pinterest',
+  useGoogleForReferenceLogin: false,
 }
 
 const DEFAULT_STREAK: z.infer<typeof streakStateSchema> = {
@@ -585,6 +588,9 @@ export function migrateProgressPayload(raw: unknown): Record<string, unknown> {
   }
   if (!referenceSourceSchema.safeParse(partialSettings.preferredReferenceSource).success) {
     partialSettings.preferredReferenceSource = DEFAULT_SETTINGS.preferredReferenceSource
+  }
+  if (typeof partialSettings.useGoogleForReferenceLogin !== 'boolean') {
+    partialSettings.useGoogleForReferenceLogin = DEFAULT_SETTINGS.useGoogleForReferenceLogin
   }
 
   out.activeQuestSession =

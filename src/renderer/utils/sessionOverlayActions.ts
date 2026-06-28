@@ -1,10 +1,20 @@
+import { getI18nFromStore } from '@/i18n'
+import { forceSyncSessionOverlayPayload } from '@/utils/sessionOverlaySync'
+
 export function isSessionWidgetModeEnabled(): boolean {
   return typeof window !== 'undefined' && Boolean(window.electronAPI)
 }
 
 /** Show session PiP widget and hide the main window (manual collapse only). */
-export function collapseSessionToOverlay(): void {
-  void window.electronAPI?.openSessionOverlay?.({ hideMain: true })
+export async function collapseSessionToOverlay(): Promise<void> {
+  const api = window.electronAPI
+  if (!api?.openSessionOverlay) return
+
+  const { language, t } = getI18nFromStore()
+  const synced = await forceSyncSessionOverlayPayload(language, t)
+  if (!synced) return
+
+  await api.openSessionOverlay({ hideMain: true })
 }
 
 /** Hide floating overlay without restoring the main window. */
