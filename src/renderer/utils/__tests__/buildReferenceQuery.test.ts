@@ -68,8 +68,10 @@ describe('buildReferenceQuery', () => {
     expect(buildReferenceSourceUrl('google', 'plants reference')).toBe(
       'https://images.google.com/search?tbm=isch&q=plants%20reference',
     )
+    expect(buildReferenceSourceUrl('youtube', 'gesture tutorial')).toContain('search_query=gesture')
+    expect(buildReferenceSourceUrl('youtube', 'gesture tutorial')).toContain('sp=EgIQAQ%3D%3D')
     expect(buildReferenceSourceUrl('youtube_short', 'gesture')).toBe(
-      'https://www.youtube.com/results?search_query=gesture%20%23shorts',
+      'https://www.youtube.com/results?search_query=gesture&sp=EgIYAQ%3D%3D',
     )
     expect(buildReferenceSourceUrl('clipTips', 'line art')).toBe(
       'https://tips.clip-studio.com/en-us/search?word=line%20art',

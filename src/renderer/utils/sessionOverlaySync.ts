@@ -190,6 +190,9 @@ export function syncSessionOverlayTimerOnly(language: Language, t: TBundle): voi
   const shouldCountTime = useActivityStore.getState().shouldCountTime
   if (!session && !practiceSession) return
 
+  const quests = useQuestStore.getState().quests
+  const quest = session ? resolveQuestById(session.questId, quests) : undefined
+
   const nextTimer = session
     ? session.isExpired
       ? formatOvertimeElapsed(session.overtimeElapsedSec ?? 0)
@@ -202,7 +205,7 @@ export function syncSessionOverlayTimerOnly(language: Language, t: TBundle): voi
   void api.overlay.setPatch({
     timerLabel: nextTimer,
     phaseLabel: session
-      ? getCurrentPhaseLabel(session, undefined, language, t.quests.referencePhaseLabel)
+      ? getCurrentPhaseLabel(session, quest, language, t.quests.referencePhaseLabel)
       : (t.skills.activePractice ?? t.skills.start_practice),
     isRunning: session?.isRunning ?? Boolean(practiceSession),
     isExpired: session?.isExpired ?? false,

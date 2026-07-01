@@ -529,7 +529,7 @@ export const zh = {
     "vfxQualityEnhanced": "增强",
     "disableSessionTimers": "禁用会话计时器",
     "disableSessionTimersHint": "暂停任务和技能练习的倒计时。按自己的节奏完成练习。",
-    "tourAndResetSection": "导览与重置",
+    "tourAndResetSection": "完整导览与进度重置",
     "showWelcomeTipsAgain": "再次显示欢迎提示",
     "fullAppTour": "完整的应用程序导览",
     "theme": "主题",

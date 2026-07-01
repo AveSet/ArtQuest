@@ -147,18 +147,6 @@ export default function NextBestActionCard({
           <h3 className="quest-card-title">{primaryTitle()}</h3>
           {action.primary.quest && renderQuestMeta(action.primary.quest)}
           <div className="flex flex-wrap gap-2 mt-3">
-            {action.primary.quest && (
-              <button
-                type="button"
-                className="btn-secondary flex-1 min-w-[8rem]"
-                onClick={() => {
-                  playUiClick()
-                  navigate(`/quests/${action.primary.quest!.id}`)
-                }}
-              >
-                {t.common.details}
-              </button>
-            )}
             <button type="button" className="btn-primary flex-1 min-w-[8rem]" onClick={handlePrimary}>
               {action.primary.kind === 'warmup'
                 ? (t.dashboard.nextActionStartWarmup ?? t.common.startQuest)

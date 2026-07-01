@@ -1495,7 +1495,7 @@ export const translations: Record<Language, any> = {
       disableSessionTimers: 'Disable session timers',
       disableSessionTimersHint:
         'Pause countdown timers for quests and skill practice. Finish at your own pace without time pressure.',
-      tourAndResetSection: 'Tour & reset',
+      tourAndResetSection: 'Full tour and progress reset',
       showWelcomeTipsAgain: 'Show welcome tips again',
       fullAppTour: 'Full app tour',
       theme: 'Theme',
@@ -2473,7 +2473,7 @@ export const translations: Record<Language, any> = {
       disableSessionTimers: 'Отключить таймеры',
       disableSessionTimersHint:
         'Остановить обратный отсчёт в квестах и тренировках навыков. Завершайте практику в своём темпе.',
-      tourAndResetSection: 'Тур и сброс',
+      tourAndResetSection: 'Полный тур и сброс Прогресса',
       showWelcomeTipsAgain: 'Показать приветствие снова',
       fullAppTour: 'Полный тур по приложению',
       theme: 'Тема',

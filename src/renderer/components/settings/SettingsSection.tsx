@@ -27,7 +27,7 @@ export default function SettingsSection({
         data-onboarding={onboardingId}
       >
         <h2 className={`settings-section-title${compact ? '' : ' mb-2'}`}>{title}</h2>
-        <div className={compact ? 'settings-collapse__content space-y-2' : 'space-y-2'}>{children}</div>
+        <div className="space-y-2">{children}</div>
       </div>
     )
   }

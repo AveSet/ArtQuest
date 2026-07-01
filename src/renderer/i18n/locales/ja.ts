@@ -529,7 +529,7 @@ export const ja = {
     "vfxQualityEnhanced": "強化",
     "disableSessionTimers": "セッションタイマーを無効化",
     "disableSessionTimersHint": "クエストとスキル練習のカウントダウンを停止し、自分のペースで進められます。",
-    "tourAndResetSection": "ツアーとリセット",
+    "tourAndResetSection": "フルツアーと進捗リセット",
     "showWelcomeTipsAgain": "ウェルカムヒントを再度表示する",
     "fullAppTour": "完全なアプリツアー",
     "theme": "テーマ",

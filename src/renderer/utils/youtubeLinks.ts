@@ -47,6 +47,17 @@ export function youtubeSearchUrl(query: string): string {
   return u.toString()
 }
 
+/**
+ * YouTube search URL filtered to regular videos (excludes Shorts shelf).
+ * Uses the public "Video" type filter on results pages.
+ */
+export function youtubeLongSearchUrl(query: string): string {
+  const u = new URL('https://www.youtube.com/results')
+  u.searchParams.set('search_query', query)
+  u.searchParams.set('sp', 'EgIQAQ==')
+  return u.toString()
+}
+
 export function formatTimestamp(startSec: number): string {
   const s = Math.max(0, Math.floor(startSec))
   const m = Math.floor(s / 60)

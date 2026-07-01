@@ -529,7 +529,7 @@ export const zhTw: Translations = {
     "vfxQualityEnhanced": "增強",
     "disableSessionTimers": "停用工作階段計時器",
     "disableSessionTimersHint": "暫停任務與技能練習的倒數計時，依自己的步調完成。",
-    "tourAndResetSection": "導覽與重設",
+    "tourAndResetSection": "完整導覽與進度重設",
     "showWelcomeTipsAgain": "再次顯示歡迎提示",
     "fullAppTour": "完整的應用程序導覽",
     "theme": "主題",

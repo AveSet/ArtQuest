@@ -5,6 +5,7 @@ import {
   clipStudioTipsSearchUrl,
   sketchfabSearchUrl,
 } from '@/utils/materialExternalCatalog'
+import { youtubeLongSearchUrl, youtubeShortsSearchUrl } from '@/utils/youtubeLinks'
 import { EXTERNAL_MATERIAL_SEARCH_LANG } from '@/utils/materialTagSearchQueries'
 
 export const REFERENCE_SOURCES: ReferenceSource[] = [
@@ -89,9 +90,9 @@ export function buildReferenceSourceUrl(source: ReferenceSource, query: string):
   const trimmed = query.trim()
   switch (normalized) {
     case 'youtube':
-      return `https://www.youtube.com/results?search_query=${encodeURIComponent(trimmed)}`
+      return youtubeLongSearchUrl(trimmed)
     case 'youtube_short':
-      return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${trimmed} #shorts`)}`
+      return youtubeShortsSearchUrl(trimmed)
     case 'sketchfab':
       return sketchfabSearchUrl(trimmed)
     case 'clipTips':

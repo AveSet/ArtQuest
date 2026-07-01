@@ -123,7 +123,6 @@ export default function QuestPhaseReferenceViewer({ questId, phaseKey }: Props) 
   const hint =
     t.quests.phaseMediaHint ??
     'Add reference images or GIFs for this phase — scroll to switch, they stay saved for next time.'
-  const addLabel = t.quests.phaseMediaAdd ?? '🖼 Add reference'
   const dropLabel = t.quests.phaseMediaDrop ?? 'Drop image or GIF here, or click to choose'
 
   if (entries.length === 0) {
@@ -213,15 +212,6 @@ export default function QuestPhaseReferenceViewer({ questId, phaseKey }: Props) 
           ))}
         </div>
       ) : null}
-      <div className="quest-phase-reference__actions">
-        <button
-          type="button"
-          className="btn-secondary text-xs py-1 px-2"
-          onClick={() => inputRef.current?.click()}
-        >
-          {addLabel}
-        </button>
-      </div>
       <input
         ref={inputRef}
         type="file"

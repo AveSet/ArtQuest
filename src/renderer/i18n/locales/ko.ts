@@ -529,7 +529,7 @@ export const ko = {
     "vfxQualityEnhanced": "향상",
     "disableSessionTimers": "세션 타이머 끄기",
     "disableSessionTimersHint": "퀘스트와 스킬 연습의 카운트다운을 멈춥니다. 자신의 속도로 마무리하세요.",
-    "tourAndResetSection": "투어 및 초기화",
+    "tourAndResetSection": "전체 투어 및 진행 초기화",
     "showWelcomeTipsAgain": "환영 팁 다시 표시",
     "fullAppTour": "전체 앱 둘러보기",
     "theme": "주제",

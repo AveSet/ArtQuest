@@ -4,12 +4,23 @@ html[data-overlay-window='1'] #root {
   margin: 0;
   padding: 0;
   height: auto;
-  min-height: 0;
-  background: var(--bg-primary);
-  background-image: none;
+  min-height: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  background-attachment: initial !important;
   overflow: hidden;
-  border-radius: 20px;
   box-sizing: border-box;
+}
+
+html.light[data-overlay-window='1'] body,
+html.dark[data-overlay-window='1'] body,
+html[data-theme='modern'][data-overlay-window='1'] body,
+html[data-theme='rpg'][data-overlay-window='1'] body,
+html.studio-theme[data-overlay-window='1'] body {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
 .quest-overlay-shell {
@@ -18,9 +29,7 @@ html[data-overlay-window='1'] #root {
   height: auto;
   padding: 0;
   color: var(--text-primary);
-  background: var(--bg-primary);
-  border-radius: 20px;
-  overflow: hidden;
+  background: transparent;
 }
 
 .quest-overlay-card {

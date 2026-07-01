@@ -31,7 +31,7 @@ import {
   youtubeWatchUrl,
   youtubeShortsUrl,
   youtubeThumbnailUrl,
-  youtubeSearchUrl,
+  youtubeLongSearchUrl,
   youtubeShortsSearchUrl,
   parseYoutubeIdFromUrl,
 } from '@/utils/youtubeLinks'
@@ -956,14 +956,14 @@ export default function Resources() {
                   onClick={() => {
                     const url =
                       videoLengthMode === 'short'
-                        ? youtubeShortsSearchUrl(`${q} #shorts`)
+                        ? youtubeShortsSearchUrl(q)
                         : videoLengthMode === 'clipTips'
                           ? clipStudioTipsSearchUrl(q)
                           : videoLengthMode === 'sketchfab'
                             ? sketchfabSearchUrl(q)
                             : videoLengthMode === 'pinterest'
                               ? pinterestSearchUrl(q)
-                              : youtubeSearchUrl(q)
+                              : youtubeLongSearchUrl(q)
                     void openExternalUrl(url)
                   }}
                 >
