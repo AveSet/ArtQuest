@@ -72,8 +72,8 @@ export function useQuestSubmit() {
           const base64 = await readFileAsDataURL(file)
           const mediaType = mediaKindFromPath(file.name || base64)
           const api = window.electronAPI
-          if (api?.saveImage) {
-            const result = await api.saveImage(base64, String(questId))
+          if (api?.gallery?.saveImage) {
+            const result = await api.gallery.saveImage(base64, String(questId))
             if (result.success && result.path) {
               const storageMode = (result.storageMode ?? 'local') as StorageMode
               const meta = {

@@ -34,6 +34,25 @@ describe('adaptiveDifficulty', () => {
     const m = computeFlowMetrics([], [])
     expect(m.completionRate).toBe(1)
     expect(m.recentTrend).toBe('stable')
+    expect(m.observationCount).toBe(0)
+  })
+
+  it('uses actual sample size for completionRate on small samples', () => {
+    const quests = [baseQuest(1, 'novice', 30)]
+    const logs: QuestCompletionLog[] = [
+      {
+        questId: 1,
+        nodeId: '',
+        completedAt: new Date().toISOString(),
+        xpEarned: 50,
+        difficulty: 'novice',
+        practiceMinutes: 15,
+      },
+    ]
+    const m = computeFlowMetrics(logs, quests)
+    expect(m.observationCount).toBe(1)
+    expect(m.completionRate).toBe(1)
+    expect(getRecommendedDifficultyShift(m)).toBe(0)
   })
 
   it('computes average time ratio from logs', () => {
@@ -59,6 +78,7 @@ describe('adaptiveDifficulty', () => {
       averageTimeRatio: 1.8,
       averageDifficultyRating: 4.5,
       recentTrend: 'declining' as const,
+      observationCount: 8,
     }
     expect(getRecommendedDifficultyShift(metrics)).toBe(-1)
     const mult = getDifficultyMultipliers(weights, metrics)
@@ -72,6 +92,7 @@ describe('adaptiveDifficulty', () => {
       averageTimeRatio: 1.2,
       averageDifficultyRating: 4,
       recentTrend: 'declining' as const,
+      observationCount: 6,
     }
     const next = updateAdaptiveWeights(weights, metrics)
     expect(next.perspective).toBeLessThan(weights.perspective!)

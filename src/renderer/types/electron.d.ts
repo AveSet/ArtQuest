@@ -83,6 +83,7 @@ export type SessionOverlayPayload = {
     clipTips: string
     sketchfab: string
     next: string
+    references?: string
     submit?: string
     expand: string
     collapse?: string
@@ -110,59 +111,113 @@ export type ReferenceWindowParams = {
   source?: ReferenceSource
 }
 
-export interface ElectronAPI {
-  /** True when foreground art-app / idle detection runs natively (Windows only). */
-  activityTrackingNative: boolean
-  saveProgress: (data: string) => Promise<IpcResult>
-  saveProgressSync: (data: string) => IpcResult
-  loadProgress: () => Promise<LoadProgressResult>
-  readCorruptProgressBackup: (
+export interface GallerySyncResult {
+  success: boolean
+  requeued?: number
+  migrated?: number
+  uploaded?: number
+  failed?: number
+  downloaded?: number
+  linked?: number
+  lastError?: string | null
+  needsScopeReconnect?: boolean
+  error?: string
+}
+
+export interface ProgressNamespace {
+  save: (data: string) => Promise<IpcResult>
+  saveSync: (data: string) => IpcResult
+  load: () => Promise<LoadProgressResult>
+  readCorruptBackup: (
     backupPath: string,
   ) => Promise<{ success: true; data: Record<string, unknown> } | { success: false; error: string }>
-  clearProgress: () => Promise<IpcResult>
-  saveImage: (base64: string, questId: string) => Promise<
-    IpcResult & { path?: string; galleryItemId?: string; syncStatus?: string; storageMode?: string }
-  >
-  saveQuestReference: (base64: string, questId: string) => Promise<IpcResult & { id?: string; path?: string }>
-  deleteQuestReference: (filePath: string) => Promise<IpcResult>
-  getSavedImages: () => Promise<SavedImage[]>
-  readImage: (filepath: string) => Promise<string | null>
-  getLocalMediaUrl: (filepath: string) => Promise<string | null>
-  pickPortraitImage: () => Promise<{ success: boolean; dataUrl?: string; error?: unknown }>
-  saveCustomAvatar: (base64: string) => Promise<IpcResult & { path?: string }>
-  syncDesktopSettings: (payload: Record<string, unknown>) => Promise<void>
-  pickArtAppExecutable: () => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: unknown }>
-  showTestNotification: (payload: { title: string; body: string }) => Promise<{ success: boolean }>
-  dispatchQuestSessionCommand: (command: QuestSessionCommand) => Promise<IpcResult>
-  onQuestSessionCommand: (handler: (command: QuestSessionCommand) => void) => () => void
-  setQuestOverlayPayload: (payload: SessionOverlayPayload) => Promise<IpcResult>
-  setQuestOverlayPatch: (patch: SessionOverlayPatch) => Promise<IpcResult>
-  setOverlayLayout: (opts: {
+  clear: () => Promise<IpcResult>
+  exportFile: (jsonPayload: string) => Promise<{ success: boolean; path?: string; error?: string }>
+  importFile: () => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+  appendLog: (entry: Record<string, unknown>) => Promise<IpcResult>
+  onBeforeQuit: (handler: () => void | Promise<void>) => () => void
+}
+
+export interface ShellNamespace {
+  showItemInFolder: (filePath: string) => Promise<void>
+  openExternal: (url: string) => Promise<{ success: boolean; error?: unknown }>
+  saveShareCardPng: (
+    base64Data: string,
+    filename: string,
+  ) => Promise<{ success: boolean; path?: string; error?: string }>
+}
+
+export interface OverlayNamespace {
+  setPayload: (payload: SessionOverlayPayload) => Promise<IpcResult>
+  setPatch: (patch: SessionOverlayPatch) => Promise<IpcResult>
+  setLayout: (opts: {
     sessionType?: 'quest' | 'practice'
     refsOpen?: boolean
     contentHeight?: number
   }) => Promise<IpcResult>
-  setSessionOverlayActive: (active: boolean) => Promise<IpcResult>
-  openSessionOverlay: (opts?: { hideMain?: boolean }) => Promise<IpcResult>
-  hideSessionOverlay: () => Promise<IpcResult>
-  expandQuestOverlay: () => Promise<IpcResult>
-  cancelQuestOverlay: () => Promise<IpcResult>
-  toggleQuestOverlay: () => Promise<IpcResult>
-  /** @deprecated Use expandQuestOverlay */
-  closeQuestOverlay: () => Promise<IpcResult>
-  getQuestOverlaySnapshot: () => SessionOverlayPayload
-  getQuestOverlayPayload: () => Promise<{
+  setSessionActive: (active: boolean) => Promise<IpcResult>
+  open: (opts?: { hideMain?: boolean }) => Promise<IpcResult>
+  hide: () => Promise<IpcResult>
+  toggle: () => Promise<IpcResult>
+  expand: () => Promise<IpcResult>
+  cancel: () => Promise<IpcResult>
+  /** @deprecated Use expand */
+  close: () => Promise<IpcResult>
+  getSnapshot: () => SessionOverlayPayload
+  getPayload: () => Promise<{
     success: boolean
     payload?: SessionOverlayPayload
     error?: unknown
   }>
-  notifyOverlayReady: () => Promise<IpcResult>
-  onOverlayRequestSync: (handler: () => void) => () => void
-  onQuestOverlayUpdate: (handler: (payload: SessionOverlayPayload) => void) => () => void
-  onQuestOverlayPatch: (handler: (patch: SessionOverlayPatch) => void) => () => void
-  openReferenceWindow: (params: ReferenceWindowParams) => Promise<IpcResult>
-  openUrlInReferenceWindow: (url: string) => Promise<IpcResult>
-  onReferenceWindowNavigate: (handler: (url: string) => void) => () => void
+  notifyReady: () => Promise<IpcResult>
+  onRequestSync: (handler: () => void) => () => void
+  onUpdate: (handler: (payload: SessionOverlayPayload) => void) => () => void
+  onPatch: (handler: (patch: SessionOverlayPatch) => void) => () => void
+}
+
+export interface ReferenceNamespace {
+  open: (params: ReferenceWindowParams) => Promise<IpcResult>
+  navigate: (url: string) => Promise<IpcResult>
+  onNavigate: (handler: (url: string) => void) => () => void
+}
+
+export interface CloudNamespace {
+  getMode: () => Promise<{ success: boolean; mode?: StorageMode; error?: unknown }>
+  setMode: (mode: StorageMode) => Promise<{ success: boolean; mode?: StorageMode; error?: unknown }>
+  connectGoogleDrive: () => Promise<{ success: boolean; account?: CloudAccount; error?: string }>
+  disconnectGoogleDrive: () => Promise<{ success: boolean; account?: CloudAccount; error?: string }>
+  setGoogleDrivePath: (drivePath: string) => Promise<{ success: boolean; account?: CloudAccount; error?: string }>
+  getGoogleDriveStatus: () => Promise<{
+    success: boolean
+    account?: CloudAccount
+    lastUploadError?: string | null
+    needsScopeReconnect?: boolean
+    folderWebUrl?: string | null
+    error?: string
+  }>
+}
+
+export interface GalleryNamespace {
+  saveImage: (
+    base64: string,
+    questId: string,
+  ) => Promise<IpcResult & { path?: string; galleryItemId?: string; syncStatus?: string; storageMode?: string }>
+  saveQuestReference: (base64: string, questId: string) => Promise<IpcResult & { id?: string; path?: string }>
+  deleteQuestReference: (filePath: string) => Promise<IpcResult>
+  listImages: () => Promise<SavedImage[]>
+  readImage: (filepath: string) => Promise<string | null>
+  getLocalMediaUrl: (filepath: string) => Promise<string | null>
+  pickPortraitImage: () => Promise<{ success: boolean; dataUrl?: string; error?: unknown }>
+  saveCustomAvatar: (base64: string) => Promise<IpcResult & { path?: string }>
+  retryUpload: (galleryItemId: string) => Promise<{ success: boolean; error?: string }>
+  retryAllUploads: () => Promise<GallerySyncResult>
+  sync: () => Promise<GallerySyncResult>
+  onSyncUpdated: (handler: () => void) => () => void
+}
+
+export interface SessionNamespace {
+  dispatchCommand: (command: QuestSessionCommand) => Promise<IpcResult>
+  onCommand: (handler: (command: QuestSessionCommand) => void) => () => void
   onActivityUpdate: (
     handler: (state: {
       processName: string
@@ -172,8 +227,16 @@ export interface ElectronAPI {
       shouldCountTime: boolean
     }) => void,
   ) => () => void
-  onSessionTick: (handler: () => void) => () => void
-  setSessionTickActive: (active: boolean) => Promise<{ success: boolean }>
+  onTick: (handler: () => void) => () => void
+  setTickActive: (active: boolean) => Promise<{ success: boolean }>
+}
+
+export interface DesktopNamespace {
+  /** True when foreground art-app / idle detection runs natively (Windows only). */
+  activityTrackingNative: boolean
+  syncSettings: (payload: Record<string, unknown>) => Promise<void>
+  pickArtAppExecutable: () => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: unknown }>
+  showTestNotification: (payload: { title: string; body: string }) => Promise<{ success: boolean }>
   setTaskbarProgress: (payload: {
     progress: number
     mode?: 'normal' | 'paused' | 'error' | 'none' | 'indeterminate'
@@ -191,42 +254,18 @@ export interface ElectronAPI {
     }) => void,
   ) => () => void
   onNavigate: (handler: (route: string) => void) => () => void
-  showItemInFolder: (filePath: string) => Promise<void>
-  openExternal: (url: string) => Promise<{ success: boolean; error?: unknown }>
-  getStorageMode: () => Promise<{ success: boolean; mode?: StorageMode; error?: unknown }>
-  setStorageMode: (mode: StorageMode) => Promise<{ success: boolean; mode?: StorageMode; error?: unknown }>
-  connectGoogleDrive: () => Promise<{ success: boolean; account?: CloudAccount; error?: string }>
-  disconnectGoogleDrive: () => Promise<{ success: boolean; account?: CloudAccount; error?: string }>
-  setGoogleDrivePath: (drivePath: string) => Promise<{ success: boolean; account?: CloudAccount; error?: string }>
-  getGoogleDriveStatus: () => Promise<{
-    success: boolean
-    account?: CloudAccount
-    lastUploadError?: string | null
-    needsScopeReconnect?: boolean
-    folderWebUrl?: string | null
-    error?: string
-  }>
-  retryGalleryUpload: (galleryItemId: string) => Promise<{ success: boolean; error?: string }>
-  retryAllGalleryUploads: () => Promise<GallerySyncResult>
-  syncGallery: () => Promise<GallerySyncResult>
-  onAppBeforeQuit: (handler: () => void) => () => void
-  onGallerySyncUpdated: (handler: () => void) => () => void
-  saveShareCardPng: (base64Data: string, filename: string) => Promise<{ success: boolean; path?: string; error?: string }>
-  exportProgressFile: (jsonPayload: string) => Promise<{ success: boolean; path?: string; error?: string }>
-  importProgressFile: () => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+  trackTelemetry: (entry: Record<string, unknown>) => Promise<{ success: boolean }>
 }
 
-interface GallerySyncResult {
-  success: boolean
-  requeued?: number
-  migrated?: number
-  uploaded?: number
-  failed?: number
-  downloaded?: number
-  linked?: number
-  lastError?: string | null
-  needsScopeReconnect?: boolean
-  error?: string
+export interface ElectronAPI {
+  progress: ProgressNamespace
+  shell: ShellNamespace
+  overlay: OverlayNamespace
+  reference: ReferenceNamespace
+  cloud: CloudNamespace
+  gallery: GalleryNamespace
+  session: SessionNamespace
+  desktop: DesktopNamespace
 }
 
 declare global {
@@ -234,3 +273,5 @@ declare global {
     electronAPI?: ElectronAPI
   }
 }
+
+export {}

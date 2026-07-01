@@ -33,8 +33,8 @@ function stretchCopy(lang: Language | undefined): { title: string; body: string 
 
 function notifyStretchReminder(title: string, body: string): void {
   const api = window.electronAPI
-  if (api?.showTestNotification) {
-    void api.showTestNotification({ title, body })
+  if (api?.desktop?.showTestNotification) {
+    void api.desktop.showTestNotification({ title, body })
     return
   }
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {

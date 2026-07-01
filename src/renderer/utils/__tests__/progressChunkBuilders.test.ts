@@ -50,7 +50,10 @@ describe('buildProgressChunkFromStores', () => {
     const chunk = buildProgressChunkFromStores('quests')
     const questState = useQuestStore.getState()
     expect(chunk.completedQuests).toEqual(questState.completedQuests)
-    expect(chunk.questCompletionLogs).toEqual(questState.questCompletionLogs)
+    const storedLogs =
+      (chunk.questCompletionLogs as QuestCompletionLog[] | undefined) ??
+      (chunk.recentTail as QuestCompletionLog[] | undefined)
+    expect(storedLogs).toEqual(questState.questCompletionLogs)
   })
 
   it('does not call full buildProgressData internally', () => {
@@ -63,7 +66,10 @@ describe('buildProgressChunkFromStores', () => {
     }))
     useQuestStore.setState({ questCompletionLogs: logs })
     const chunk = buildProgressChunkFromStores('quests')
-    expect((chunk.questCompletionLogs as QuestCompletionLog[]).length).toBe(50)
+    expect(
+      (chunk.questCompletionLogs as QuestCompletionLog[] | undefined)?.length ??
+        (chunk.recentTail as QuestCompletionLog[] | undefined)?.length,
+    ).toBe(50)
     const full = buildProgressData()
     expect(full.questCompletionLogs.length).toBe(50)
   })

@@ -429,6 +429,8 @@ export interface Translations {
     timerMainLabel?: string
     timerReferenceLabel?: string
     needReferences?: string
+    overlayReference?: string
+    overlayCancelQuest?: string
     referenceYoutube?: string
     referenceYoutubeLong?: string
     referenceYoutubeShort?: string
@@ -527,6 +529,7 @@ export interface Translations {
     loading: string
     stepLabel: string
     showInFolder: string
+    showInFolderDisabled?: string
     unknownQuest: string
     lightboxPrev: string
     lightboxNext: string
@@ -615,6 +618,11 @@ export interface Translations {
     fontLarge?: string
     highContrast?: string
     reduceMotion?: string
+    telemetryEnabled?: string
+    vfxQuality?: string
+    vfxQualityOff?: string
+    vfxQualityNormal?: string
+    vfxQualityEnhanced?: string
     disableSessionTimers?: string
     disableSessionTimersHint?: string
     tourAndResetSection?: string
@@ -699,6 +707,9 @@ export interface Translations {
     resourcesBody: string
     achievementsTitle: string
     achievementsBody: string
+    goalsTitle?: string
+    goalsBody?: string
+    materialsEngagementBody?: string
     settingsTitle: string
     settingsBody: string
     skipTour: string
@@ -1196,7 +1207,7 @@ export const translations: Record<Language, any> = {
       goalPlaceholder: 'e.g. Draw a full character sheet in 30 days',
       goalSave: 'Save goal',
       goalEdit: 'Edit',
-      goalComplete: 'Mark as achieved',
+      goalComplete: 'Mark as completed',
       goalNewPlaceholder: 'What is your next goal?',
       goalsHistoryLink: 'View {count} completed goals →',
     },
@@ -1268,6 +1279,8 @@ export const translations: Record<Language, any> = {
       timerMainLabel: 'Quest time',
       timerReferenceLabel: 'Reference time',
       needReferences: 'Need references?',
+      overlayReference: 'Reference',
+      overlayCancelQuest: 'Cancel',
       referenceYoutube: 'YouTube',
       referenceYoutubeLong: 'Long videos',
       referenceYoutubeShort: 'Shorts',
@@ -1379,6 +1392,7 @@ export const translations: Record<Language, any> = {
       loading: 'Loading…',
       stepLabel: 'Step {n}',
       showInFolder: 'Show in folder',
+      showInFolderDisabled: 'File not saved locally',
       unknownQuest: 'Unknown quest',
       lightboxPrev: 'Previous image',
       lightboxNext: 'Next image',
@@ -1455,7 +1469,7 @@ export const translations: Record<Language, any> = {
       minimizeToTray: 'Keep running when closing window (taskbar tray)',
       sessionWidgetMode: 'Session widget mode',
       sessionWidgetModeHint:
-        'When on, use “Collapse to widget” during a session to switch to a small floating timer. The main window stays open until you collapse manually.',
+        'After you start a quest or skill practice, tap “Collapse to widget” on the session screen. A small floating timer opens — nothing collapses until you press that button.',
       openAtLogin: 'Start ArtQuest when you sign in',
       reminders: 'Daily practice reminder (local time)',
       remindersHint: 'One notification around the chosen time once per calendar day.',
@@ -1468,6 +1482,11 @@ export const translations: Record<Language, any> = {
       fontLarge: 'Large',
       highContrast: 'Higher contrast surfaces',
       reduceMotion: 'Reduce motion',
+      telemetryEnabled: 'Share anonymous diagnostics (local only)',
+      vfxQuality: 'Celebration effects',
+      vfxQualityOff: 'CSS only',
+      vfxQualityNormal: 'Normal',
+      vfxQualityEnhanced: 'Enhanced',
       disableSessionTimers: 'Disable session timers',
       disableSessionTimersHint:
         'Pause countdown timers for quests and skill practice. Finish at your own pace without time pressure.',
@@ -1814,6 +1833,11 @@ export const translations: Record<Language, any> = {
       achievementsTitle: 'Achievements',
       achievementsBody:
         'Milestones for streaks, quest counts, and hidden goals — check Progress → Achievements as you play.',
+      goalsTitle: 'Your goal',
+      goalsBody:
+        'Set a personal goal on the dashboard — it stays visible as a daily reminder. Mark it completed when you finish.',
+      materialsEngagementBody:
+        'Use Learning now for focused picks tied to your progress, or browse the full catalog. Engagement chips remember what you opened.',
       settingsTitle: 'Settings',
       settingsBody:
         'Learning profile, portrait, theme, language, sounds, and accessibility. Replay this full tour anytime from the button below.',
@@ -1930,7 +1954,7 @@ export const translations: Record<Language, any> = {
       completedOn: 'Выполнено {date}',
       goals: 'Цели',
       goalsEmpty: 'Выполненных целей пока нет. Отметьте цель на главной, когда достигнете её.',
-      goalCompletedOn: 'Достигнуто {date}',
+      goalCompletedOn: 'Выполнено {date}',
       goalStartedOn: 'Начато {date}',
     },
     portrait: {
@@ -2155,7 +2179,7 @@ export const translations: Record<Language, any> = {
       goalPlaceholder: 'Например: нарисовать полный character sheet за 30 дней',
       goalSave: 'Сохранить цель',
       goalEdit: 'Изменить',
-      goalComplete: 'Отметить как достигнутую',
+      goalComplete: 'Отметить как выполненную',
       goalNewPlaceholder: 'Какая ваша следующая цель?',
       goalsHistoryLink: 'Смотреть {count} выполненных целей →',
     },
@@ -2228,6 +2252,8 @@ export const translations: Record<Language, any> = {
       timerMainLabel: 'Время квеста',
       timerReferenceLabel: 'Время на референсы',
       needReferences: 'Нужны референсы?',
+      overlayReference: 'Референс',
+      overlayCancelQuest: 'Отменить',
       referenceYoutube: 'YouTube',
       referenceYoutubeLong: 'Длинные',
       referenceYoutubeShort: 'Короткие',
@@ -2339,6 +2365,7 @@ export const translations: Record<Language, any> = {
       loading: 'Загрузка…',
       stepLabel: 'Шаг {n}',
       showInFolder: 'Показать в папке',
+      showInFolderDisabled: 'Файл не сохранён локально',
       unknownQuest: 'Неизвестный квест',
       lightboxPrev: 'Предыдущее изображение',
       lightboxNext: 'Следующее изображение',
@@ -2415,7 +2442,7 @@ export const translations: Record<Language, any> = {
       minimizeToTray: 'Оставаться в фоне при закрытии окна (значок в трее)',
       sessionWidgetMode: 'Режим виджета',
       sessionWidgetModeHint:
-        'Если включено, во время сессии можно вручную свернуть окно в плавающий таймер. При старте квеста или практики окно не скрывается автоматически.',
+        'После начала квеста или практики нажмите «Свернуть в виджет» на экране сессии — откроется плавающий таймер. Автоматического сворачивания нет.',
       openAtLogin: 'Запускать ArtQuest при входе в систему',
       reminders: 'Напоминание о практике раз в день (локальное время)',
       remindersHint: 'Одно системное уведомление около выбранного времени в календарный день.',
@@ -2428,6 +2455,11 @@ export const translations: Record<Language, any> = {
       fontLarge: 'Крупный',
       highContrast: 'Повышенный контраст поверхностей',
       reduceMotion: 'Уменьшить анимации',
+      telemetryEnabled: 'Анонимная диагностика (только локально)',
+      vfxQuality: 'Эффекты наград',
+      vfxQualityOff: 'Только CSS',
+      vfxQualityNormal: 'Обычные',
+      vfxQualityEnhanced: 'Усиленные',
       disableSessionTimers: 'Отключить таймеры',
       disableSessionTimersHint:
         'Остановить обратный отсчёт в квестах и тренировках навыков. Завершайте практику в своём темпе.',
@@ -2822,6 +2854,11 @@ export const translations: Record<Language, any> = {
       achievementsTitle: 'Достижения',
       achievementsBody:
         'Вехи за серии, число квестов и скрытые цели — смотрите в Прогресс → Достижения по ходу игры.',
+      goalsTitle: 'Ваша цель',
+      goalsBody:
+        'Задайте личную цель на главной — она будет напоминать каждый день. Отметьте выполненной, когда достигнете.',
+      materialsEngagementBody:
+        '«Сейчас в обучении» — подборка под ваш прогресс; полный каталог — все материалы. Метки запоминают, что вы открывали.',
       settingsTitle: 'Настройки',
       settingsBody:
         'Профиль обучения, портрет, тема, язык, звуки и доступность. Полный тур можно запустить снова кнопкой ниже.',

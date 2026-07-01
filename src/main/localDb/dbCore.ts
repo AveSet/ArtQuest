@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 
-const CURRENT_SCHEMA_VERSION = 4
+const CURRENT_SCHEMA_VERSION = 5
 
 let db: DatabaseSync | null = null
 
@@ -157,6 +157,20 @@ function migrate(database: DatabaseSync): void {
     }
   }
 
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS quest_completion_log (
+      id TEXT PRIMARY KEY,
+      completed_at TEXT NOT NULL,
+      payload_json TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_qcl_completed_at ON quest_completion_log(completed_at);
+    CREATE TABLE IF NOT EXISTS quest_completion_summary (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      total_count INTEGER NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `)
+
   database
     .prepare(
       `INSERT INTO app_meta (key, value, updated_at)
@@ -205,5 +219,7 @@ export function clearLocalUserData(): void {
     database.prepare('DELETE FROM event_log').run()
     database.prepare('DELETE FROM progress_snapshot').run()
     database.prepare('DELETE FROM progress_chunk').run()
+    database.prepare('DELETE FROM quest_completion_log').run()
+    database.prepare('DELETE FROM quest_completion_summary').run()
   })
 }

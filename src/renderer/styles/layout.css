@@ -328,4 +328,29 @@ html[data-motion='reduce'] *::after {
   z-index: 325;
   outline: 2px solid var(--gold-primary);
   outline-offset: 3px;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--gold-primary) 25%, transparent),
+    0 0 24px color-mix(in srgb, var(--gold-primary) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-onboarding-active='true'] {
+    animation: onboarding-target-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes onboarding-target-pulse {
+  0%,
+  100% {
+    outline-color: var(--gold-primary);
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--gold-primary) 25%, transparent),
+      0 0 20px color-mix(in srgb, var(--gold-primary) 30%, transparent);
+  }
+  50% {
+    outline-color: var(--accent-hover);
+    box-shadow:
+      0 0 0 6px color-mix(in srgb, var(--gold-primary) 35%, transparent),
+      0 0 32px color-mix(in srgb, var(--gold-primary) 45%, transparent);
+  }
 }

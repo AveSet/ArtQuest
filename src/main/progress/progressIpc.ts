@@ -26,8 +26,15 @@ import {
   persistProgressChunkBatch,
   saveFullProgressAtomic,
 } from '../db/progressRepository'
+import {
+  appendCompletionLogEntry,
+  loadAllCompletionLogs,
+  migrateCompletionLogsFromProgress,
+  countCompletionLogs,
+} from '../db/questCompletionLogRepository'
 import { backupCorruptProgress } from './corruptProgressBackup'
 import { isPathUnderRoot } from '../pathSafety'
+import { SQLITE_LOGS_SCHEMA_VERSION, unpackQuestCompletionLogsFromStorage } from '../../shared/progressLogLiveCompression'
 
 export type ProgressDebugLogger = (msg: string) => void
 
@@ -75,7 +82,8 @@ function readProgressJsonFile(
 function tryNormalizeRaw(
   raw: Record<string, unknown>,
 ): { ok: true; filtered: Record<string, unknown> } | { ok: false; message: string } {
-  const result = normalizeProgressPayloadResult(raw)
+  const enriched = enrichProgressWithSqliteLogs(raw)
+  const result = normalizeProgressPayloadResult(enriched)
   if (result.ok) {
     return { ok: true, filtered: pickLoadedProgressFields(result.data) }
   }
@@ -83,6 +91,33 @@ function tryNormalizeRaw(
     ok: false,
     message: result.errorMessage ?? result.reason,
   }
+}
+
+function enrichProgressWithSqliteLogs(raw: Record<string, unknown>): Record<string, unknown> {
+  const version =
+    typeof raw.schemaVersion === 'number' ? raw.schemaVersion : SQLITE_LOGS_SCHEMA_VERSION - 1
+  const inlineLogs = Array.isArray(raw.questCompletionLogs) ? raw.questCompletionLogs : []
+  const expandedInline =
+    inlineLogs.length > 0 ? inlineLogs : unpackQuestCompletionLogsFromStorage(raw)
+
+  if (countCompletionLogs() === 0 && expandedInline.length > 0) {
+    migrateCompletionLogsFromProgress(expandedInline as Record<string, unknown>[])
+  }
+
+  const sqliteLogs = loadAllCompletionLogs()
+  if (sqliteLogs.length > 0) {
+    return {
+      ...raw,
+      schemaVersion: Math.max(version, SQLITE_LOGS_SCHEMA_VERSION),
+      questCompletionLogs: sqliteLogs,
+    }
+  }
+
+  if (version >= SQLITE_LOGS_SCHEMA_VERSION && expandedInline.length > 0) {
+    return { ...raw, schemaVersion: SQLITE_LOGS_SCHEMA_VERSION, questCompletionLogs: expandedInline }
+  }
+
+  return raw
 }
 
 function createWriteProgressFile(deps: ProgressIpcDeps) {
@@ -280,6 +315,14 @@ export function registerProgressIpcHandlers(deps: ProgressIpcDeps): void {
   const writeProgressFile = createWriteProgressFile(deps)
 
   ipcMain.handle('save-progress', async (_, data: unknown) => writeProgressFile(data))
+
+  ipcMain.handle('artquest:v1:progress:append-log', async (_, entry: unknown) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      return { success: false, error: 'Invalid completion log entry' }
+    }
+    const ok = appendCompletionLogEntry(entry as Record<string, unknown>)
+    return ok ? { success: true } : { success: false, error: 'Append failed' }
+  })
 
   ipcMain.on('save-progress-sync', (event, data: unknown) => {
     event.returnValue = writeProgressFile(data)

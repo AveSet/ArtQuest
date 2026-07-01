@@ -210,7 +210,9 @@
 
 .dashboard-next-action-card {
   border: 1px solid var(--border-secondary);
+  border-left: 4px solid var(--accent);
   background: var(--bg-secondary);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .dashboard-reward-stars--compact {

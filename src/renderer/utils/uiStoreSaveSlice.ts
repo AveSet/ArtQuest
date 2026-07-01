@@ -31,6 +31,7 @@ function settingsFingerprint(settings: UIState['settings']): string {
     (settings.trackedArtApps ?? []).join(','),
     settings.customArtAppExecutablePath ?? '',
     settings.artIdleTimeoutSec ?? '',
+    JSON.stringify(settings.windowBounds ?? {}),
     Object.keys(settings.materialEngagement ?? {}).length,
     settings.materialFavoriteIds.length,
     settings.materialCustomLinks.length,

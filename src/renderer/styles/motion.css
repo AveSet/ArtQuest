@@ -1,4 +1,7 @@
-/* Shared UI motion — modals, routes, tabs, collapsibles */
+/* Shared UI motion — modals, routes, tabs, collapsibles
+ * Timing tiers: micro 120–180ms (--motion-duration-fast/short),
+ * state change 220–320ms (--motion-duration-med),
+ * celebration 450–700ms (--motion-duration-slow). */
 
 .motion-overlay {
   opacity: 0;

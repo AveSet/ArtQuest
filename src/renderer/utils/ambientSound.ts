@@ -127,3 +127,15 @@ export function syncAmbientLoop(): void {
   stopAmbientLoop()
   startAmbientLoop()
 }
+
+/** Briefly lower ambient bed during reward stingers. */
+export function duckAmbient(durationMs = 900, factor = 0.35): void {
+  if (!ambientGain) return
+  const base = ambientVolume()
+  if (base <= 0) return
+  const previous = ambientGain.gain.value
+  ambientGain.gain.value = base * factor
+  window.setTimeout(() => {
+    if (ambientGain) ambientGain.gain.value = ambientVolume()
+  }, durationMs)
+}

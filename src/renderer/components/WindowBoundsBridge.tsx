@@ -42,6 +42,13 @@ function boundsEqual(a: WindowBoundsPartial | undefined, b: WindowBoundsPartial)
   return Boolean(mainEq && overlayEq && refEq)
 }
 
+let flushBoundsSaveImpl: (() => void) | null = null
+
+/** Flush pending window bounds into the UI store immediately (e.g. before quit save). */
+export function flushWindowBoundsNow(): void {
+  flushBoundsSaveImpl?.()
+}
+
 /** Persist overlay/reference window positions reported by the main process. */
 export default function WindowBoundsBridge() {
   const pendingPartialRef = useRef<WindowBoundsPartial>({})
@@ -59,20 +66,27 @@ export default function WindowBoundsBridge() {
     useUIStore.getState().setSettings({ windowBounds: next })
   }
 
-  const queueBoundsSave = (partial: WindowBoundsPartial) => {
+  flushBoundsSaveImpl = flushBoundsSave
+
+  const queueBoundsSave = (partial: WindowBoundsPartial, immediate = false) => {
     pendingPartialRef.current = mergeWindowBounds(pendingPartialRef.current, partial)
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    if (immediate) {
+      flushBoundsSave()
+      return
+    }
     saveTimerRef.current = setTimeout(flushBoundsSave, BOUNDS_SAVE_DEBOUNCE_MS)
   }
 
   useEffect(() => {
-    const unsub = window.electronAPI?.onWindowBoundsReport?.((partial) => {
+    const unsub = window.electronAPI?.desktop?.onWindowBoundsReport?.((partial) => {
       queueBoundsSave(partial)
     })
     return () => {
       unsub?.()
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
       flushBoundsSave()
+      if (flushBoundsSaveImpl === flushBoundsSave) flushBoundsSaveImpl = null
     }
   }, [])
 
@@ -81,5 +95,5 @@ export default function WindowBoundsBridge() {
 
 export function applySavedWindowBounds(bounds: Settings['windowBounds']): void {
   if (!bounds || (!bounds.main && !bounds.overlay && !bounds.reference)) return
-  void window.electronAPI?.applyWindowBounds?.(bounds)
+  void window.electronAPI?.desktop?.applyWindowBounds?.(bounds)
 }

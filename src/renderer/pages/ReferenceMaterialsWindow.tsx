@@ -165,7 +165,7 @@ export default function ReferenceMaterialsWindow() {
   useEffect(() => {
     document.documentElement.setAttribute('data-reference-window', '1')
     const stopVh = initViewportHeightSync()
-    const unsub = window.electronAPI?.onReferenceWindowNavigate?.((url) => {
+    const unsub = window.electronAPI?.reference?.onNavigate?.((url) => {
       setPlayingId(null)
       setSourceUrls((prev) => ({ ...prev, [selectedSource]: url }))
     })
@@ -324,7 +324,7 @@ export default function ReferenceMaterialsWindow() {
           <button
             type="button"
             className="btn-secondary reference-toolbar__action"
-            onClick={() => void window.electronAPI?.openExternal?.(paneUrl)}
+            onClick={() => void window.electronAPI?.shell?.openExternal?.(paneUrl)}
           >
             {t.resources.refWindowOpenExternal ?? 'Open externally'}
           </button>

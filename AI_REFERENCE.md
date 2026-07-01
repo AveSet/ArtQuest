@@ -19,7 +19,7 @@
 7. **Tests** — co-located `__tests__/`; run `npm test` or targeted `npm test -- path/to/file.test.ts`.
 8. **Builds** — default `dist-build/`; isolated builds: `--config.directories.output=dist-build-YYYY-MM-DD-vN`.
 
-**Last synced:** 2026-06-28 (v1.0.3, schema v22, stack upgrade: Vite 8, RR 8, Tailwind 4, Zod 4, Vitest 4).
+**Last synced:** 2026-07-01 (v1.0.3, schema v27, stack: Vite 8, RR 8, Tailwind 4, Zod 4, Vitest 4).
 
 ---
 
@@ -82,7 +82,7 @@ artquest/
 │   │   └── ipcTypes.ts
 │   │
 │   ├── shared/                 # Shared main ↔ renderer (no Electron/React)
-│   │   ├── progressSchema.ts   # Zod schema v22, normalize/migrate/parse
+│   │   ├── progressSchema.ts   # Zod schema v27, normalize/migrate/parse
 │   │   ├── progressChunkMerge.ts
 │   │   ├── progressLogCompression.ts
 │   │   ├── storageMode.ts      # "local" | "local_and_cloud" | "cloud_only"
@@ -147,7 +147,7 @@ All stores in `src/renderer/store/`. Created with `create()`. Cross-store access
 | `useQuestStore` | Quest catalog, completion, dailies, weekly challenge, user quests, references |
 | `useUIStore` | Settings, streak, save/load, import/export, review schedule, feedback stats |
 | `useSkillStore` | Skill tree XP, unlocks, prestige, achievements (incl. hidden) |
-| `useThemeStore` | Theme (`modern` \| `light` \| `rpg`), syncs `<html>` CSS vars |
+| `useThemeStore` | Theme (`modern` \| `light` \| `rpg` \| `studio`), syncs `<html>` CSS vars |
 | `useQuestSessionStore` | Active quest timer, phases, overtime mode, overlay sync |
 | `useSessionRitualStore` | Phase-transition banner state (`PhaseTransitionCard`) |
 | `useSkillPracticeStore` | Skill practice session (no quest) |
@@ -176,14 +176,17 @@ Key interfaces:
 
 ## 6. Progress Schema (`src/shared/progressSchema.ts`)
 
-- **Version 20** — `CURRENT_PROGRESS_SCHEMA_VERSION = 20`
+- **Version 27** — `CURRENT_PROGRESS_SCHEMA_VERSION = 27`
 - Single source of truth: Zod `progressPayloadSchema`, `normalizeProgressPayload`, `parseProgressPayload`, `migrateProgressPayload`, `pickLoadedProgressFields`
 - `src/main/progressSchema.ts` **re-exports** from shared (no duplicate logic)
 - Unknown keys stripped via `.strip()`
 - v15+ fields: `questReviewSchedule`, `feedbackStats`, `materialEngagement`, `lastExportAt`, `lastWarmupCompletedDate`
+- v23+ fields: `windowBounds`, `longAbsenceReturnDate`, `preferredReferenceSource`, `experienceTier`, goals
+- v27 settings: `vfxQuality`, `telemetryEnabled`, optional `sfxVolume` / `musicVolume`
 - Removed from settings on migrate: `campaign`, `learningPath`, `campaignMode*`, `portraitAnimation`, `selectedLearningPathId`
 - `questCompletionLogs` unbounded (was capped at 500)
 - Persisted sessions: `activeQuestSession`, `activeSkillPracticeSession` (in `core` chunk)
+- Migration contract tests: `src/shared/__tests__/progressMigrationContract.test.ts`
 
 ---
 
@@ -191,7 +194,7 @@ Key interfaces:
 
 ### SQLite (`src/main/localDb.ts`)
 
-Database file: `{userData}/artquest.sqlite` (local DB schema version **3**, separate from progress JSON schema v22).
+Database file: `{userData}/artquest.sqlite` (local DB schema version **3**, separate from progress JSON schema v27).
 
 | Table | Purpose |
 |-------|---------|
@@ -220,7 +223,7 @@ Chunk keys (`PROGRESS_CHUNK_KEYS`): `core`, `quests`, `skills`, `gallery`, `cosm
 | `gallery` | completedWorks |
 | `cosmetics` | `portraitProgress` — daily star streak + streak shield only (legacy chunk key) |
 
-**Auto-save flow (`initAutoSave()` in App.tsx):**
+**Auto-save flow (`useAppBootstrap()` → `initAutoSave()` in App.tsx):**
 1. Store subscriptions mark dirty chunks (`markChunkDirty`)
 2. Debounced 2s (`SAVE_DELAY_MS`) → save dirty chunks via `saveProgress` IPC
 3. Every **24** incremental saves → full `saveProgress()` snapshot

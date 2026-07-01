@@ -18,6 +18,12 @@ import { computeFlowMetrics, updateAdaptiveWeights } from '@/utils/adaptiveDiffi
 import { scheduleNextReview } from '@/utils/questSpacedReview'
 import { aggregateFeedbackStats } from '@/utils/feedbackAnalytics'
 import { canonicalAdaptiveTag, relatedQuestTagsForMistakes } from '@/utils/mistakeTags'
+import {
+  DAILY_COMPLETION_BONUS_MULTIPLIER,
+  REWARD_XP_FLOAT_MIN,
+  WEEKLY_CHALLENGE_BONUS_MIN,
+  WEEKLY_CHALLENGE_BONUS_MULTIPLIER,
+} from '@/utils/rewardLoopConstants'
 
 export type QuestCompletionEffectsInput = {
   questId: number
@@ -129,7 +135,7 @@ export function runQuestCompletionEffects(input: QuestCompletionEffectsInput): v
   if (allDailiesDone) {
     questStore.ensureWeeklyChallenge()
     dispatchFeedbackMoment({ kind: 'daily_complete', category: rewardCategory })
-    const bonusXp = Math.round((trackXp + nodeXp) * 0.5)
+    const bonusXp = Math.round((trackXp + nodeXp) * DAILY_COMPLETION_BONUS_MULTIPLIER)
     if (bonusXp > 0 && rewardCategory) {
       distributeQuestXp(bonusXp, rewardCategory, {
         targetSkillNodeId,
@@ -150,7 +156,9 @@ export function runQuestCompletionEffects(input: QuestCompletionEffectsInput): v
         },
       })
       addBonusXpToLastQuestLog(questId, bonusXp)
-      dispatchFeedbackMoment({ kind: 'xp_float', amount: bonusXp })
+      if (bonusXp >= REWARD_XP_FLOAT_MIN) {
+        dispatchFeedbackMoment({ kind: 'xp_float', amount: bonusXp })
+      }
     } else {
       useQuestStore.setState({ dailyBonusGrantedDate: today })
     }
@@ -183,7 +191,10 @@ export function runQuestCompletionEffects(input: QuestCompletionEffectsInput): v
 
   if (weeklyJustDone) {
     dispatchFeedbackMoment({ kind: 'weekly_complete', category: rewardCategory })
-    const bonusXp = Math.max(100, Math.round((trackXp + nodeXp) * 0.75))
+    const bonusXp = Math.max(
+      WEEKLY_CHALLENGE_BONUS_MIN,
+      Math.round((trackXp + nodeXp) * WEEKLY_CHALLENGE_BONUS_MULTIPLIER),
+    )
     if (bonusXp > 0 && rewardCategory) {
       distributeQuestXp(bonusXp, rewardCategory, {
         targetSkillNodeId,
@@ -205,7 +216,9 @@ export function runQuestCompletionEffects(input: QuestCompletionEffectsInput): v
       },
     })
     addBonusXpToLastQuestLog(questId, bonusXp)
-    dispatchFeedbackMoment({ kind: 'xp_float', amount: bonusXp })
+    if (bonusXp >= REWARD_XP_FLOAT_MIN) {
+      dispatchFeedbackMoment({ kind: 'xp_float', amount: bonusXp })
+    }
   }
 
   const { questCompletionLogs: allLogs, quests: allQuests } = useQuestStore.getState()

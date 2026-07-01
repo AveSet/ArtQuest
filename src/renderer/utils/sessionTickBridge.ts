@@ -6,6 +6,6 @@ import { syncTaskbarProgress } from '@/utils/syncTaskbarProgress'
 export function syncSessionTickActive(): void {
   const questActive = useQuestSessionStore.getState().session != null
   const practiceActive = useSkillPracticeStore.getState().session != null
-  void window.electronAPI?.setSessionTickActive?.(questActive || practiceActive)
+  void window.electronAPI?.session?.setTickActive?.(questActive || practiceActive)
   syncTaskbarProgress()
 }

@@ -69,7 +69,7 @@ let tickHandle: ReturnType<typeof setInterval> | null = null
 let referenceToastTimer: number | null = null
 
 function usesMainProcessSessionTicks(): boolean {
-  return typeof window !== 'undefined' && Boolean(window.electronAPI?.onSessionTick)
+  return typeof window !== 'undefined' && Boolean(window.electronAPI?.session?.onTick)
 }
 
 function ensureTick(get: () => QuestSessionState, _set: (partial: Partial<QuestSessionState> | ((s: QuestSessionState) => Partial<QuestSessionState>)) => void) {

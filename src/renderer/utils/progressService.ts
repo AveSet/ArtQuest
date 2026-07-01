@@ -35,8 +35,8 @@ export async function saveProgressAsync(): Promise<ProgressSaveResult> {
       const progressData = buildProgressData()
       logProgressPayloadFootprint('async', progressData)
 
-      if (window.electronAPI?.saveProgress) {
-        const result = await window.electronAPI.saveProgress(JSON.stringify(progressData))
+      if (window.electronAPI?.progress?.save) {
+        const result = await window.electronAPI.progress.save(JSON.stringify(progressData))
         if (result && !result.success) {
           console.error('Failed to save progress:', result.error)
           return { ok: false, error: 'save_failed' }
@@ -66,8 +66,8 @@ export function saveProgressSync(): ProgressSaveResult {
     const progressData = buildProgressData()
     logProgressPayloadFootprint('sync', progressData)
     const api = window.electronAPI
-    if (api?.saveProgressSync) {
-      const result = api.saveProgressSync(JSON.stringify(progressData))
+    if (api?.progress?.saveSync) {
+      const result = api.progress.saveSync(JSON.stringify(progressData))
       if (result && !result.success) {
         console.error('Failed to save progress (sync):', result.error)
         return { ok: false, error: 'save_failed' }

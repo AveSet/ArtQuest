@@ -49,7 +49,7 @@ async function saveDirtyChunksInner(): Promise<boolean> {
   const snapshot = captureStoreSnapshot()
 
   const api = window.electronAPI
-  if (api?.saveProgress) {
+  if (api?.progress?.save) {
     const batch: Array<{ _chunkKey: ChunkKey; data: Record<string, unknown>; _createdAtMs: number }> = []
     for (const chunk of chunks) {
       batch.push({
@@ -69,7 +69,7 @@ async function saveDirtyChunksInner(): Promise<boolean> {
             chunkVersion: 1,
           })
 
-    const result = await api.saveProgress(payload)
+    const result = await api.progress.save(payload)
     if (result && !result.success) {
       console.error('[incrementalSave] chunk batch failed:', result.error)
       reportChunkSaveError()

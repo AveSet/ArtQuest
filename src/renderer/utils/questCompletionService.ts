@@ -160,6 +160,7 @@ export function appendQuestCompletionLogPatch(
     logEntry: QuestCompletionLog
   },
 ) {
+  void window.electronAPI?.progress?.appendLog?.(input.logEntry as unknown as Record<string, unknown>)
   return {
     lastCompletionReward: buildLastCompletionReward(
       input.trackXp,

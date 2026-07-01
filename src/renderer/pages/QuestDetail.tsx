@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useLocation } from 'react-router'
 import { useShallow } from 'zustand/react/shallow'
 import { useQuestStore } from '@/store/useQuestStore'
+import { useUIStore } from '@/store/useUIStore'
 import SubmitStepBackdrop from '@/components/SubmitStepBackdrop'
 import { useState, useEffect, useRef, useCallback, Fragment, useMemo } from 'react'
 import {
@@ -23,7 +24,7 @@ import {
 } from '@/store/useQuestSessionStore'
 import { getQuestDisplayMinutes } from '@/utils/questSessionPlan'
 import { usePersonalizedQuestMinutes } from '@/utils/usePersonalizedQuestMinutes'
-import { openReferenceWindow } from '@/utils/openReferenceWindow'
+import { openReferenceWindow, defaultModeForReferenceSource } from '@/utils/openReferenceWindow'
 import { collapseSessionToOverlay } from '@/utils/sessionOverlayActions'
 import { resolveQuestSkillNodeId } from '@/utils/resolveQuestSkillNode'
 import { resolveQuestTitle } from '@/utils/questDisplay'
@@ -126,9 +127,16 @@ const QuestDetail = () => {
   const expireSoundPlayedRef = useRef(false)
   const { submitQuest, isSubmitting, submitError, clearSubmitError } = useQuestSubmit()
   const sessionQuestId = useQuestSessionStore((s) => s.session?.questId ?? null)
-  const sessionForReflection = useQuestSessionStore((s) =>
-    s.session?.questId === Number(id) ? s.session : null,
-  )
+  const sessionIsOvertime = useQuestSessionStore((s) => {
+    const session = s.session
+    if (!session || session.questId !== Number(id)) return false
+    return session.isExpired || sessionInOvertime(session)
+  })
+  const sessionPracticeMinutes = useQuestSessionStore((s) => {
+    const session = s.session
+    if (!session || session.questId !== Number(id)) return null
+    return getSessionPracticeMinutes(session)
+  })
   const sessionPhaseKey = useQuestSessionStore((s) => {
     const session = s.session
     if (!session || session.questId !== Number(id)) return ''
@@ -174,22 +182,17 @@ const QuestDetail = () => {
   const useFullReflection = useMemo(() => {
     if (!quest) return true
     const practiceMinutes =
-      sessionForReflection && sessionForReflection.questId === quest.id
-        ? getSessionPracticeMinutes(sessionForReflection)
-        : quest.estimatedTime
+      sessionPracticeMinutes != null ? sessionPracticeMinutes : quest.estimatedTime
     const isSpeedRun =
       quest.estimatedTime > 0 &&
       practiceMinutes > 0 &&
       practiceMinutes < quest.estimatedTime / 2
-    const isOvertime =
-      !!sessionForReflection &&
-      (sessionForReflection.isExpired || sessionInOvertime(sessionForReflection))
     return shouldUseFullReflection({
       completedQuestCount: completedQuests.length,
-      isOvertime,
+      isOvertime: sessionIsOvertime,
       isSpeedRun,
     })
-  }, [quest, sessionForReflection, completedQuests.length])
+  }, [quest, sessionIsOvertime, sessionPracticeMinutes, completedQuests.length])
 
   const quickStartHandledRef = useRef(false)
 
@@ -301,32 +304,11 @@ const QuestDetail = () => {
     playSound('questStart', quest.category)
   }, [quest, isWarmupQuest, isFundamentalsQuest, warmupDoneToday, startGlobalSession, personalizedMinutes?.minutes, fundamentalsProgress, resetSubmitState])
 
-  const startWithReferenceBonus = useCallback(
-    (afterStart: () => void) => {
-      if (!quest) return
-      setTimerExpired(false)
-      expireSoundPlayedRef.current = false
-      setShowReferenceChoices(false)
-      const minutesOverride = personalizedMinutes?.minutes
-      startGlobalSession(
-        quest,
-        true,
-        minutesOverride ? { mainMinutesOverride: minutesOverride } : undefined,
-      )
-      resetSubmitState()
-      useSessionRitualStore.getState().setActive()
-      playSessionSound('sessionEnter', quest.category)
-      playSound('questStart', quest.category)
-      afterStart()
-    },
-    [quest, startGlobalSession, personalizedMinutes?.minutes, resetSubmitState],
-  )
-
 
   const openQuestRefs = useCallback(
     (mode: 'long' | 'short' | 'pinterest' | 'clipTips' | 'sketchfab') => {
       if (!quest) return
-      openReferenceWindow({
+      void openReferenceWindow({
         mode,
         questId: quest.id,
         nodeId: resolveQuestSkillNodeId(quest),
@@ -338,30 +320,27 @@ const QuestDetail = () => {
     [quest, lang],
   )
 
-  const startWithYoutubeLong = useCallback(() => {
+  const handleShowReferenceChoices = useCallback(() => {
     if (!quest) return
-    startWithReferenceBonus(() => openQuestRefs('long'))
-  }, [quest, startWithReferenceBonus, openQuestRefs])
+    setShowReferenceChoices(true)
+    const source =
+      useUIStore.getState().settings.preferredReferenceSource ?? ('pinterest' as const)
+    void openReferenceWindow({
+      mode: defaultModeForReferenceSource(source),
+      source,
+      questId: quest.id,
+      nodeId: resolveQuestSkillNodeId(quest),
+      category: quest.category,
+      tags: quest.tags,
+      lang,
+    })
+  }, [quest, lang])
 
-  const startWithYoutubeShort = useCallback(() => {
-    if (!quest) return
-    startWithReferenceBonus(() => openQuestRefs('short'))
-  }, [quest, startWithReferenceBonus, openQuestRefs])
-
-  const startWithPinterest = useCallback(() => {
-    if (!quest) return
-    startWithReferenceBonus(() => openQuestRefs('pinterest'))
-  }, [quest, startWithReferenceBonus, openQuestRefs])
-
-  const startWithClipTips = useCallback(() => {
-    if (!quest) return
-    startWithReferenceBonus(() => openQuestRefs('clipTips'))
-  }, [quest, startWithReferenceBonus, openQuestRefs])
-
-  const startWithSketchfab = useCallback(() => {
-    if (!quest) return
-    startWithReferenceBonus(() => openQuestRefs('sketchfab'))
-  }, [quest, startWithReferenceBonus, openQuestRefs])
+  const openRefsYoutubeLong = useCallback(() => openQuestRefs('long'), [openQuestRefs])
+  const openRefsYoutubeShort = useCallback(() => openQuestRefs('short'), [openQuestRefs])
+  const openRefsPinterest = useCallback(() => openQuestRefs('pinterest'), [openQuestRefs])
+  const openRefsClipTips = useCallback(() => openQuestRefs('clipTips'), [openQuestRefs])
+  const openRefsSketchfab = useCallback(() => openQuestRefs('sketchfab'), [openQuestRefs])
 
   const cancelSession = useCallback(() => {
     setTimerExpired(false)
@@ -620,12 +599,12 @@ const QuestDetail = () => {
           onBack={() => {
             navigate(returnAfterQuest ?? '/quests')
           }}
-          onShowReferenceChoices={() => setShowReferenceChoices(true)}
-          onStartYoutubeLong={startWithYoutubeLong}
-          onStartYoutubeShort={startWithYoutubeShort}
-          onStartPinterest={startWithPinterest}
-          onStartClipTips={startWithClipTips}
-          onStartSketchfab={startWithSketchfab}
+          onShowReferenceChoices={handleShowReferenceChoices}
+          onStartYoutubeLong={openRefsYoutubeLong}
+          onStartYoutubeShort={openRefsYoutubeShort}
+          onStartPinterest={openRefsPinterest}
+          onStartClipTips={openRefsClipTips}
+          onStartSketchfab={openRefsSketchfab}
           onStartQuestNow={startQuestNow}
         />
       ) : (

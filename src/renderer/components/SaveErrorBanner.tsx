@@ -20,6 +20,7 @@ export default function SaveErrorBanner() {
   return (
     <div
       role="alert"
+      data-testid="save-error-banner"
       className="banner-error fixed top-16 left-1/2 z-[250] -translate-x-1/2 max-w-md w-[calc(100%-2rem)] px-4 py-3 rounded-lg shadow-lg flex items-start gap-3"
     >
       <span className="flex-1 text-sm">{message}</span>

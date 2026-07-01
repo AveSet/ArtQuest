@@ -154,6 +154,10 @@ const PRESETS = {
     { f: 220, d: 0.1, gap: 0.05, v: 0.18, w: 'triangle' },
     { f: 165, d: 0.14, gap: 0.06, v: 0.14, w: 'sine' },
   ]),
+  sessionReady: () => seq([], [
+    { f: 392, d: 0.05, v: 0.24, w: 'triangle' },
+    { f: 523, d: 0.09, gap: 0.065, v: 0.28, w: 'sine' },
+  ]),
 }
 
 fs.mkdirSync(OUT, { recursive: true })

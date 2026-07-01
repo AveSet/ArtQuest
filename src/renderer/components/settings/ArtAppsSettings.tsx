@@ -5,6 +5,7 @@ import { useI18n } from '@/i18n'
 import { playUiClick } from '@/utils/sound'
 import { pushDesktopIntegrationSync } from '@/utils/desktopIntegration'
 import SettingsSection from '@/components/settings/SettingsSection'
+import { SettingsIconArtApps, SettingsSectionTitle } from '@/components/settings/SettingsIcons'
 import ArtAppPicker from '@/components/settings/ArtAppPicker'
 import type { ArtAppId } from '../../../shared/artApps'
 
@@ -22,7 +23,7 @@ export default function ArtAppsSettings() {
   const tracked = new Set(settings.trackedArtApps ?? [])
   const enabled = settings.activityTrackingEnabled !== false
   const idleSec = settings.artIdleTimeoutSec ?? 60
-  const nativeTracking = window.electronAPI?.activityTrackingNative === true
+  const nativeTracking = window.electronAPI?.desktop?.activityTrackingNative === true
   const customPath = settings.customArtAppExecutablePath?.trim()
 
   const apply = useCallback(
@@ -37,7 +38,7 @@ export default function ArtAppsSettings() {
 
   const pickCustomApp = useCallback(async () => {
     playUiClick()
-    const result = await window.electronAPI?.pickArtAppExecutable?.()
+    const result = await window.electronAPI?.desktop?.pickArtAppExecutable?.()
     if (!result?.success || !result.path) return
     const nextTracked = tracked.has('custom')
       ? [...tracked]
@@ -52,7 +53,7 @@ export default function ArtAppsSettings() {
 
   return (
     <SettingsSection
-      title={`🎨 ${labels.artAppsSection}`}
+      title={<SettingsSectionTitle icon={<SettingsIconArtApps />}>{labels.artAppsSection}</SettingsSectionTitle>}
       defaultOpen={false}
       testId="art-apps-section"
     >

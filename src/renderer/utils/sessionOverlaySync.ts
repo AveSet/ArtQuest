@@ -24,7 +24,7 @@ import type { Language, translations } from '@/i18n/translations'
 type TBundle = (typeof translations)[Language]
 
 type OverlayPayload = Parameters<
-  NonNullable<typeof window.electronAPI>['setQuestOverlayPayload']
+  NonNullable<typeof window.electronAPI>['overlay']['setPayload']
 >[0]
 
 let lastStableKey = ''
@@ -54,10 +54,11 @@ export function buildSessionOverlayPayload(language: Language, t: TBundle): Over
     clipTips: t.quests.referenceClipTips ?? 'CSP Tips',
     sketchfab: t.quests.referenceSketchfab ?? 'Sketchfab',
     next: t.quests.sessionPhaseNext ?? t.settings.shortcutAdvance ?? 'Next',
+    references: t.quests.overlayReference ?? t.quests.needReferences ?? 'Reference',
     submit: t.common.submit ?? 'Submit',
     expand: t.common.open ?? 'Open',
     collapse: t.skills.collapseToWidget ?? 'Collapse to widget',
-    cancel: t.common.cancel ?? 'Cancel',
+    cancel: t.quests.overlayCancelQuest ?? t.common.cancel ?? 'Cancel',
     open: t.common.open ?? 'Open',
     close: t.quests.sessionOverlayExpandAria ?? t.common.open ?? 'Open',
     finish: t.skills.endPractice ?? 'Finish',
@@ -131,6 +132,7 @@ export function buildSessionOverlayPayload(language: Language, t: TBundle): Over
       isReferencePhase: false,
       labels: {
         ...labels,
+        cancel: t.skills.cancelPractice ?? t.common.cancel ?? 'Cancel',
         finish: practiceReadyToFinish
           ? (t.skills.endPractice ?? 'Finish')
           : (t.skills.cancelPractice ?? t.common.cancel),
@@ -182,7 +184,7 @@ export function sessionOverlaySyncFingerprint(): string {
 /** Push timer-only overlay patch on 1 Hz session ticks without rebuilding full payload. */
 export function syncSessionOverlayTimerOnly(language: Language, t: TBundle): void {
   const api = window.electronAPI
-  if (!api?.setQuestOverlayPatch) return
+  if (!api?.overlay?.setPatch) return
   const session = useQuestSessionStore.getState().session
   const practiceSession = useSkillPracticeStore.getState().session
   const shouldCountTime = useActivityStore.getState().shouldCountTime
@@ -197,7 +199,7 @@ export function syncSessionOverlayTimerOnly(language: Language, t: TBundle): voi
   lastTimerLabel = nextTimer
   const inActivePhases = session ? sessionHasPhases(session) && !session.phasesComplete : false
   const practiceReadyToFinish = practiceSession ? practiceSession.activeElapsedSec >= 60 : false
-  void api.setQuestOverlayPatch({
+  void api.overlay.setPatch({
     timerLabel: nextTimer,
     phaseLabel: session
       ? getCurrentPhaseLabel(session, undefined, language, t.quests.referencePhaseLabel)
@@ -218,7 +220,7 @@ export function syncSessionOverlayPayload(language: Language, t: TBundle): void 
   if (fingerprint === lastSyncFingerprint) return
   lastSyncFingerprint = fingerprint
   const api = window.electronAPI
-  if (!api?.setQuestOverlayPayload) return
+  if (!api?.overlay?.setPayload) return
 
   const payload = buildSessionOverlayPayload(language, t)
 
@@ -227,15 +229,15 @@ export function syncSessionOverlayPayload(language: Language, t: TBundle): void 
     if (stableKey !== lastStableKey) {
       lastStableKey = stableKey
       lastTimerLabel = ''
-      void api.setQuestOverlayPayload(payload)
+      void api.overlay.setPayload(payload)
     }
     hideSessionOverlay()
-    void api.setSessionOverlayActive?.(false)
+    void api.overlay.setSessionActive?.(false)
     syncTaskbarProgress()
     return
   }
 
-  void api.setSessionOverlayActive?.(true)
+  void api.overlay.setSessionActive?.(true)
   syncTaskbarProgress()
 
   const { timerLabel, ...stablePart } = payload
@@ -243,14 +245,14 @@ export function syncSessionOverlayPayload(language: Language, t: TBundle): void 
   if (stableKey !== lastStableKey) {
     lastStableKey = stableKey
     lastTimerLabel = timerLabel ?? ''
-    void api.setQuestOverlayPayload(payload)
+    void api.overlay.setPayload(payload)
     return
   }
 
   const nextTimer = timerLabel ?? ''
-  if (nextTimer !== lastTimerLabel && api.setQuestOverlayPatch) {
+  if (nextTimer !== lastTimerLabel && api.overlay.setPatch) {
     lastTimerLabel = nextTimer
-    void api.setQuestOverlayPatch({
+    void api.overlay.setPatch({
       timerLabel: nextTimer,
       phaseLabel: payload.phaseLabel,
       isRunning: payload.isRunning,
@@ -284,7 +286,7 @@ export async function forceSyncSessionOverlayPayload(
   t: TBundle,
 ): Promise<boolean> {
   const api = window.electronAPI
-  if (!api?.setQuestOverlayPayload) return false
+  if (!api?.overlay?.setPayload) return false
 
   resetSessionOverlaySyncCache()
   lastSyncFingerprint = sessionOverlaySyncFingerprint()
@@ -296,8 +298,8 @@ export async function forceSyncSessionOverlayPayload(
   lastStableKey = JSON.stringify(stablePart)
   lastTimerLabel = timerLabel ?? ''
 
-  void api.setSessionOverlayActive?.(true)
-  const result = await api.setQuestOverlayPayload(payload)
+  void api.overlay.setSessionActive?.(true)
+  const result = await api.overlay.setPayload(payload)
   return result?.success !== false
 }
 

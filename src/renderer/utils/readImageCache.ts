@@ -40,14 +40,14 @@ function readCached(
 
 /** Load image from disk as a data URL (Electron `read-image`). */
 export function readImageCached(savedPath: string): Promise<string | null> {
-  const api = window.electronAPI?.readImage
+  const api = window.electronAPI?.gallery?.readImage
   if (!api) return Promise.resolve(null)
   return readCached(savedPath, api)
 }
 
 /** Load local file as a `file://` URL (Electron `get-local-media-url`). */
 export function readLocalMediaUrlCached(savedPath: string): Promise<string | null> {
-  const api = window.electronAPI?.getLocalMediaUrl
+  const api = window.electronAPI?.gallery?.getLocalMediaUrl
   if (!api) return Promise.resolve(null)
   return readCached(savedPath, api)
 }
@@ -58,7 +58,7 @@ export function readSavedMediaCached(savedPath: string): Promise<string | null> 
   if (mediaKindFromPath(savedPath) === 'video') {
     return readLocalMediaUrlCached(savedPath)
   }
-  if (window.electronAPI?.getLocalMediaUrl) {
+  if (window.electronAPI?.gallery?.getLocalMediaUrl) {
     return readLocalMediaUrlCached(savedPath)
   }
   return readImageCached(savedPath)

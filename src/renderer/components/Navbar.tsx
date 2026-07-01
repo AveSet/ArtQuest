@@ -133,7 +133,6 @@ const Navbar = memo(function Navbar({ hidden = false }: { hidden?: boolean }) {
         className={`nav-bottom-tab nav-bottom-tab--more ${mobileMoreOpen || mobileMoreLinks.some((l) => location.pathname.startsWith(l.path)) ? 'nav-bottom-tab--active' : ''}`}
         aria-expanded={mobileMoreOpen}
         aria-controls="nav-mobile-more-menu"
-        aria-haspopup="true"
         aria-label={t.nav.more ?? 'More'}
         onClick={() => {
           setMobileMoreOpen((v) => !v)
@@ -160,8 +159,8 @@ const Navbar = memo(function Navbar({ hidden = false }: { hidden?: boolean }) {
           <div
             ref={mobileMoreMenuRef}
             id="nav-mobile-more-menu"
-            role="menu"
-            aria-labelledby="nav-mobile-more-trigger"
+            role="navigation"
+            aria-label={t.nav.more ?? 'More'}
             className="nav-bottom-more fixed bottom-14 left-0 right-0 flex justify-center gap-4 py-2 px-4 bg-[var(--bg-primary)] border-t border-[var(--border-secondary)] shadow-lg sm:hidden"
             style={{ zIndex: 'calc(var(--z-nav) + 10)' }}
           >
@@ -173,7 +172,6 @@ const Navbar = memo(function Navbar({ hidden = false }: { hidden?: boolean }) {
               <Link
                 key={link.path}
                 to={link.path}
-                role="menuitem"
                 className={`nav-bottom-tab ${isActive ? 'nav-bottom-tab--active' : ''}`}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={() => {

@@ -3,6 +3,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { createPortal } from 'react-dom'
 import { useUIStore } from '@/store/useUIStore'
 import { buildQuestScreenSparks } from './celebrationLayout'
+import VfxWebglLayer from './vfx/VfxWebglLayer'
 import { skillCategoryColor } from '@/utils/skillCategoryColors'
 import type { QuestCategory } from '@/data/skillTree'
 
@@ -53,6 +54,7 @@ export default function QuestScreenCelebration() {
       {SCREEN_SPARKS.map(({ key, style }) => (
         <span key={key} className="quest-celebration-screen__spark" style={style} />
       ))}
+      <VfxWebglLayer preset="questComplete" category={celebrationCategory ?? undefined} />
     </div>,
     document.body,
   )

@@ -4,10 +4,10 @@ Manual checklist for the learning loop (run after UX/learning changes).
 
 ## Beginner fundamentals gate
 
-1. Set experience tier to **Beginner** (or fresh profile) — Dashboard **«Основы»** card shows progress 0/10.
+1. Set experience tier to **Beginner** (or fresh profile) — Dashboard **«Основы»** card shows progress **0/11**.
 2. Next best action is a fundamentals exercise (not warm-up); daily checklist shows locked hint.
-3. Complete 7 fundamentals exercises in order — daily quests unlock; catalog banner on `/quests` disappears.
-4. `/fundamentals` lists all 10 exercises grouped by tier; locked items cannot start until previous is done.
+3. Complete **one** fundamentals exercise — daily quests unlock; catalog banner on `/quests` disappears.
+4. `/fundamentals` lists all **11** catalog exercises grouped by tier; locked items cannot start until previous is done.
 
 ## Full practice day
 

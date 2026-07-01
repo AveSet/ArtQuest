@@ -21,7 +21,7 @@ async function launchTestApp() {
 
 /** loadProgress returns `{ status, data }` — unwrap for assertions. */
 async function loadProgressData(page: Awaited<ReturnType<typeof launchTestApp>>['page']) {
-  const result = await page.evaluate(async () => window.electronAPI?.loadProgress?.())
+  const result = await page.evaluate(async () => window.electronAPI?.progress?.load?.())
   expect(result?.status).toBe('ok')
   if (result?.status !== 'ok') return null
   return result.data as Record<string, unknown>
@@ -39,7 +39,7 @@ async function seedElectronProgress(
   progress: Record<string, unknown>,
 ) {
   await page.evaluate(async (payload) => {
-    await window.electronAPI?.saveProgress?.(JSON.stringify(payload))
+    await window.electronAPI?.progress?.save?.(JSON.stringify(payload))
     window.location.reload()
   }, progress)
   await expect(page.locator('#main-content, .container-fantasy').first()).toBeVisible({
@@ -60,7 +60,7 @@ test('boots real Electron runtime and persists progress through preload IPC', as
       const api = window.electronAPI
       return {
         hasApi: Boolean(api),
-        hasSave: typeof api?.saveProgress === 'function',
+        hasSave: typeof api?.progress?.save === 'function',
         hasLoad: typeof api?.loadProgress === 'function',
         hasOpenExternal: typeof api?.openExternal === 'function',
         hasNodeRequire: typeof (window as unknown as { require?: unknown }).require === 'function',
@@ -75,7 +75,7 @@ test('boots real Electron runtime and persists progress through preload IPC', as
     })
 
     const saveResult = await page.evaluate(async (progress) => {
-      return window.electronAPI?.saveProgress?.(JSON.stringify(progress))
+      return window.electronAPI?.progress?.save?.(JSON.stringify(progress))
     }, MOCK_PROGRESS)
     expect(saveResult?.success).toBe(true)
 
@@ -86,7 +86,7 @@ test('boots real Electron runtime and persists progress through preload IPC', as
     )
 
     const blockedExternal = await page.evaluate(async () => {
-      return window.electronAPI?.openExternal?.('file:///C:/Windows/System32/calc.exe')
+      return window.electronAPI?.shell?.openExternal?.('file:///C:/Windows/System32/calc.exe')
     })
     expect(blockedExternal?.success).toBe(false)
   } finally {
@@ -104,12 +104,12 @@ test('rejects corrupt progress payloads', async () => {
     })
 
     const invalidJson = await page.evaluate(async () => {
-      return window.electronAPI?.saveProgress?.('{ not valid json')
+      return window.electronAPI?.progress?.save?.('{ not valid json')
     })
     expect(invalidJson?.success).toBe(false)
 
     const invalidStructure = await page.evaluate(async () => {
-      return window.electronAPI?.saveProgress?.(JSON.stringify([]))
+      return window.electronAPI?.progress?.save?.(JSON.stringify([]))
     })
     expect(invalidStructure?.success).toBe(false)
   } finally {
@@ -127,7 +127,7 @@ test('saves incremental progress chunks and loads merged snapshot', async () => 
     })
 
     const fullSave = await page.evaluate(async (progress) => {
-      return window.electronAPI?.saveProgress?.(JSON.stringify(progress))
+      return window.electronAPI?.progress?.save?.(JSON.stringify(progress))
     }, MOCK_PROGRESS)
     expect(fullSave?.success).toBe(true)
 
@@ -147,7 +147,7 @@ test('saves incremental progress chunks and loads merged snapshot', async () => 
     }
 
     const chunkSave = await page.evaluate(async (chunk) => {
-      return window.electronAPI?.saveProgress?.(JSON.stringify(chunk))
+      return window.electronAPI?.progress?.save?.(JSON.stringify(chunk))
     }, chunkPayload)
     expect(chunkSave?.success).toBe(true)
 
@@ -170,7 +170,7 @@ test('getSavedImages returns an array from gallery IPC', async () => {
       timeout: 30_000,
     })
 
-    const images = await page.evaluate(async () => window.electronAPI?.getSavedImages?.())
+    const images = await page.evaluate(async () => window.electronAPI?.gallery?.listImages?.())
     expect(Array.isArray(images)).toBe(true)
   } finally {
     await app.close()
@@ -187,7 +187,7 @@ test('session tick IPC delivers pulses while active', async () => {
     })
 
     const activated = await page.evaluate(async () => {
-      return window.electronAPI?.setSessionTickActive?.(true)
+      return window.electronAPI?.session?.setTickActive?.(true)
     })
     expect(activated?.success).toBe(true)
 
@@ -195,7 +195,7 @@ test('session tick IPC delivers pulses while active', async () => {
       () =>
         new Promise<number>((resolve) => {
           let count = 0
-          const unsub = window.electronAPI?.onSessionTick?.(() => {
+          const unsub = window.electronAPI?.session?.onTick?.(() => {
             count += 1
             if (count >= 2) {
               unsub?.()
@@ -211,7 +211,7 @@ test('session tick IPC delivers pulses while active', async () => {
     expect(tickCount).toBeGreaterThanOrEqual(2)
 
     const deactivated = await page.evaluate(async () => {
-      return window.electronAPI?.setSessionTickActive?.(false)
+      return window.electronAPI?.session?.setTickActive?.(false)
     })
     expect(deactivated?.success).toBe(true)
   } finally {
@@ -237,8 +237,8 @@ test('overlay payload syncs through preload IPC', async () => {
         timerLabel: '04:59',
         labels: { next: 'Next' },
       }
-      const setResult = await window.electronAPI?.setQuestOverlayPayload?.(payload)
-      const snapResult = await window.electronAPI?.getQuestOverlayPayload?.()
+      const setResult = await window.electronAPI?.overlay?.setPayload?.(payload)
+      const snapResult = await window.electronAPI?.overlay?.getPayload?.()
       return { setResult, snap: snapResult?.payload }
     })
 
@@ -275,13 +275,13 @@ test('dispatchQuestSessionCommand advances an active quest session phase', async
 
     if (hadNextPhase) {
       const dispatch = await page.evaluate(async () => {
-        return window.electronAPI?.dispatchQuestSessionCommand?.('advancePhase')
+        return window.electronAPI?.session?.dispatchCommand?.('advancePhase')
       })
       expect(dispatch?.success).toBe(true)
       await expect(nextPhaseBefore).toBeHidden({ timeout: 10_000 }).catch(() => undefined)
     } else {
       const dispatch = await page.evaluate(async () => {
-        return window.electronAPI?.dispatchQuestSessionCommand?.('cancelQuestSession')
+        return window.electronAPI?.session?.dispatchCommand?.('cancelQuestSession')
       })
       expect(dispatch?.success).toBe(true)
       await expect(page.locator('[data-onboarding="dashboard-dailies"]')).toBeVisible({ timeout: 15_000 })

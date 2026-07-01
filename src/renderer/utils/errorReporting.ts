@@ -1,4 +1,5 @@
 import { appLog } from './appLog'
+import { trackTelemetry } from '@/telemetry/telemetryClient'
 
 const STORAGE_KEY = 'artquest_error_log'
 const MAX_ENTRIES = 50
@@ -59,6 +60,8 @@ export function recordClientError(
     stack: options?.stack,
     ...options?.meta,
   })
+
+  trackTelemetry('client_error', { scope, message, stack: options?.stack, meta: options?.meta })
 
   const next = [...readEntries(), entry].slice(-MAX_ENTRIES)
   writeEntries(next)

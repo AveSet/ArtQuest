@@ -341,10 +341,10 @@ async function blobToBase64(blob: Blob): Promise<string> {
 
 export async function downloadShareCard(blob: Blob, filename = 'artquest-share.png'): Promise<boolean> {
   const api = window.electronAPI
-  if (api?.saveShareCardPng) {
+  if (api?.shell?.saveShareCardPng) {
     try {
       const base64 = await blobToBase64(blob)
-      const result = await api.saveShareCardPng(base64, filename)
+      const result = await api.shell.saveShareCardPng(base64, filename)
       return result.success
     } catch {
       return false

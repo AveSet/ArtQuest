@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { Quest, QuestCompletionLog, CompletedWork, QuestTitleOverrides, QuestSavedReference, QuestPhaseMediaEntry } from './models'
+import type { QuestPhaseMediaMap } from '@/utils/questPhaseMedia'
 import type { Language } from '@/i18n/translations'
 import { CATEGORY_INFO, type QuestCategory } from '@/data/skillTree'
 import { mergeQuestLists } from '@/utils/mergeQuestLists'
@@ -23,13 +24,6 @@ import {
   finalizeQuestCompletion,
   playMicroChallengeCompleteSound,
 } from '@/utils/questCompletionService'
-import { readFileAsDataURL } from '@/utils/fileHelpers'
-import { getPhaseMediaStorageId } from '@/utils/questPhaseKeys'
-import {
-  getPhaseMediaEntries,
-  newPhaseMediaId,
-  type QuestPhaseMediaMap,
-} from '@/utils/questPhaseMedia'
 import { getFundamentalsQuestById, getFundamentalsTrackKind, isFundamentalsAdvancedId, isFundamentalsQuestId, isFundamentalsTrackId } from '@/data/fundamentalsExercises'
 import { getWarmupQuestById, isWarmupQuestId } from '@/data/warmupQuests'
 import {
@@ -41,7 +35,18 @@ import {
 import { useQuestSessionStore } from '@/store/useQuestSessionStore'
 import { pickDailyQuestReplacement } from '@/utils/dailyQuestGenerator'
 import { devLog } from '@/utils/devLog'
-import { syncWeeklyChallengeState } from '@/utils/weeklyChallenge'
+import {
+  createQuestGallerySlice,
+  questGalleryInitialState,
+} from '@/store/questStore/gallerySlice'
+import {
+  createQuestCadenceSlice,
+  questCadenceInitialState,
+} from '@/store/questStore/cadenceSlice'
+import {
+  createQuestMediaSlice,
+  questMediaInitialState,
+} from '@/store/questStore/mediaSlice'
 import { loadQuestsProgressive } from '@/data/quests_data'
 
 export type QuestCompletionReward = {
@@ -148,22 +153,12 @@ export const useQuestStore = create<QuestState>((set, get) => ({
   questsLoaded: false,
   questsLoadError: false,
   completedQuests: [],
-  completedWorks: [],
   questCompletionLogs: [],
-  dailyQuestsIds: [],
-  completedToday: [],
-  lastDailyQuestDate: '',
-  lastFavCategories: '',
-  dailyBonusGrantedDate: '',
-  weeklyChallengeWeek: '',
-  weeklyChallengeQuestId: 0,
-  weeklyChallengeCompletedWeek: '',
-  lastWarmupCompletedDate: '',
-  fundamentalsProgress: normalizeFundamentalsProgress(undefined),
   lastCompletionReward: null,
   microChallengesCompleted: {},
-  questSavedReferences: {},
-  questPhaseMedia: {},
+  ...questCadenceInitialState,
+  ...questGalleryInitialState,
+  ...questMediaInitialState,
 
   recomputeQuests: () => {
     const { catalogQuests, userQuests, deletedQuestIds } = get()
@@ -475,80 +470,6 @@ export const useQuestStore = create<QuestState>((set, get) => ({
     })
   },
 
-  ensureWeeklyChallenge: () => {
-    const { quests, weeklyChallengeWeek, weeklyChallengeQuestId, weeklyChallengeCompletedWeek, completedQuests } =
-      get()
-    if (quests.length === 0) return
-    const sync = syncWeeklyChallengeState(
-      quests,
-      weeklyChallengeWeek,
-      weeklyChallengeQuestId,
-      weeklyChallengeCompletedWeek,
-      completedQuests,
-    )
-    if (sync.needsPersist) {
-      set({
-        weeklyChallengeWeek: sync.weekKey,
-        weeklyChallengeQuestId: sync.questId,
-      })
-    }
-  },
-
-  uploadWork: (questId, imageUrl, savedPath, notes, mediaType, meta) => {
-    set((state) => ({
-      completedWorks: [
-        ...state.completedWorks,
-        {
-          ...meta,
-          questId,
-          imageUrl,
-          savedPath,
-          date: new Date().toISOString(),
-          notes: notes?.trim() || undefined,
-          mediaType,
-        },
-      ],
-    }))
-  },
-
-  toggleWorkFavorite: (workKey) => {
-    set((state) => ({
-      completedWorks: state.completedWorks.map((work) => {
-        const sameId = workKey.id && work.id === workKey.id
-        const sameFallback = !workKey.id && work.questId === workKey.questId && work.date === workKey.date
-        if (!sameId && !sameFallback) return work
-        return { ...work, favorite: !work.favorite }
-      }),
-    }))
-  },
-
-  updateWorkReview: (workKey, patch) => {
-    set((state) => ({
-      completedWorks: state.completedWorks.map((work) => {
-        const sameId = workKey.id && work.id === workKey.id
-        const sameFallback = !workKey.id && work.questId === workKey.questId && work.date === workKey.date
-        if (!sameId && !sameFallback) return work
-        return {
-          ...work,
-          ...(patch.notes !== undefined ? { notes: patch.notes.trim() || undefined } : {}),
-          ...(patch.improvementNotes !== undefined
-            ? { improvementNotes: patch.improvementNotes.trim() || undefined }
-            : {}),
-          ...(patch.tags !== undefined ? { tags: patch.tags } : {}),
-        }
-      }),
-    }))
-  },
-
-  getDailyQuests: () => {
-    const { quests, dailyQuestsIds } = get()
-    return quests.filter((q) => dailyQuestsIds.includes(q.id))
-  },
-
-  setDailyQuestsDate: (dateStr) => {
-    set({ lastDailyQuestDate: dateStr, completedToday: [] })
-  },
-
   updateLastCompletionFeedback: (questId, feedback) => {
     set((state) => {
       const logs = [...state.questCompletionLogs]
@@ -609,6 +530,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
       )
       emitQuestCompletionXpFloat(skillXp)
     } else {
+      void window.electronAPI?.progress?.appendLog?.(logEntry as unknown as Record<string, unknown>)
       set((s) => ({ questCompletionLogs: [...s.questCompletionLogs, logEntry] }))
     }
 
@@ -639,126 +561,7 @@ export const useQuestStore = create<QuestState>((set, get) => ({
 
   },
 
-  getQuestReferences: (questId) => {
-    return get().questSavedReferences[String(questId)] ?? []
-  },
-
-  addQuestReferenceFromFile: async (questId, file) => {
-    if (!file.type.startsWith('image/')) return false
-    const api = window.electronAPI
-    if (!api?.saveQuestReference) return false
-    try {
-      const base64 = await readFileAsDataURL(file)
-      const result = await api.saveQuestReference(base64, String(questId))
-      if (!result.success || !result.path || !result.id) return false
-      const entry: QuestSavedReference = {
-        id: result.id,
-        path: result.path,
-        addedAt: new Date().toISOString(),
-      }
-      set((state) => {
-        const key = String(questId)
-        const prev = state.questSavedReferences[key] ?? []
-        return {
-          questSavedReferences: {
-            ...state.questSavedReferences,
-            [key]: [...prev, entry],
-          },
-        }
-      })
-      return true
-    } catch {
-      return false
-    }
-  },
-
-  removeQuestReference: async (questId, refId) => {
-    const key = String(questId)
-    const list = get().questSavedReferences[key] ?? []
-    const ref = list.find((r) => r.id === refId)
-    if (ref?.path) {
-      await window.electronAPI?.deleteQuestReference?.(ref.path)
-    }
-    set((state) => ({
-      questSavedReferences: {
-        ...state.questSavedReferences,
-        [key]: (state.questSavedReferences[key] ?? []).filter((r) => r.id !== refId),
-      },
-    }))
-  },
-
-  getPhaseMediaEntries: (questId, phaseKey) =>
-    getPhaseMediaEntries(get().questPhaseMedia, questId, phaseKey),
-
-  appendPhaseMediaFromFile: async (questId, phaseKey, file) => {
-    if (!file.type.startsWith('image/')) return false
-    const questKey = String(questId)
-    const entryId = newPhaseMediaId()
-    const api = window.electronAPI
-    let entry: QuestPhaseMediaEntry
-
-    if (api?.saveQuestReference) {
-      try {
-        const base64 = await readFileAsDataURL(file)
-        const storageId = getPhaseMediaStorageId(questId, phaseKey, entryId)
-        const result = await api.saveQuestReference(base64, storageId)
-        if (!result.success || !result.path) return false
-        entry = {
-          id: entryId,
-          path: result.path,
-          mimeType: file.type,
-          addedAt: new Date().toISOString(),
-        }
-      } catch {
-        return false
-      }
-    } else {
-      try {
-        const dataUrl = await readFileAsDataURL(file)
-        entry = {
-          id: entryId,
-          dataUrl,
-          mimeType: file.type,
-          addedAt: new Date().toISOString(),
-        }
-      } catch {
-        return false
-      }
-    }
-
-    set((state) => {
-      const prev = state.questPhaseMedia[questKey]?.[phaseKey] ?? []
-      return {
-        questPhaseMedia: {
-          ...state.questPhaseMedia,
-          [questKey]: {
-            ...(state.questPhaseMedia[questKey] ?? {}),
-            [phaseKey]: [...prev, entry],
-          },
-        },
-      }
-    })
-    return true
-  },
-
-  removePhaseMediaEntry: async (questId, phaseKey, index) => {
-    const questKey = String(questId)
-    const list = get().questPhaseMedia[questKey]?.[phaseKey] ?? []
-    const existing = list[index]
-    if (!existing) return
-    if (existing.path) {
-      await window.electronAPI?.deleteQuestReference?.(existing.path)
-    }
-    set((state) => {
-      const prevList = state.questPhaseMedia[questKey]?.[phaseKey] ?? []
-      const nextList = prevList.filter((_, i) => i !== index)
-      const prev = { ...(state.questPhaseMedia[questKey] ?? {}) }
-      if (nextList.length === 0) delete prev[phaseKey]
-      else prev[phaseKey] = nextList
-      const next = { ...state.questPhaseMedia }
-      if (Object.keys(prev).length === 0) delete next[questKey]
-      else next[questKey] = prev
-      return { questPhaseMedia: next }
-    })
-  },
+  ...createQuestGallerySlice(set, get),
+  ...createQuestCadenceSlice(set, get),
+  ...createQuestMediaSlice(set, get),
 }))

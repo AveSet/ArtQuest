@@ -45,8 +45,8 @@ export default function DashboardPortrait({ gender, idle = false }: Props) {
     if (pickingRef.current) return
     pickingRef.current = true
 
-    if (window.electronAPI?.pickPortraitImage) {
-      void window.electronAPI.pickPortraitImage().then((result) => {
+    if (window.electronAPI?.gallery?.pickPortraitImage) {
+      void window.electronAPI.gallery.pickPortraitImage().then((result) => {
         pickingRef.current = false
         if (result.success && result.dataUrl) setCropSource(result.dataUrl)
       })
@@ -93,8 +93,8 @@ export default function DashboardPortrait({ gender, idle = false }: Props) {
 
   const handleConfirmCrop = useCallback(
     async (croppedDataUrl: string) => {
-      if (window.electronAPI?.saveCustomAvatar) {
-        const result = await window.electronAPI.saveCustomAvatar(croppedDataUrl)
+      if (window.electronAPI?.gallery?.saveCustomAvatar) {
+        const result = await window.electronAPI.gallery.saveCustomAvatar(croppedDataUrl)
         if (result.success && result.path) {
           setSettings({ customAvatarPath: result.path, customAvatarDataUrl: undefined })
           void saveProgress()

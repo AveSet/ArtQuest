@@ -9,6 +9,7 @@ import { questStoreSaveFingerprint } from '@/utils/questStoreSaveSlice'
 import { skillStoreSaveFingerprint } from '@/utils/skillStoreSaveSlice'
 import { uiStoreSaveFingerprint } from '@/utils/uiStoreSaveSlice'
 import { portraitStoreSaveFingerprint } from '@/utils/portraitStoreSaveSlice'
+import { flushWindowBoundsNow } from '@/components/WindowBoundsBridge'
 
 const SAVE_DELAY_MS = 2000
 const FULL_SAVE_EVERY_N_INCREMENTAL = 24
@@ -142,28 +143,36 @@ export function initAutoSave() {
     scheduleSave()
   })
 
+  /** Blocking full save used on beforeunload — sync required by the browser lifecycle API. */
   const flushSyncBeforeUnload = () => {
     if (saveTimer) {
       clearTimeout(saveTimer)
       saveTimer = null
     }
     try {
+      flushWindowBoundsNow()
       useUIStore.getState().saveProgressSync()
     } catch (err) {
       console.error('[autoSave] unload flush failed:', err)
     }
   }
 
-  /** Blocking full save used on app quit — ensures debounced dirty state is persisted. */
-  const flushOnQuit = () => {
+  /** Async-first save on app quit; sync fallback if async fails. */
+  const flushOnQuit = async () => {
     if (saveTimer) {
       clearTimeout(saveTimer)
       saveTimer = null
     }
+    flushWindowBoundsNow()
     try {
-      useUIStore.getState().saveProgressSync()
+      await useUIStore.getState().saveProgress()
     } catch (err) {
-      console.error('[autoSave] quit flush failed:', err)
+      console.error('[autoSave] quit async flush failed, falling back to sync:', err)
+      try {
+        useUIStore.getState().saveProgressSync()
+      } catch (syncErr) {
+        console.error('[autoSave] quit sync fallback failed:', syncErr)
+      }
     }
   }
 
@@ -178,10 +187,8 @@ export function initAutoSave() {
   document.addEventListener('visibilitychange', flushOnHidden)
 
   let detachBeforeQuit: (() => void) | null = null
-  if (window.electronAPI?.onAppBeforeQuit) {
-    detachBeforeQuit = window.electronAPI.onAppBeforeQuit(() => {
-      flushOnQuit()
-    })
+  if (window.electronAPI?.progress?.onBeforeQuit) {
+    detachBeforeQuit = window.electronAPI.progress.onBeforeQuit(() => flushOnQuit())
   }
 
   return () => {

@@ -5,7 +5,7 @@ import type { ReferenceSource } from '@/store/models'
 import { useUIStore } from '@/store/useUIStore'
 
 export type ReferenceWindowParams = {
-  mode: MaterialVideoMode
+  mode?: MaterialVideoMode
   questId?: number
   nodeId?: string
   category?: QuestCategory | 'all'
@@ -14,7 +14,54 @@ export type ReferenceWindowParams = {
   source?: ReferenceSource
 }
 
-export function openReferenceWindow(params: ReferenceWindowParams): void {
-  const source = params.source ?? useUIStore.getState().settings.preferredReferenceSource
-  void window.electronAPI?.openReferenceWindow?.({ ...params, source })
+export function defaultModeForReferenceSource(source: ReferenceSource): MaterialVideoMode {
+  switch (source) {
+    case 'pinterest':
+      return 'pinterest'
+    case 'artstation':
+      return 'sketchfab'
+    case 'google':
+      return 'long'
+    case 'youtube':
+    default:
+      return 'long'
+  }
+}
+
+function buildReferenceMaterialsHash(
+  params: ReferenceWindowParams & { source: ReferenceSource; mode: MaterialVideoMode },
+): string {
+  const p = new URLSearchParams()
+  p.set('mode', params.mode)
+  p.set('source', params.source)
+  if (params.questId != null) p.set('questId', String(params.questId))
+  if (params.nodeId) p.set('node', params.nodeId)
+  if (params.category) p.set('category', params.category)
+  if (params.tags?.length) p.set('tags', params.tags.join(','))
+  if (params.lang) p.set('lang', params.lang)
+  return `#/reference-materials?${p.toString()}`
+}
+
+export async function openReferenceWindow(params: ReferenceWindowParams): Promise<boolean> {
+  const source: ReferenceSource =
+    params.source ?? useUIStore.getState().settings.preferredReferenceSource ?? 'pinterest'
+  const mode = params.mode ?? defaultModeForReferenceSource(source)
+  const payload = { ...params, source, mode }
+
+  if (window.electronAPI?.reference?.open) {
+    try {
+      const result = await window.electronAPI.reference.open(payload)
+      if (result && !result.success) {
+        console.error('[openReferenceWindow]', result.error ?? 'failed to open reference window')
+        return false
+      }
+      return true
+    } catch (err) {
+      console.error('[openReferenceWindow]', err)
+      return false
+    }
+  }
+
+  window.location.hash = buildReferenceMaterialsHash(payload)
+  return true
 }

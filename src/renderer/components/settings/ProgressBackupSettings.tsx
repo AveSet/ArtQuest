@@ -10,6 +10,7 @@ import {
   stripGalleryBinary,
 } from '@/utils/progressExport'
 import SettingsSection from '@/components/settings/SettingsSection'
+import { SettingsIconBackup, SettingsSectionTitle } from '@/components/settings/SettingsIcons'
 
 export default function ProgressBackupSettings() {
   const { t } = useI18n()
@@ -31,8 +32,8 @@ export default function ProgressBackupSettings() {
     const stripped = stripGalleryBinary(progressData, includeMediaExport)
     const envelope = buildExportEnvelope(stripped)
     const json = JSON.stringify(envelope, null, 2)
-    if (window.electronAPI?.exportProgressFile) {
-      const result = await window.electronAPI.exportProgressFile(json)
+    if (window.electronAPI?.progress?.exportFile) {
+      const result = await window.electronAPI.progress.exportFile(json)
       if (result.success) {
         setSettings({})
         useUIStore.setState({ lastExportAt: envelope.exportedAt })
@@ -52,8 +53,8 @@ export default function ProgressBackupSettings() {
   const importProgressBackup = async () => {
     playUiClick()
     setBackupMsg('')
-    if (window.electronAPI?.importProgressFile) {
-      const result = await window.electronAPI.importProgressFile()
+    if (window.electronAPI?.progress?.importFile) {
+      const result = await window.electronAPI.progress.importFile()
       if (result.success) {
         await loadProgress()
         setBackupMsg(t.settings.importSuccess ?? 'Imported')
@@ -77,8 +78,8 @@ export default function ProgressBackupSettings() {
           setBackupMsg(t.settings.importFailed ?? 'Import failed')
           return
         }
-        if (window.electronAPI?.saveProgress) {
-          await window.electronAPI.saveProgress(JSON.stringify(normalized))
+        if (window.electronAPI?.progress?.save) {
+          await window.electronAPI.progress.save(JSON.stringify(normalized))
         } else {
           const { saveProgressToBrowser } = await import('@/utils/browserProgress')
           if (!saveProgressToBrowser(normalized as Record<string, unknown>)) {
@@ -96,7 +97,11 @@ export default function ProgressBackupSettings() {
   }
 
   return (
-    <SettingsSection title={`📦 ${t.settings.backupSection ?? 'Backup'}`} testId="backup-settings" defaultOpen={false}>
+    <SettingsSection
+      title={<SettingsSectionTitle icon={<SettingsIconBackup />}>{t.settings.backupSection ?? 'Backup'}</SettingsSectionTitle>}
+      testId="backup-settings"
+      defaultOpen={false}
+    >
       <p className="text-xs text-[var(--text-muted)]">{t.settings.exportProgressHint}</p>
       {lastExportAt ? (
         <p className="text-xs text-[var(--text-muted)]">

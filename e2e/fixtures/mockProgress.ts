@@ -1,6 +1,6 @@
-/** Minimal progress snapshot for Playwright (web mode + mocked electronAPI). */
+/** Minimal progress snapshot for Playwright (web mode + mocked electronAPI). Schema v25. */
 export const MOCK_PROGRESS = {
-  schemaVersion: 18,
+  schemaVersion: 27,
   skillNodes: [],
   legacySkills: [],
   achievements: [],

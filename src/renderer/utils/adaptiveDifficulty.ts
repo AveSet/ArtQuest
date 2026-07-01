@@ -2,6 +2,7 @@ import type { Quest, QuestCompletionLog, FlowMetrics, AdaptiveWeights } from '@/
 import { QUEST_DIFFICULTY_ORDER, QUEST_DIFFICULTY_RANK } from '../../shared/difficultyOrder'
 
 const WINDOW_SIZE = 20
+const MIN_ADAPTIVE_SAMPLE = 5
 
 function isSuccessfulCompletion(log: QuestCompletionLog): boolean {
   return (log as QuestCompletionLog & { status?: string }).status !== 'timeout'
@@ -14,7 +15,13 @@ export function computeFlowMetrics(
 ): FlowMetrics {
   const recent = logs.slice(-WINDOW_SIZE)
   if (recent.length === 0) {
-    return { completionRate: 1, averageTimeRatio: 1, averageDifficultyRating: 3, recentTrend: 'stable' }
+    return {
+      completionRate: 1,
+      averageTimeRatio: 1,
+      averageDifficultyRating: 3,
+      recentTrend: 'stable',
+      observationCount: 0,
+    }
   }
 
   const questMap = new Map(quests.map((q) => [q.id, q]))
@@ -56,27 +63,30 @@ export function computeFlowMetrics(
   }
 
   const successfulRecent = recent.filter(isSuccessfulCompletion).length
-  const completionRate = Math.min(1, successfulRecent / WINDOW_SIZE)
+  const completionRate =
+    recent.length > 0 ? Math.min(1, successfulRecent / recent.length) : 1
 
   return {
     completionRate,
     averageTimeRatio: Math.round(avgTimeRatio * 100) / 100,
     averageDifficultyRating: Math.round(avgDifficultyRating * 10) / 10,
     recentTrend,
+    observationCount: recent.length,
   }
+}
+
+/** Suggest whether to go easier, harder, or stay based on flow metrics */
+export function getRecommendedDifficultyShift(metrics: FlowMetrics): -1 | 0 | 1 {
+  if (metrics.observationCount < MIN_ADAPTIVE_SAMPLE) return 0
+  if (metrics.completionRate < 0.4) return -1
+  if (metrics.averageTimeRatio > 1.5 && metrics.completionRate >= 0.6) return -1
+  if (metrics.averageTimeRatio < 0.7 && metrics.completionRate >= 0.8 && metrics.averageDifficultyRating <= 3) return 1
+  return 0
 }
 
 /** Map a difficulty to a -2..+2 delta relative to the user's current average difficulty */
 export function difficultyDelta(difficulty: Quest['difficulty']): number {
   return QUEST_DIFFICULTY_RANK[difficulty] - 2
-}
-
-/** Suggest whether to go easier, harder, or stay based on flow metrics */
-export function getRecommendedDifficultyShift(metrics: FlowMetrics): -1 | 0 | 1 {
-  if (metrics.completionRate < 0.4) return -1
-  if (metrics.averageTimeRatio > 1.5 && metrics.completionRate >= 0.6) return -1
-  if (metrics.averageTimeRatio < 0.7 && metrics.completionRate >= 0.8 && metrics.averageDifficultyRating <= 3) return 1
-  return 0
 }
 
 /** Given current adaptive weights, compute difficulty multipliers for each level */

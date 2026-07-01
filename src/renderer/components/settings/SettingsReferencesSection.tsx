@@ -1,4 +1,5 @@
 import SettingsSection from '@/components/settings/SettingsSection'
+import { SettingsIconSearch, SettingsSectionTitle } from '@/components/settings/SettingsIcons'
 import { REFERENCE_SOURCES } from '@/utils/buildReferenceQuery'
 import { settingsChoiceClass } from '@/utils/settingsUi'
 import { playUiClick } from '@/utils/sound'
@@ -25,7 +26,11 @@ export default function SettingsReferencesSection({
     <div className="settings-block space-y-2">
       <h2 className="settings-group-heading">{t.settings.referencesSection ?? 'References & materials'}</h2>
       <SettingsSection
-        title={`🔎 ${t.settings.referenceSourceTitle ?? 'Default reference source'}`}
+        title={
+          <SettingsSectionTitle icon={<SettingsIconSearch />}>
+            {t.settings.referenceSourceTitle ?? 'Default reference source'}
+          </SettingsSectionTitle>
+        }
         defaultOpen={false}
       >
         <p className="text-xs text-[var(--text-muted)] mb-2">

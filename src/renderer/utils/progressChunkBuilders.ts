@@ -6,6 +6,7 @@ import { useSkillPracticeStore } from '@/store/useSkillPracticeStore'
 import { usePortraitStore } from '@/store/usePortraitStore'
 import { CURRENT_PROGRESS_SCHEMA_VERSION } from '../../shared/progressSchema'
 import { PROGRESS_CHUNK_KEYS, type ProgressChunkKey } from '../../shared/progressChunkMerge'
+import { packQuestCompletionLogsForStorage } from '../../shared/progressLogLiveCompression'
 import { serializeQuestSession, serializeSkillPracticeSession } from '@/utils/sessionPersistence'
 import { serializeQuestTitleOverrides } from '@/utils/questTitleOverrides'
 import type { CompletedWork } from '@/store/models'
@@ -80,12 +81,16 @@ function buildCoreChunkFromSnapshot(snapshot: FrozenStoreSnapshot): Record<strin
 
 function buildQuestsChunkFromSnapshot(snapshot: FrozenStoreSnapshot): Record<string, unknown> {
   const questState = snapshot.quest
+  const logPack = packQuestCompletionLogsForStorage(
+    questState.questCompletionLogs as unknown as Record<string, unknown>[],
+    CURRENT_PROGRESS_SCHEMA_VERSION,
+  )
   return {
     userQuests: questState.userQuests,
     deletedQuestIds: questState.deletedQuestIds,
     questTitleOverrides: serializeQuestTitleOverrides(questState.questTitleOverrides),
     completedQuests: questState.completedQuests,
-    questCompletionLogs: questState.questCompletionLogs,
+    ...logPack,
     microChallengesCompleted: questState.microChallengesCompleted,
     questSavedReferences: questState.questSavedReferences,
     questPhaseMedia: questState.questPhaseMedia,

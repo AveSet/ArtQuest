@@ -44,6 +44,18 @@ describe('Settings page smoke', () => {
     expect(profileSection.textContent).toMatch(/Animation|Анимация/)
   })
 
+  it('renders settings sections with text labels, not emoji icons', async () => {
+    render(
+      <I18nProvider>
+        <Settings />
+      </I18nProvider>,
+    )
+
+    const profileSection = await screen.findByTestId('learning-profile-settings')
+    expect(profileSection.textContent).not.toMatch(/[\u{1F300}-\u{1FAFF}]/u)
+    expect(await screen.findByRole('heading', { name: /Learning profile|Профиль обучения/i })).toBeDefined()
+  })
+
   it('confirms reset progress after trash button', async () => {
     const resetSpy = vi.spyOn(useUIStore.getState(), 'resetProgress').mockResolvedValue(undefined)
     const user = userEvent.setup()

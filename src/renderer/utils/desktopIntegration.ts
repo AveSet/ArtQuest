@@ -30,7 +30,7 @@ export function buildDesktopIntegrationPayload(settings: Settings, copy?: Deskto
 export function pushDesktopIntegrationSync(settings: Settings, copy?: DesktopReminderCopy): void {
   const api = window.electronAPI
   const payload = buildDesktopIntegrationPayload(settings, copy)
-  if (api?.syncDesktopSettings) {
-    void api.syncDesktopSettings(payload)
+  if (api?.desktop?.syncSettings) {
+    void api.desktop.syncSettings(payload)
   }
 }

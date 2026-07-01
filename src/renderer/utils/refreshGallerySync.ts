@@ -41,9 +41,9 @@ function savedImageToWork(img: {
 
 /** Merge disk gallery metadata into quest store; import missing works for gallery display. */
 export async function refreshGallerySyncFromDisk(options?: { persist?: boolean }): Promise<boolean> {
-  if (!window.electronAPI?.getSavedImages) return false
+  if (!window.electronAPI?.gallery?.listImages) return false
 
-  const savedImages = await window.electronAPI.getSavedImages()
+  const savedImages = await window.electronAPI.gallery.listImages()
   if (savedImages.length === 0) return false
 
   const works = useQuestStore.getState().completedWorks

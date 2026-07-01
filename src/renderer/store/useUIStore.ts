@@ -21,6 +21,7 @@ import { setBatchLoading, resetSaveFingerprint } from '@/utils/autoSave'
 import { devInfo, devWarn } from '@/utils/devLog'
 import { appLog } from '@/utils/appLog'
 import { clearProgressFromBrowser } from '@/utils/browserProgress'
+import { resetQuestStores } from '@/store/questStore/hydrateQuestStores'
 import { detectSystemLanguage } from '@/utils/detectSystemLanguage'
 import type { LocalizedString } from '@/i18n/languages'
 import { useQuestSessionStore } from '@/store/useQuestSessionStore'
@@ -209,13 +210,13 @@ export const useUIStore = create<UIState>((set, get) => ({
       setBatchLoading(true)
       set({ loadProgressError: null, corruptProgressBackupPath: null })
 
-      const response: LoadProgressResponse = window.electronAPI?.loadProgress
-        ? await window.electronAPI.loadProgress()
+      const response: LoadProgressResponse = window.electronAPI?.progress?.load
+        ? await window.electronAPI.progress.load()
         : loadProgressFromBrowserWithStatus()
 
       let savedImages: SavedGalleryImage[] = []
-      if (window.electronAPI?.getSavedImages) {
-        savedImages = await window.electronAPI.getSavedImages()
+      if (window.electronAPI?.gallery?.listImages) {
+        savedImages = await window.electronAPI.gallery.listImages()
       }
 
       if (response.status === 'ok') {
@@ -289,8 +290,8 @@ export const useUIStore = create<UIState>((set, get) => ({
   exportCorruptProgressBackup: async () => {
     const { corruptProgressBackupPath } = get()
     let backupRaw: Record<string, unknown> | null = null
-    if (corruptProgressBackupPath && window.electronAPI?.readCorruptProgressBackup) {
-      const result = await window.electronAPI.readCorruptProgressBackup(corruptProgressBackupPath)
+    if (corruptProgressBackupPath && window.electronAPI?.progress?.readCorruptBackup) {
+      const result = await window.electronAPI.progress.readCorruptBackup(corruptProgressBackupPath)
       if (result.success) backupRaw = result.data
     }
     if (!backupRaw) {
@@ -308,8 +309,8 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   resetProgress: async () => {
     try {
-      if (window.electronAPI?.clearProgress) {
-        const clearResult = await window.electronAPI.clearProgress()
+      if (window.electronAPI?.progress?.clear) {
+        const clearResult = await window.electronAPI.progress.clear()
         if (clearResult && !clearResult.success) {
           console.error('Failed to clear progress:', clearResult.error)
           set({ saveError: 'reset_failed' })
@@ -320,30 +321,7 @@ export const useUIStore = create<UIState>((set, get) => ({
         return
       }
 
-      useQuestStore.setState({
-        userQuests: [],
-        deletedQuestIds: [],
-        questTitleOverrides: {},
-        catalogQuests: useQuestStore.getState().catalogQuests,
-        quests: useQuestStore.getState().catalogQuests,
-        completedQuests: [],
-        completedWorks: [],
-        questCompletionLogs: [],
-        dailyQuestsIds: [],
-        completedToday: [],
-        lastDailyQuestDate: '',
-        lastFavCategories: '',
-        dailyBonusGrantedDate: '',
-        weeklyChallengeWeek: '',
-        weeklyChallengeQuestId: 0,
-        weeklyChallengeCompletedWeek: '',
-        lastWarmupCompletedDate: '',
-        fundamentalsProgress: { completedIds: [], trackPhaseDone: {}, lastCompletedDate: '' },
-        lastCompletionReward: null,
-        microChallengesCompleted: {},
-        questSavedReferences: {},
-        questPhaseMedia: {},
-      })
+      resetQuestStores(useQuestStore.getState().catalogQuests)
 
       useQuestSessionStore.getState().hydrateSession(null)
       useSkillPracticeStore.getState().clearSession()

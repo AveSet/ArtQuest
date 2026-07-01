@@ -10,6 +10,9 @@ declare global {
     __e2eRecordAllDailiesComplete?: () => void
     __e2eBuildExportEnvelope?: () => ReturnType<typeof buildExportEnvelope>
     __e2eTryShareCardDownload?: () => Promise<{ ok: boolean; blobSize?: number; reason?: string }>
+    __e2eInjectSaveFailure?: () => void
+    __e2eGetLastSaveError?: () => string | null
+    __e2eGetHydrationMs?: () => number | null
   }
 }
 

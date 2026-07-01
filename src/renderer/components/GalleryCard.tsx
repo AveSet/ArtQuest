@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect, memo, useCallback, useMemo, type MouseEvent as ReactMouseEvent } from 'react'
-import { createPortal } from 'react-dom'
+import { useState, useRef, memo, useCallback, useMemo, type MouseEvent as ReactMouseEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { useI18n, getCategoryLabel } from '@/i18n'
 import type { Language } from '@/i18n/languages'
@@ -10,9 +9,8 @@ import { GalleryLightbox } from './GalleryLightbox'
 import { formatLocalizedDate } from '@/utils/dateLocale'
 import GalleryWorkReview from '@/components/GalleryWorkReview'
 import { useQuestStore } from '@/store/useQuestStore'
+import { useGalleryWorkContextMenu } from '@/components/GalleryWorkContextMenu'
 
-const CONTEXT_MENU_W = 180
-const CONTEXT_MENU_H = 88
 /** Max thumbnails rendered per quest group before "show more" (grouped gallery perf). */
 export const GALLERY_GROUP_PREVIEW_MAX = 8
 
@@ -50,7 +48,7 @@ const GalleryCard = memo(function GalleryCard({ group, language }: GalleryCardPr
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
   const [erroredImages, setErroredImages] = useState<Set<number>>(new Set())
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; workIdx: number } | null>(null)
+  const { openContextMenu, menuPortal } = useGalleryWorkContextMenu()
   const [showAllWorks, setShowAllWorks] = useState(false)
   const [compareMode, setCompareMode] = useState(false)
 
@@ -60,31 +58,13 @@ const GalleryCard = memo(function GalleryCard({ group, language }: GalleryCardPr
     )
   ), [group.works])
 
-  const openFileLocation = useCallback(async (workIdx: number) => {
-    setContextMenu(null)
-    const work = sortedWorks[workIdx]
-    if (!work?.savedPath || !window.electronAPI?.showItemInFolder) return
-    await window.electronAPI.showItemInFolder(work.savedPath)
-  }, [sortedWorks])
 
-  useEffect(() => {
-    if (!contextMenu) return
-    const close = (e: globalThis.MouseEvent) => {
-      if (e.button === 2) return
-      const target = e.target as HTMLElement
-      if (target.closest('.gallery-context-menu')) return
-      setContextMenu(null)
-    }
-    window.addEventListener('mousedown', close)
-    return () => window.removeEventListener('mousedown', close)
-  }, [contextMenu])
-
-  const onContextMenu = useCallback((e: ReactMouseEvent, idx: number) => {
-    e.preventDefault()
-    const x = Math.min(e.clientX, window.innerWidth - CONTEXT_MENU_W - 8)
-    const y = Math.min(e.clientY, window.innerHeight - CONTEXT_MENU_H - 8)
-    setContextMenu({ x: Math.max(8, x), y: Math.max(8, y), workIdx: idx })
-  }, [])
+  const onContextMenu = useCallback(
+    (e: ReactMouseEvent, idx: number) => {
+      openContextMenu(e, sortedWorks[idx]?.savedPath)
+    },
+    [openContextMenu, sortedWorks],
+  )
 
   const onImageLoad = useCallback((idx: number) => {
     setLoadedImages(prev => new Set(prev).add(idx))
@@ -268,25 +248,7 @@ const GalleryCard = memo(function GalleryCard({ group, language }: GalleryCardPr
         </div>
       )}
 
-      {contextMenu &&
-        createPortal(
-          <div
-            className="gallery-context-menu fixed bg-[var(--bg-secondary)] border border-[var(--border-secondary)] rounded-lg shadow-xl py-1 min-w-[180px]"
-            style={{ zIndex: 'var(--z-context-menu)', left: contextMenu.x, top: contextMenu.y }}
-            onContextMenu={(e) => e.preventDefault()}
-          >
-            <button
-              type="button"
-              disabled={!sortedWorks[contextMenu.workIdx]?.savedPath || !window.electronAPI?.showItemInFolder}
-              className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={() => openFileLocation(contextMenu.workIdx)}
-            >
-              {t.gallery.showInFolder}
-            </button>
-          </div>,
-          document.body,
-        )}
+      {menuPortal}
 
       {selectedImage !== null && selectedWork && (
         <GalleryLightbox

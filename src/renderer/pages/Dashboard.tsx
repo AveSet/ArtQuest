@@ -165,7 +165,7 @@ const Dashboard = () => {
   const gateDailies = shouldGateDailiesForBeginner(experienceTier, fundamentalsProgress)
 
   const { action: nextBestAction, warmupAvailable, focusTags, weakestCriterion } = useNextBestAction()
-  const [dailyPanelOpen, setDailyPanelOpen] = useState(true)
+  const [dailyPanelOpen, setDailyPanelOpen] = useState(false)
 
   const warmupQuest = useMemo(() => getWarmupQuestForDate(today), [today])
 
@@ -468,7 +468,7 @@ const Dashboard = () => {
 
           <ReviewShelf />
 
-          <div className="card-fantasy p-3 dashboard-toggle-strip" data-onboarding="dashboard-next-action">
+          <div className="card-fantasy p-3 dashboard-toggle-strip">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
@@ -548,7 +548,6 @@ const Dashboard = () => {
                   id="dashboard-dailies"
                   className="card-fantasy p-4 mb-4 border border-[var(--border-secondary)]"
                   role="status"
-                  data-onboarding="dashboard-dailies"
                 >
                   <p className="text-sm text-[var(--text-muted)]">
                     {t.fundamentals?.dailyLockedHint ??

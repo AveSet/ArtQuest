@@ -14,13 +14,13 @@ export function useCustomAvatarSrc(): string | null {
 
     let cancelled = false
     void (async () => {
-      if (window.electronAPI?.getLocalMediaUrl) {
-        const url = await window.electronAPI.getLocalMediaUrl(customAvatarPath)
+      if (window.electronAPI?.gallery?.getLocalMediaUrl) {
+        const url = await window.electronAPI.gallery.getLocalMediaUrl(customAvatarPath)
         if (!cancelled) setResolvedPathSrc(url)
         return
       }
-      if (window.electronAPI?.readImage) {
-        const dataUrl = await window.electronAPI.readImage(customAvatarPath)
+      if (window.electronAPI?.gallery?.readImage) {
+        const dataUrl = await window.electronAPI.gallery.readImage(customAvatarPath)
         if (!cancelled) setResolvedPathSrc(dataUrl)
         return
       }

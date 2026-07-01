@@ -6,8 +6,8 @@ export async function openExternalUrl(url: string): Promise<void> {
   } catch {
     return
   }
-  if (window.electronAPI?.openExternal) {
-    await window.electronAPI.openExternal(url)
+  if (window.electronAPI?.shell?.openExternal) {
+    await window.electronAPI.shell.openExternal(url)
     return
   }
   window.open(url, '_blank', 'noopener,noreferrer')

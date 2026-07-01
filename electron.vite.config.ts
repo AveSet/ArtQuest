@@ -22,9 +22,13 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     build: {
       rollupOptions: {
+        input: {
+          preload: resolve(__dirname, 'src/preload/preload.ts'),
+          overlayPreload: resolve(__dirname, 'src/preload/overlayPreload.ts'),
+        },
         output: {
           format: 'cjs',
-          entryFileNames: 'preload.js',
+          entryFileNames: '[name].js',
         },
       },
     },

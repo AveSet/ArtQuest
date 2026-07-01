@@ -258,6 +258,16 @@ html[data-overlay-window='1'] #root {
   margin-top: 0.12rem;
 }
 
+.quest-overlay-actions--triple {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.quest-overlay-actions__reference {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-secondary));
+  background: color-mix(in srgb, var(--bg-secondary) 92%, transparent);
+  color: var(--text-primary);
+}
+
 .quest-overlay-actions button,
 .quest-overlay-empty button {
   width: 100%;

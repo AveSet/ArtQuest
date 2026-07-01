@@ -9,11 +9,13 @@ import { getPersonalizedQuestMinutes } from '@/utils/questPersonalizedTime'
 import type { ExperienceTier } from '@/utils/experienceTier'
 import {
   getNextFundamentalsExercise,
+  getFundamentalsCompletedCount,
   isFundamentalsGateCleared,
   shouldGateDailiesForBeginner,
   shouldPrioritizeFundamentalsAction,
   type FundamentalsProgress,
 } from '@/utils/fundamentalsProgress'
+import { FUNDAMENTALS_EXERCISE_COUNT } from '@/data/fundamentalsExercises'
 import { getWarmupQuestForDate, isWarmupCompletedToday } from '@/utils/warmupQuest'
 import { getMistakeTagLabel } from '@/utils/mistakeTags'
 import {
@@ -326,7 +328,10 @@ export function buildNextBestAction(params: BuildNextBestActionParams): NextBest
         kind: 'fundamentals',
         quest: nextFundamentals,
         reasonKey: 'fundamentals',
-        reasonParams: {},
+        reasonParams: {
+          done: String(getFundamentalsCompletedCount(fundamentalsProgress)),
+          total: String(FUNDAMENTALS_EXERCISE_COUNT),
+        },
       },
       secondary: gateDailies ? undefined : secondary,
       plan: normalizedPlan.length > 0 ? normalizedPlan : [

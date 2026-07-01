@@ -8,7 +8,7 @@ export default function SettingsSection({
   children,
   testId,
 }: {
-  title: string
+  title: ReactNode
   defaultOpen?: boolean
   collapsible?: boolean
   children: ReactNode

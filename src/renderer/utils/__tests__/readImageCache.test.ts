@@ -6,6 +6,10 @@ import {
   invalidateReadImageCache,
 } from '../readImageCache'
 
+function mockGallery(partial: Record<string, unknown>) {
+  return { gallery: partial } as typeof window.electronAPI
+}
+
 describe('readImageCached', () => {
   let prevApi: typeof window.electronAPI
 
@@ -29,7 +33,7 @@ describe('readImageCached', () => {
       .fn()
       .mockRejectedValueOnce(new Error('disk'))
       .mockResolvedValueOnce('data:image/png;base64,BB')
-    window.electronAPI = { readImage } as unknown as typeof window.electronAPI
+    window.electronAPI = mockGallery({ readImage })
 
     await expect(readImageCached('/retry.png')).resolves.toBeNull()
     await expect(readImageCached('/retry.png')).resolves.toBe('data:image/png;base64,BB')
@@ -38,7 +42,7 @@ describe('readImageCached', () => {
 
   it('dedupes concurrent reads for the same path', async () => {
     const readImage = vi.fn(async () => 'data:image/png;base64,AA')
-    window.electronAPI = { readImage } as unknown as typeof window.electronAPI
+    window.electronAPI = mockGallery({ readImage })
 
     const a = readImageCached('/quest-1.png')
     const b = readImageCached('/quest-1.png')
@@ -66,7 +70,7 @@ describe('readSavedMediaCached', () => {
   it('routes videos to getLocalMediaUrl', async () => {
     const readImage = vi.fn(async () => 'data:image/png;base64,AA')
     const getLocalMediaUrl = vi.fn(async () => 'file:///saved/clips/quest-1.mp4')
-    window.electronAPI = { readImage, getLocalMediaUrl } as unknown as typeof window.electronAPI
+    window.electronAPI = mockGallery({ readImage, getLocalMediaUrl })
 
     await expect(readSavedMediaCached('/clips/quest-1.mp4')).resolves.toBe('file:///saved/clips/quest-1.mp4')
     expect(getLocalMediaUrl).toHaveBeenCalledTimes(1)
@@ -76,7 +80,7 @@ describe('readSavedMediaCached', () => {
   it('routes images to getLocalMediaUrl when available', async () => {
     const readImage = vi.fn(async () => 'data:image/png;base64,AA')
     const getLocalMediaUrl = vi.fn(async () => 'file:///saved/quest-1.png')
-    window.electronAPI = { readImage, getLocalMediaUrl } as unknown as typeof window.electronAPI
+    window.electronAPI = mockGallery({ readImage, getLocalMediaUrl })
 
     await expect(readSavedMediaCached('/saved/quest-1.png')).resolves.toBe('file:///saved/quest-1.png')
     expect(getLocalMediaUrl).toHaveBeenCalledTimes(1)
@@ -85,7 +89,7 @@ describe('readSavedMediaCached', () => {
 
   it('dedupes concurrent video reads', async () => {
     const getLocalMediaUrl = vi.fn(async () => 'file:///saved/quest-1.webm')
-    window.electronAPI = { getLocalMediaUrl } as unknown as typeof window.electronAPI
+    window.electronAPI = mockGallery({ getLocalMediaUrl })
 
     const a = readLocalMediaUrlCached('/saved/quest-1.webm')
     const b = readLocalMediaUrlCached('/saved/quest-1.webm')

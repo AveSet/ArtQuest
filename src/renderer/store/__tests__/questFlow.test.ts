@@ -80,19 +80,23 @@ describe('quest full flow integration', () => {
     // Mock electron API for save/load cycle
     vi.stubGlobal('window', {
       electronAPI: {
-        saveProgress: vi.fn(async (data: string) => {
-          capturedSaveData = data
-        }),
-        saveProgressSync: vi.fn((data: string) => {
-          capturedSaveData = data
-        }),
-        loadProgress: vi.fn(async () => {
-          if (!capturedSaveData) return { status: 'empty' as const }
-          return { status: 'ok' as const, data: JSON.parse(capturedSaveData) as Record<string, unknown> }
-        }),
-        readImage: vi.fn(async (_path: string) => null),
-        getSavedImages: vi.fn(async () => []),
-        clearProgress: vi.fn(async () => {}),
+        progress: {
+          save: vi.fn(async (data: string) => {
+            capturedSaveData = data
+          }),
+          saveSync: vi.fn((data: string) => {
+            capturedSaveData = data
+          }),
+          load: vi.fn(async () => {
+            if (!capturedSaveData) return { status: 'empty' as const }
+            return { status: 'ok' as const, data: JSON.parse(capturedSaveData) as Record<string, unknown> }
+          }),
+          clear: vi.fn(async () => ({ success: true })),
+        },
+        gallery: {
+          readImage: vi.fn(async (_path: string) => null),
+          listImages: vi.fn(async () => []),
+        },
       },
     })
   })
@@ -237,6 +241,26 @@ describe('quest full flow integration', () => {
     vi.useRealTimers()
 
     expect(useUIStore.getState().streakState.current).toBe(0)
+  })
+
+  it('regenerates daily quest ids when the calendar date changes', () => {
+    const quests = [makeQuest(1), makeQuest(2), makeQuest(3), makeQuest(4), makeQuest(5)]
+    useQuestStore.setState({
+      quests,
+      questsLoaded: true,
+      lastDailyQuestDate: '2026-05-13',
+      dailyQuestsIds: [1, 2, 3],
+    })
+
+    checkAndGenerateDailyQuests('2026-05-14')
+    const firstDayIds = [...useQuestStore.getState().dailyQuestsIds]
+
+    checkAndGenerateDailyQuests('2026-05-15')
+    const secondDayIds = useQuestStore.getState().dailyQuestsIds
+
+    expect(firstDayIds.length).toBeGreaterThan(0)
+    expect(secondDayIds.length).toBeGreaterThan(0)
+    expect(useQuestStore.getState().lastDailyQuestDate).toBe('2026-05-15')
   })
 
   it('persists and restores skill nodes through save/load', async () => {

@@ -33,6 +33,7 @@ export default function LoadProgressErrorBanner() {
     <div
       role="alertdialog"
       aria-labelledby="load-progress-error-title"
+      data-testid="load-progress-error-banner"
       className="banner-error fixed top-16 left-1/2 z-[260] -translate-x-1/2 max-w-lg w-[calc(100%-2rem)] px-4 py-3 rounded-lg shadow-lg"
     >
       <p id="load-progress-error-title" className="text-sm font-medium mb-2">
@@ -51,10 +52,10 @@ export default function LoadProgressErrorBanner() {
             >
               {t.errors.exportCorruptBackup}
             </button>
-            {corruptProgressBackupPath && window.electronAPI?.showItemInFolder ? (
+            {corruptProgressBackupPath && window.electronAPI?.shell?.showItemInFolder ? (
               <button
                 type="button"
-                onClick={() => void window.electronAPI?.showItemInFolder(corruptProgressBackupPath)}
+                onClick={() => void window.electronAPI?.shell?.showItemInFolder(corruptProgressBackupPath)}
                 className="px-3 py-1 rounded border border-current/30 hover:bg-white/10"
               >
                 {t.errors.showBackupFolder}

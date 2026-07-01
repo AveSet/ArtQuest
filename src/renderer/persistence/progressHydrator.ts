@@ -7,34 +7,18 @@ import { useSkillPracticeStore } from '@/store/useSkillPracticeStore'
 import { usePortraitStore } from '@/store/usePortraitStore'
 import { useThemeStore } from '@/store/useThemeStore'
 import { applyPrerequisiteUnlocks } from '@/utils/skillUnlocks'
-import { mergeQuestLists } from '@/utils/mergeQuestLists'
-import { normalizeQuestTitleOverrides } from '@/utils/questTitleOverrides'
 import { normalizeQuestSessionShortcuts } from '../../shared/questSessionShortcuts'
 import { expectedMaxXpAtNodeLevel, NODE_MAX_LEVEL } from '@/utils/progressionBalance'
-import { getLocalDateStr, reconcileCompletedToday } from '@/utils/dailyQuests'
-import { normalizeFundamentalsProgress } from '@/utils/fundamentalsProgress'
-import { normalizeQuestPhaseMedia } from '@/utils/questPhaseMedia'
+import {
+  hydrateQuestStores,
+  type SavedGalleryImage,
+} from '@/store/questStore/hydrateQuestStores'
 import {
   restoreQuestSession,
   restoreSkillPracticeSession,
 } from '@/utils/sessionPersistence'
 
-export type SavedGalleryImage = {
-  id?: string
-  filename: string
-  path: string
-  questId: number | null
-  date: string
-  mediaType?: 'image' | 'video'
-  thumbnailPath?: string
-  storageMode?: 'local' | 'local_and_cloud' | 'cloud_only' | 'google_drive'
-  cloudProvider?: string
-  remoteFileId?: string
-  remotePath?: string
-  syncStatus?: string
-  syncError?: string
-  lastSyncAt?: string
-}
+export type { SavedGalleryImage } from '@/store/questStore/hydrateQuestStores'
 
 export type HydratedUiSlice = {
   settings: Settings
@@ -135,68 +119,7 @@ export function hydrateStoresFromProgress(
         : useSkillStore.getState().achievements,
   })
 
-  const userQuests = Array.isArray(data.userQuests) ? (data.userQuests as Quest[]) : []
-  const deletedQuestIds = Array.isArray(data.deletedQuestIds)
-    ? data.deletedQuestIds.filter((id): id is number => typeof id === 'number')
-    : []
-  const questTitleOverrides = normalizeQuestTitleOverrides(data.questTitleOverrides)
-  const questPatch: Partial<ReturnType<typeof useQuestStore.getState>> = {
-    userQuests,
-    deletedQuestIds,
-    questTitleOverrides,
-  }
-  if (useQuestStore.getState().catalogQuests.length > 0) {
-    questPatch.quests = mergeQuestLists(
-      useQuestStore.getState().catalogQuests,
-      userQuests,
-      deletedQuestIds,
-    )
-  }
-  useQuestStore.setState(questPatch)
-
-  if (data.completedQuests.length > 0) {
-    const catalog = useQuestStore.getState().catalogQuests
-    let completedQuests = data.completedQuests
-    if (catalog.length > 0) {
-      const repeatableIds = new Set(
-        catalog.filter((quest) => quest.is_repeatable).map((quest) => quest.id),
-      )
-      completedQuests = completedQuests.filter((id) => !repeatableIds.has(id))
-    }
-    useQuestStore.setState({ completedQuests })
-  }
-
-  const completedWorks = mergeGalleryWorks(data.completedWorks, savedImages)
-  if (completedWorks.length > 0) {
-    useQuestStore.setState({ completedWorks })
-  }
-  if (data.questCompletionLogs.length > 0) {
-    useQuestStore.setState({ questCompletionLogs: data.questCompletionLogs })
-  }
-
-  const today = getLocalDateStr()
-  const reconciledCompletedToday = reconcileCompletedToday(
-    data.completedToday,
-    data.dailyQuestsIds,
-    data.lastDailyQuestDate,
-    today,
-  )
-
-  useQuestStore.setState({
-    dailyQuestsIds: data.dailyQuestsIds,
-    completedToday: reconciledCompletedToday,
-    lastDailyQuestDate: data.lastDailyQuestDate,
-    lastFavCategories: data.lastFavCategories,
-    dailyBonusGrantedDate: data.dailyBonusGrantedDate,
-    weeklyChallengeWeek: data.weeklyChallengeWeek,
-    weeklyChallengeQuestId: data.weeklyChallengeQuestId,
-    weeklyChallengeCompletedWeek: data.weeklyChallengeCompletedWeek,
-    lastWarmupCompletedDate: data.lastWarmupCompletedDate ?? '',
-    fundamentalsProgress: normalizeFundamentalsProgress(data.fundamentalsProgress),
-    microChallengesCompleted: data.microChallengesCompleted ?? {},
-    questSavedReferences: data.questSavedReferences ?? {},
-    questPhaseMedia: normalizeQuestPhaseMedia(data.questPhaseMedia),
-  })
+  hydrateQuestStores(data, savedImages, mergeGalleryWorks)
 
   const profileSetupComplete =
     typeof data.settings.profileSetupComplete === 'boolean'

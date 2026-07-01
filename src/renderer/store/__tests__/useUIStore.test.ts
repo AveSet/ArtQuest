@@ -41,23 +41,25 @@ describe('useUIStore', () => {
     it('loads saved settings and streak state', async () => {
       vi.stubGlobal('window', {
         electronAPI: {
-          loadProgress: vi.fn(async () => ({
-            status: 'ok' as const,
-            data: {
-              settings: { soundEnabled: false, soundVolume: 0.5, language: 'ru', favoriteCategories: ['animation'], useRandomCategories: true },
-              streakState: { current: 7, longest: 14, lastActiveDate: '2026-05-09' },
-              skillNodes: [],
-              completedQuests: [1, 2],
-              completedWorks: [],
-              questCompletionLogs: [],
-              adaptiveWeights: { default: 1.0 },
-              lastRefreshDate: '',
-              dailyQuestsIds: [],
-              completedToday: [],
-              lastDailyQuestDate: '',
-            },
-          })),
-          getSavedImages: vi.fn(async () => []),
+          progress: {
+            load: vi.fn(async () => ({
+              status: 'ok' as const,
+              data: {
+                settings: { soundEnabled: false, soundVolume: 0.5, language: 'ru', favoriteCategories: ['animation'], useRandomCategories: true },
+                streakState: { current: 7, longest: 14, lastActiveDate: '2026-05-09' },
+                skillNodes: [],
+                completedQuests: [1, 2],
+                completedWorks: [],
+                questCompletionLogs: [],
+                adaptiveWeights: { default: 1.0 },
+                lastRefreshDate: '',
+                dailyQuestsIds: [],
+                completedToday: [],
+                lastDailyQuestDate: '',
+              },
+            })),
+          },
+          gallery: { listImages: vi.fn(async () => []) },
         },
       })
 
@@ -73,8 +75,8 @@ describe('useUIStore', () => {
     it('starts fresh when no saved data', async () => {
       vi.stubGlobal('window', {
         electronAPI: {
-          loadProgress: vi.fn(async () => ({ status: 'empty' as const })),
-          getSavedImages: vi.fn(async () => []),
+          progress: { load: vi.fn(async () => ({ status: 'empty' as const })) },
+          gallery: { listImages: vi.fn(async () => []) },
         },
       })
 
@@ -88,12 +90,14 @@ describe('useUIStore', () => {
     it('shows corrupt error instead of silent fresh start', async () => {
       vi.stubGlobal('window', {
         electronAPI: {
-          loadProgress: vi.fn(async () => ({
-            status: 'corrupt' as const,
-            backupPath: '/mock/backups/progress-corrupt.json',
-            message: 'Invalid feedbackStats',
-          })),
-          getSavedImages: vi.fn(async () => []),
+          progress: {
+            load: vi.fn(async () => ({
+              status: 'corrupt' as const,
+              backupPath: '/mock/backups/progress-corrupt.json',
+              message: 'Invalid feedbackStats',
+            })),
+          },
+          gallery: { listImages: vi.fn(async () => []) },
         },
       })
 
@@ -108,8 +112,8 @@ describe('useUIStore', () => {
       vi.stubGlobal('window', {
         matchMedia: vi.fn(() => ({ matches: true })),
         electronAPI: {
-          loadProgress: vi.fn(async () => ({ status: 'empty' as const })),
-          getSavedImages: vi.fn(async () => []),
+          progress: { load: vi.fn(async () => ({ status: 'empty' as const })) },
+          gallery: { listImages: vi.fn(async () => []) },
         },
       })
       useUIStore.setState({ isLoaded: false, settings: { ...DEFAULT_SETTINGS, reduceMotion: false } })
@@ -181,10 +185,10 @@ describe('useUIStore', () => {
         lastFavCategories: '"x"',
       })
       const api = window.electronAPI!
-      const originalClear = api.clearProgress
-      api.clearProgress = async () => ({ success: false as const, error: 'disk' })
+      const originalClear = api.progress.clear
+      api.progress.clear = async () => ({ success: false as const, error: 'disk' })
       await useUIStore.getState().resetProgress()
-      api.clearProgress = originalClear
+      api.progress.clear = originalClear
       expect(useQuestStore.getState().completedQuests).toEqual([1, 2])
       expect(useUIStore.getState().saveError).toBe('reset_failed')
     })

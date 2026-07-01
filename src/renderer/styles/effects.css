@@ -187,6 +187,44 @@
   animation: none !important;
 }
 
+@keyframes goal-complete-burst {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold-primary) 50%, transparent);
+  }
+  35% {
+    transform: scale(1.015);
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--gold-primary) 20%, transparent);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.goal-complete-burst {
+  animation: goal-complete-burst 0.65s ease-out;
+}
+
+@keyframes goal-complete-btn-flash {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  40% {
+    filter: brightness(1.2);
+  }
+}
+
+.goal-complete-btn-flash {
+  animation: goal-complete-btn-flash 0.45s ease-out;
+}
+
+html[data-motion='reduce'] .goal-complete-burst,
+html[data-motion='reduce'] .goal-complete-btn-flash {
+  animation: none !important;
+}
+
 /* Session micro-feedback — press pop for primary CTA */
 @keyframes sessionBtnPressPop {
   0% { transform: scale(1); }

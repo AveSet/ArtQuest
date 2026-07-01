@@ -1,5 +1,6 @@
 import { useUIStore } from '@/store/useUIStore'
 import type { QuestCategory } from '@/data/skillTree'
+import { duckAmbient } from '@/utils/ambientSound'
 
 let sharedAudioContext: AudioContext | null = null
 
@@ -41,6 +42,17 @@ const SOUND_FILES: SoundType[] = [
   'questAbandon',
   'sessionReady',
 ]
+
+/** Reward stingers that duck the ambient bed while playing. */
+const REWARD_SOUND_TYPES = new Set<SoundType>([
+  'levelup',
+  'complete',
+  'achievement',
+  'dailyComplete',
+  'weeklyComplete',
+  'rewardReveal',
+  'pathUnlock',
+])
 
 const bufferCache = new Map<SoundType, AudioBuffer | 'missing'>()
 const bufferLoadPromises = new Map<SoundType, Promise<AudioBuffer | null>>()
@@ -351,6 +363,10 @@ export function preloadSounds(): void {
 export const playSound = (type: SoundType, category?: QuestCategory | string) => {
   const { soundEnabled, soundVolume } = useUIStore.getState().settings
   if (!soundEnabled) return
+
+  if (REWARD_SOUND_TYPES.has(type)) {
+    duckAmbient()
+  }
 
   const ctx = getAudioContext()
   if (!ctx) return

@@ -1,29 +1,43 @@
-.skill-node-emoji {
+.skill-node-emoji,
+.skill-node-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
   color: var(--skill-node-accent, var(--accent));
   filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--skill-node-accent, var(--accent)) 25%, transparent));
 }
 
-.skill-node-emoji--tree {
+.rpg-skill-icon-slot .skill-node-icon--panel {
+  width: 2rem;
+  height: 2rem;
+}
+
+.skill-node-emoji--tree,
+.skill-node-icon--tree {
   font-size: 1.5rem;
 }
 
-.skill-node-emoji--panel {
+.skill-node-emoji--panel,
+.skill-node-icon--panel {
   font-size: 1.75rem;
 }
 
-.skill-node-emoji--inline {
+.skill-node-emoji--inline,
+.skill-node-icon--inline {
   font-size: 1rem;
 }
 
-[data-theme="rpg"] .skill-node-emoji {
+[data-theme="rpg"] .skill-node-emoji,
+[data-theme="rpg"] .skill-node-icon {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--skill-node-accent, var(--gold-primary)) 35%, transparent));
 }
 
-.node-skill--locked .skill-node-emoji {
+.node-skill--locked .skill-node-emoji,
+.node-skill--locked .skill-node-icon {
   opacity: 0.5;
   filter: grayscale(0.85);
 }

@@ -8,7 +8,8 @@ import { useThemeStore } from '@/store/useThemeStore'
 import { useActivityStore } from '@/store/useActivityStore'
 import { useQuestSessionStore } from '@/store/useQuestSessionStore'
 import { buildQuestDetailNavState, resolveQuestById } from '@/utils/resolveQuestById'
-import { openReferenceWindow } from '@/utils/openReferenceWindow'
+import { openReferenceWindow, defaultModeForReferenceSource } from '@/utils/openReferenceWindow'
+import { useUIStore } from '@/store/useUIStore'
 import { finishSkillPracticeSession } from '@/utils/skillPracticeFinish'
 import { cancelSkillPracticeSession } from '@/utils/skillPracticeCancel'
 import { SKILL_TREE_NODES } from '@/data/skillTree'
@@ -46,7 +47,7 @@ export default function QuestSessionCommandBridge() {
   }, [navigate])
 
   useEffect(() => {
-    const unsubscribe = window.electronAPI?.onQuestSessionCommand?.((command) => {
+    const unsubscribe = window.electronAPI?.session?.onCommand?.((command) => {
       const store = useQuestSessionStore.getState()
       const activeSession = store.session
       if (command === 'advancePhase') {
@@ -75,10 +76,13 @@ export default function QuestSessionCommandBridge() {
         return
       }
       if (command === 'openReferences') {
+        const source = useUIStore.getState().settings.preferredReferenceSource ?? 'pinterest'
+        const mode = defaultModeForReferenceSource(source)
         if (activeSession) {
           const quest = resolveQuestById(activeSession.questId, useQuestStore.getState().quests)
-          openReferenceWindow({
-            mode: 'long',
+          void openReferenceWindow({
+            mode,
+            source,
             questId: activeSession.questId,
             category: quest?.category,
             tags: quest?.tags ?? [],
@@ -90,8 +94,9 @@ export default function QuestSessionCommandBridge() {
         if (practice) {
           const staticNode = SKILL_TREE_NODES.find((n) => n.id === practice.nodeId)
           const runtimeNode = useSkillStore.getState().skillNodes.find((n) => n.id === practice.nodeId)
-          openReferenceWindow({
-            mode: 'long',
+          void openReferenceWindow({
+            mode,
+            source,
             nodeId: practice.nodeId,
             category: practice.category,
             tags: staticNode?.tags ?? runtimeNode?.tags ?? [],
@@ -133,7 +138,7 @@ export default function QuestSessionCommandBridge() {
       useThemeStore.subscribe(sync),
       useActivityStore.subscribe(sync),
     ]
-    const unsubOverlaySync = window.electronAPI?.onOverlayRequestSync?.(() => {
+    const unsubOverlaySync = window.electronAPI?.overlay?.onRequestSync?.(() => {
       resetSessionOverlaySyncCache()
       sync()
     })

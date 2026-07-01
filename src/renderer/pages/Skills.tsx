@@ -1,20 +1,21 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { createPortal } from 'react-dom'
 import { useSkillStore } from '@/store/useSkillStore'
+import { useUIStore } from '@/store/useUIStore'
 import { useI18n, getLocalizedTitle, getLocalizedDescription } from '@/i18n'
 import { useSearchParams, useNavigate } from 'react-router'
 import { CATEGORY_INFO, type QuestCategory } from '@/data/skillTree'
 import { NODE_MAX_LEVEL, computePracticeOnlyXp } from '@/utils/progressionBalance'
 import { MAX_PRESTIGE } from '@/store/models'
 import { NODE_ROWS } from '@/utils/skillUnlocks'
-import { playSound, playUiClick } from '@/utils/sound'
+import { playSound } from '@/utils/sound'
 import { SkillNodeIcon } from '@/components/SkillNodeIcon'
 import type { SkillNode } from '@/store/models'
 import { useSkillPracticeStore } from '@/store/useSkillPracticeStore'
 import { useVisibleCategories } from '@/utils/useVisibleCategories'
 import ReferenceSourceChoices from '@/components/Quest/ReferenceSourceChoices'
-import { openReferenceWindow } from '@/utils/openReferenceWindow'
+import { openReferenceWindow, defaultModeForReferenceSource } from '@/utils/openReferenceWindow'
 import {
   collapseSessionToOverlay,
   expandSessionToMainWindow,
@@ -24,7 +25,7 @@ import { getNodesDueForReview } from '@/utils/skillReview'
 import { useActivityStore } from '@/store/useActivityStore'
 import { finishSkillPracticeSession } from '@/utils/skillPracticeFinish'
 import { cancelSkillPracticeSession } from '@/utils/skillPracticeCancel'
-import ConfirmDialog from '@/components/ConfirmDialog'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { getLocalDateStr } from '@/utils/dailyQuests'
 import { getReferenceYoutubeButtonLabels } from '@/utils/referenceYtLabels'
 import { areSessionTimersDisabled } from '@/utils/sessionTimersPreference'
@@ -89,8 +90,8 @@ const Skills = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [showResult, setShowResult] = useState(false)
   const [showReferenceChoices, setShowReferenceChoices] = useState(false)
-  const [pendingRefMode, setPendingRefMode] = useState<'long' | 'short' | 'pinterest' | 'clipTips' | 'sketchfab' | null>(null)
   const [resultXp, setResultXp] = useState(0)
+  const skillDetailPanelRef = useRef<HTMLDivElement>(null)
   const { session: practiceSession, startSession: startSkillPracticeSession, setPanelMinimized: setPracticePanelMinimized, panelMinimized: practicePanelMinimized } =
     useSkillPracticeStore(
       useShallow((s) => ({
@@ -113,6 +114,7 @@ const Skills = () => {
   }, [activeCategory, skillNodes])
 
   const selectedNode = selectedNodeId ? categoryNodes.find((n) => n.id === selectedNodeId) : null
+  useFocusTrap(Boolean(selectedNode), skillDetailPanelRef)
   const shouldCountTime = useActivityStore((s) => s.shouldCountTime)
   const activePracticeElapsedSec =
     selectedNode && practiceSession?.nodeId === selectedNode.id
@@ -234,12 +236,8 @@ const Skills = () => {
   const openNodeRefs = useCallback(
     (mode: 'long' | 'short' | 'pinterest' | 'clipTips' | 'sketchfab') => {
       if (!selectedNode) return
-      if (practiceSession?.nodeId !== selectedNode.id) {
-        setPendingRefMode(mode)
-        return
-      }
-      setShowReferenceChoices(false)
-      openReferenceWindow({
+      setShowReferenceChoices(true)
+      void openReferenceWindow({
         mode,
         nodeId: selectedNode.id,
         category: selectedNode.category,
@@ -247,22 +245,23 @@ const Skills = () => {
         lang,
       })
     },
-    [selectedNode, practiceSession?.nodeId, lang],
+    [selectedNode, lang],
   )
 
-  const confirmStartPracticeForRefs = useCallback(() => {
-    if (!selectedNode || !pendingRefMode) return
-    ensurePracticeStarted()
-    setShowReferenceChoices(false)
-    openReferenceWindow({
-      mode: pendingRefMode,
+  const handleShowReferenceChoices = useCallback(() => {
+    if (!selectedNode) return
+    setShowReferenceChoices(true)
+    const source =
+      useUIStore.getState().settings.preferredReferenceSource ?? ('pinterest' as const)
+    void openReferenceWindow({
+      mode: defaultModeForReferenceSource(source),
+      source,
       nodeId: selectedNode.id,
       category: selectedNode.category,
       tags: selectedNode.tags,
       lang,
     })
-    setPendingRefMode(null)
-  }, [selectedNode, pendingRefMode, ensurePracticeStarted, lang])
+  }, [selectedNode, lang])
 
   const openMaterialsLong = useCallback(() => openNodeRefs('long'), [openNodeRefs])
   const openMaterialsShort = useCallback(() => openNodeRefs('short'), [openNodeRefs])
@@ -297,6 +296,15 @@ const Skills = () => {
     setShowReferenceChoices(false)
     if (practiceSession) setPracticePanelMinimized(true)
   }, [practiceSession, setPracticePanelMinimized])
+
+  useEffect(() => {
+    if (!selectedNode) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') dismissPanel()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [selectedNode, dismissPanel])
 
   const hasAnySkillProgress = useMemo(
     () => skillNodes.some((n) => n.level > 0 || n.xp > 0 || n.prestige > 0),
@@ -436,12 +444,16 @@ const Skills = () => {
               onClick={dismissPanel}
             />
             <div
+              ref={skillDetailPanelRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="skill-detail-title"
               className="skill-detail-panel card-fantasy fixed left-1/2 top-1/2 w-[min(100vw-2rem,32rem)] max-h-[min(88vh,760px)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto p-5 border border-[var(--border-primary)] shadow-2xl"
               data-onboarding="skills-node-panel"
               style={{ zIndex: 'var(--z-overlay-drawer)', borderColor: categoryColor }}
             >
             <div className="flex justify-between items-start mb-3 gap-2">
-              <h3 className="text-base font-bold text-[var(--text-heading)] leading-tight">
+              <h3 id="skill-detail-title" className="text-base font-bold text-[var(--text-heading)] leading-tight">
                 {getLocalizedTitle(selectedNode.title, lang)}
               </h3>
               <button
@@ -582,7 +594,7 @@ const Skills = () => {
                       {!showReferenceChoices ? (
                         <button
                           type="button"
-                          onClick={() => setShowReferenceChoices(true)}
+                          onClick={handleShowReferenceChoices}
                           className="btn-secondary w-full py-2 text-sm mb-2"
                         >
                           🖼 {t.quests.needReferences}
@@ -650,15 +662,6 @@ const Skills = () => {
           </>,
           document.body,
         )}
-      <ConfirmDialog
-        open={pendingRefMode != null}
-        title={t.skills.practiceConfirmTitle ?? ''}
-        message={t.skills.practiceConfirmMessage ?? ''}
-        confirmLabel={t.skills.start_practice}
-        cancelLabel={t.common.cancel}
-        onConfirm={confirmStartPracticeForRefs}
-        onCancel={() => setPendingRefMode(null)}
-      />
     </div>
   )
 }

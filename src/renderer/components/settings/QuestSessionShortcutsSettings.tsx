@@ -12,6 +12,7 @@ import { useI18n } from '@/i18n'
 import { playUiClick } from '@/utils/sound'
 import { pushDesktopIntegrationSync } from '@/utils/desktopIntegration'
 import SettingsSection from '@/components/settings/SettingsSection'
+import { SettingsIconKeyboard, SettingsSectionTitle } from '@/components/settings/SettingsIcons'
 import ShortcutCaptureButton from '@/components/settings/ShortcutCaptureButton'
 
 const VISIBLE_SHORTCUT_COMMANDS = QUEST_SESSION_SHORTCUT_COMMANDS.filter(
@@ -58,7 +59,7 @@ export default function QuestSessionShortcutsSettings() {
 
   return (
     <SettingsSection
-      title={`⌨ ${labels.questShortcutsSection}`}
+      title={<SettingsSectionTitle icon={<SettingsIconKeyboard />}>{labels.questShortcutsSection}</SettingsSectionTitle>}
       defaultOpen={false}
       testId="quest-shortcuts-section"
     >

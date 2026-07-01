@@ -11,17 +11,19 @@ describe('ArtAppsSettings', () => {
       settings: { ...DEFAULT_SETTINGS, activityTrackingEnabled: true },
     })
     ;(window as unknown as { electronAPI?: Record<string, unknown> }).electronAPI = {
-      activityTrackingNative: true,
-      pickArtAppExecutable: vi.fn(() =>
-        Promise.resolve({ success: true, path: 'C:\\Apps\\Krita\\krita.exe' }),
-      ),
-      syncDesktopSettings: vi.fn(() => Promise.resolve()),
+      desktop: {
+        activityTrackingNative: true,
+        pickArtAppExecutable: vi.fn(() =>
+          Promise.resolve({ success: true, path: 'C:\\Apps\\Krita\\krita.exe' }),
+        ),
+        syncSettings: vi.fn(() => Promise.resolve()),
+      },
     }
   })
 
   it('shows platform note when native tracking is unavailable', () => {
-    ;(window as unknown as { electronAPI?: { activityTrackingNative: boolean } }).electronAPI = {
-      activityTrackingNative: false,
+    ;(window as unknown as { electronAPI?: { desktop: { activityTrackingNative: boolean } } }).electronAPI = {
+      desktop: { activityTrackingNative: false },
     }
 
     render(

@@ -4,6 +4,7 @@ import { resolveQuestTitle } from '@/utils/questDisplay'
 import type { NextBestAction } from '@/utils/nextBestAction'
 import type { Quest } from '@/store/models'
 import type { QuestTitleOverrides } from '@/store/models'
+import { FUNDAMENTALS_EXERCISE_COUNT } from '@/data/fundamentalsExercises'
 import { playUiClick } from '@/utils/sound'
 import { buildQuestDetailNavState } from '@/utils/resolveQuestById'
 import { fmt, getDashboardCopy } from '@/i18n/dashboardCopy'
@@ -44,7 +45,7 @@ export default function NextBestActionCard({
       case 'fundamentals':
         return fmt(t.dashboard.nextActionFundamentalsReason ?? '', {
           done: p.done ?? '0',
-          total: p.total ?? '7',
+          total: p.total ?? String(FUNDAMENTALS_EXERCISE_COUNT),
         })
       case 'daily':
         return fmt(t.dashboard.nextActionDailyReason ?? '', {

@@ -11,7 +11,7 @@ import { useI18n } from '@/i18n'
 /** Syncs foreground art-app / idle state from main process. */
 export default function ActivityBridge() {
   useEffect(() => {
-    const unsub = window.electronAPI?.onActivityUpdate?.((state) => {
+    const unsub = window.electronAPI?.session?.onActivityUpdate?.((state) => {
       useActivityStore.getState().update(state)
     })
     return () => unsub?.()
@@ -32,12 +32,12 @@ export function SessionTickBridge() {
     ]
     return () => {
       for (const unsub of unsubs) unsub()
-      void window.electronAPI?.setSessionTickActive?.(false)
+      void window.electronAPI?.session?.setTickActive?.(false)
     }
   }, [])
 
   useEffect(() => {
-    const unsub = window.electronAPI?.onSessionTick?.(() => {
+    const unsub = window.electronAPI?.session?.onTick?.(() => {
       useQuestSessionStore.getState().tick()
       if (useActivityStore.getState().shouldCountTime) {
         useSkillPracticeStore.getState().tickActiveSecond()
@@ -55,7 +55,7 @@ export function NavigateBridge() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const unsub = window.electronAPI?.onNavigate?.((route) => {
+    const unsub = window.electronAPI?.desktop?.onNavigate?.((route) => {
       navigate(route)
     })
     return () => unsub?.()

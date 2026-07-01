@@ -205,6 +205,8 @@ export interface FlowMetrics {
   averageTimeRatio: number
   averageDifficultyRating: number
   recentTrend: 'improving' | 'declining' | 'stable'
+  /** Number of recent logs used for adaptive metrics (≤ WINDOW_SIZE). */
+  observationCount: number
 }
 
 export interface AdaptiveWeights {
@@ -254,7 +256,7 @@ export interface Settings {
   favoriteCategories: QuestCategory[]
   useRandomCategories: boolean
   minimizeToTray: boolean
-  /** When true, quest/practice sessions can collapse to the floating timer widget. */
+  /** Legacy preference; widget collapse is manual during sessions (Electron only). */
   sessionWidgetMode: boolean
   openAtLogin: boolean
   remindersEnabled: boolean
@@ -320,6 +322,14 @@ export interface Settings {
   weeklyMinutesGoal?: number
   /** Last date chest reveal modal was shown (YYYY-MM-DD) */
   lastChestRevealDate?: string
+  /** Opt-in local telemetry ring buffer + SQLite event_log export. */
+  telemetryEnabled?: boolean
+  /** GPU particle tier; CSS celebration remains fallback when off. */
+  vfxQuality?: 'off' | 'normal' | 'enhanced'
+  /** Separate gain for micro-SFX (defaults to soundVolume). */
+  sfxVolume?: number
+  /** Optional music loop gain (v1.1). */
+  musicVolume?: number
 }
 
 export interface ProgressData {

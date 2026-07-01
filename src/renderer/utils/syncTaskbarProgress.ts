@@ -12,12 +12,12 @@ function pushTaskbarProgress(progress: number, mode: string): void {
   const key = `${progress}|${mode}`
   if (key === lastSent) return
   lastSent = key
-  void window.electronAPI?.setTaskbarProgress?.({ progress, mode })
+  void window.electronAPI?.desktop?.setTaskbarProgress?.({ progress, mode })
 }
 
 /** Sync Electron taskbar/dock progress with the active session. */
 export function syncTaskbarProgress(): void {
-  const api = window.electronAPI?.setTaskbarProgress
+  const api = window.electronAPI?.desktop?.setTaskbarProgress
   if (!api) return
 
   const session = useQuestSessionStore.getState().session

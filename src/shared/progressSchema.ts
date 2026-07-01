@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { QUEST_SESSION_SHORTCUT_COMMANDS } from './questSessionShortcuts'
+import { unpackQuestCompletionLogsFromStorage } from './progressLogLiveCompression'
 
 /** Bump when saved shape changes; migrateProgressPayload handles older versions. */
-export const CURRENT_PROGRESS_SCHEMA_VERSION = 25
+export const CURRENT_PROGRESS_SCHEMA_VERSION = 27
 
 const questCategorySchema = z.enum([
   'drawing',
@@ -236,6 +237,10 @@ const settingsSchema = z.object({
     preferredReferenceSource: referenceSourceSchema.optional().default('pinterest'),
     /** When true and Google Drive is connected, reference webviews use Google SSO with that account. */
     useGoogleForReferenceLogin: z.boolean().optional().default(false),
+    telemetryEnabled: z.boolean().optional().default(false),
+    vfxQuality: z.enum(['off', 'normal', 'enhanced']).optional().default('normal'),
+    sfxVolume: z.number().min(0).max(1).optional(),
+    musicVolume: z.number().min(0).max(1).optional(),
     windowBounds: z
       .object({
         main: z
@@ -419,6 +424,8 @@ const DEFAULT_SETTINGS: z.infer<typeof settingsSchema> = {
   experienceTier: 'beginner',
   preferredReferenceSource: 'pinterest',
   useGoogleForReferenceLogin: false,
+  telemetryEnabled: false,
+  vfxQuality: 'normal',
 }
 
 const DEFAULT_STREAK: z.infer<typeof streakStateSchema> = {
@@ -664,7 +671,7 @@ export function migrateProgressPayload(raw: unknown): Record<string, unknown> {
   out.questTitleOverrides = parseRecordItems(raw.questTitleOverrides, questTitleOverrideEntrySchema)
   out.completedWorks = parseArrayItems(raw.completedWorks, completedWorkSchema)
   out.questCompletionLogs = parseArrayItems(
-    coerceCompletionLogStatuses(raw.questCompletionLogs),
+    coerceCompletionLogStatuses(unpackQuestCompletionLogsFromStorage(raw)),
     questCompletionLogSchema,
   )
   out.microChallengesCompleted = parseMicroChallengesCompleted(raw.microChallengesCompleted)

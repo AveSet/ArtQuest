@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router'
 import { useI18n } from '@/i18n'
 import {
   getNextFundamentalsExercise,
+  getFundamentalsCompletedCount,
   isFundamentalsGateCleared,
   shouldGateDailiesForBeginner,
   type FundamentalsProgress,
 } from '@/utils/fundamentalsProgress'
+import { FUNDAMENTALS_EXERCISE_COUNT } from '@/data/fundamentalsExercises'
 import type { ExperienceTier } from '@/utils/experienceTier'
 import { resolveQuestTitle } from '@/utils/questDisplay'
 import { playUiClick } from '@/utils/sound'
 import { buildQuestDetailNavState } from '@/utils/resolveQuestById'
+import { fmt } from '@/i18n/dashboardCopy'
 
 type Props = {
   experienceTier: ExperienceTier
@@ -23,6 +26,11 @@ export default function FundamentalsProgressCard({ experienceTier, fundamentalsP
   const next = getNextFundamentalsExercise(fundamentalsProgress)
   const gateCleared = isFundamentalsGateCleared(fundamentalsProgress)
   const gateActive = shouldGateDailiesForBeginner(experienceTier, fundamentalsProgress)
+  const doneCount = getFundamentalsCompletedCount(fundamentalsProgress)
+  const progressLabel = fmt(t.fundamentals?.progressHint ?? '{done}/{total} exercises completed', {
+    done: doneCount,
+    total: FUNDAMENTALS_EXERCISE_COUNT,
+  })
   const hasStarted =
     gateCleared ||
     Object.values(fundamentalsProgress.trackPhaseDone).some((n) => (n ?? 0) > 0) ||
@@ -50,6 +58,10 @@ export default function FundamentalsProgressCard({ experienceTier, fundamentalsP
           {t.fundamentals?.viewAll ?? 'View all'}
         </Link>
       </div>
+
+      <p className="text-sm text-[var(--text-muted)] mb-2" aria-live="polite">
+        {progressLabel}
+      </p>
 
       {gateActive && !gateCleared && (
         <p className="text-xs text-[var(--status-warning-text)] mb-3 px-2.5 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-secondary)]">

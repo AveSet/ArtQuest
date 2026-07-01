@@ -49,7 +49,7 @@ export default function LearningProfileModal({ open }: Props) {
   )
 
   const pickCustomApp = async () => {
-    const result = await window.electronAPI?.pickArtAppExecutable?.()
+    const result = await window.electronAPI?.desktop?.pickArtAppExecutable?.()
     if (!result?.success || !result.path) return
     setCustomArtAppPath(result.path)
     setTrackedApps((prev) => {

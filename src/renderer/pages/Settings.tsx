@@ -27,16 +27,28 @@ import { syncAmbientLoop } from '@/utils/ambientSound'
 import { getSessionRitual } from '@/i18n/sessionRitualCopy'
 import { settingsChoiceClass, settingsChipClass, settingsOptionClass } from '@/utils/settingsUi'
 import type { ReferenceSource } from '@/store/models'
-
-const CATEGORY_ICONS: Record<QuestCategory, string> = {
-  drawing: '🎨',
-  anatomy: '🦴',
-  animation: '🎬',
-  effects: '✨',
-  storytelling: '📖',
-  character_design: '🎭',
-  environment: '🏞️',
-}
+import {
+  SettingsCategoryIcon,
+  SettingsIconAccessibility,
+  SettingsIconChart,
+  SettingsIconCompass,
+  SettingsIconDesktop,
+  SettingsIconDrawing,
+  SettingsIconAnimation,
+  SettingsIconFemale,
+  SettingsIconGlobe,
+  SettingsIconMale,
+  SettingsIconPortrait,
+  SettingsIconProfile,
+  SettingsIconSound,
+  SettingsIconStorage,
+  SettingsIconTarget,
+  SettingsIconBell,
+  SettingsIconWarning,
+  SettingsSectionTitle,
+  SettingsInlineIcon,
+  SettingsThemeIcon,
+} from '@/components/settings/SettingsIcons'
 
 type SettingsTab = 'personal' | 'technical'
 
@@ -75,8 +87,8 @@ const Settings = () => {
     if (!window.electronAPI) return
     let cancelled = false
     Promise.all([
-      window.electronAPI.getStorageMode?.(),
-      window.electronAPI.getGoogleDriveStatus?.(),
+      window.electronAPI.cloud.getMode?.(),
+      window.electronAPI.cloud.getGoogleDriveStatus?.(),
     ]).then(([modeResult, statusResult]) => {
       if (cancelled) return
       if (modeResult?.success && modeResult.mode) {
@@ -108,7 +120,7 @@ const Settings = () => {
   const updateStorageMode = async (mode: StorageMode) => {
     playUiClick()
     setStorageModeState(mode)
-    const result = await window.electronAPI?.setStorageMode?.(mode)
+    const result = await window.electronAPI?.cloud?.setMode?.(mode)
     if (result && !result.success) {
       setCloudMsgKind('error')
       setCloudMsg(String(result.error ?? t.settings.storageUpdateFailed!))
@@ -119,7 +131,7 @@ const Settings = () => {
     playUiClick()
     setCloudMsg('')
     setCloudMsgKind('info')
-    const result = await window.electronAPI?.connectGoogleDrive?.()
+    const result = await window.electronAPI?.cloud?.connectGoogleDrive?.()
     if (result?.success && result.account) {
       setGoogleAccount({
         connected: result.account.connected,
@@ -127,7 +139,7 @@ const Settings = () => {
         remoteRootPath: result.account.remoteRootPath,
       })
       setNeedsScopeReconnect(false)
-      const status = await window.electronAPI?.getGoogleDriveStatus?.()
+      const status = await window.electronAPI?.cloud?.getGoogleDriveStatus?.()
       setDriveFolderUrl(status?.folderWebUrl ?? null)
     } else if (result?.error) {
       setCloudMsgKind('error')
@@ -139,7 +151,7 @@ const Settings = () => {
     playUiClick()
     setCloudMsg('')
     setCloudMsgKind('info')
-    const result = await window.electronAPI?.disconnectGoogleDrive?.()
+    const result = await window.electronAPI?.cloud?.disconnectGoogleDrive?.()
     if (result?.success && result.account) {
       setGoogleAccount({
         connected: result.account.connected,
@@ -156,7 +168,7 @@ const Settings = () => {
 
   const updateGooglePath = async (remoteRootPath: string) => {
     setGoogleAccount(prev => ({ ...prev, remoteRootPath }))
-    const result = await window.electronAPI?.setGoogleDrivePath?.(remoteRootPath)
+    const result = await window.electronAPI?.cloud?.setGoogleDrivePath?.(remoteRootPath)
     if (result?.success && result.account) {
       setGoogleAccount({
         connected: result.account.connected,
@@ -172,14 +184,14 @@ const Settings = () => {
   const syncCloudGallery = async () => {
     playUiClick()
     setCloudMsg('')
-    const result = await window.electronAPI?.syncGallery?.()
+    const result = await window.electronAPI?.gallery?.sync?.()
     if (!result?.success) {
       setCloudMsgKind('error')
       setCloudMsg(result?.error ?? t.settings.syncFailed!)
       return
     }
     await refreshGallerySyncFromDisk()
-    const status = await window.electronAPI?.getGoogleDriveStatus?.()
+    const status = await window.electronAPI?.cloud?.getGoogleDriveStatus?.()
     setDriveFolderUrl(status?.folderWebUrl ?? null)
     if (result.needsScopeReconnect) {
       setNeedsScopeReconnect(true)
@@ -211,9 +223,9 @@ const Settings = () => {
 
   const openDriveFolder = async () => {
     playUiClick()
-    const url = driveFolderUrl ?? (await window.electronAPI?.getGoogleDriveStatus?.())?.folderWebUrl
+    const url = driveFolderUrl ?? (await window.electronAPI?.cloud?.getGoogleDriveStatus?.())?.folderWebUrl
     if (url) {
-      await window.electronAPI?.openExternal?.(url)
+      await window.electronAPI?.shell?.openExternal?.(url)
     } else {
       setCloudMsgKind('info')
       setCloudMsg(t.settings.googleDriveFolderPending ?? 'Run Sync first to create the Google Drive folder.')
@@ -329,7 +341,10 @@ const Settings = () => {
       <div className="settings-grid">
         {activeTab === 'personal' ? (
         <div className="settings-block">
-          <SettingsSection title={`👤 ${t.profile.settingsTitle}`} testId="learning-profile-settings">
+          <SettingsSection
+            title={<SettingsSectionTitle icon={<SettingsIconProfile />}>{t.profile.settingsTitle}</SettingsSectionTitle>}
+            testId="learning-profile-settings"
+          >
             <p className="text-xs text-[var(--text-muted)]">{t.profile.settingsHint}</p>
             <div className="flex flex-col sm:flex-row gap-2">
               {(['drawing', 'animation'] as const).map((profile) => {
@@ -345,7 +360,11 @@ const Settings = () => {
                     aria-pressed={selected}
                     className={settingsChoiceClass(selected)}
                   >
-                    {profile === 'drawing' ? `🎨 ${t.profile.chooseDrawing}` : `🎬 ${t.profile.chooseAnimation}`}
+                    {profile === 'drawing' ? (
+                      <SettingsInlineIcon icon={<SettingsIconDrawing />}>{t.profile.chooseDrawing}</SettingsInlineIcon>
+                    ) : (
+                      <SettingsInlineIcon icon={<SettingsIconAnimation />}>{t.profile.chooseAnimation}</SettingsInlineIcon>
+                    )}
                   </button>
                 )
               })}
@@ -353,7 +372,11 @@ const Settings = () => {
           </SettingsSection>
 
           <SettingsSection
-            title={`📊 ${t.profile.experienceSettingsTitle ?? 'Skill level'} · ${t.sessionRitual?.energyModeLabel ?? 'Session length'}`}
+            title={
+              <SettingsSectionTitle icon={<SettingsIconChart />}>
+                {`${t.profile.experienceSettingsTitle ?? 'Skill level'} · ${t.sessionRitual?.energyModeLabel ?? 'Session length'}`}
+              </SettingsSectionTitle>
+            }
           >
             <p className="text-xs text-[var(--text-muted)] mb-2">
               {(t.profile.experienceSettingsHint ??
@@ -405,7 +428,9 @@ const Settings = () => {
             </div>
           </SettingsSection>
 
-          <SettingsSection title={`🎯 ${t.settings.favoriteCategories}`}>
+          <SettingsSection
+            title={<SettingsSectionTitle icon={<SettingsIconTarget />}>{t.settings.favoriteCategories}</SettingsSectionTitle>}
+          >
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-[var(--text-muted)]">{t.settings.selectUpToThree}</p>
               <button
@@ -431,7 +456,6 @@ const Settings = () => {
             </div>
             <div className="flex flex-wrap gap-1.5">
               {visibleCategories.map((key) => {
-                const icon = CATEGORY_ICONS[key] ?? '⭐'
                 const isSelected = (settings.favoriteCategories || []).includes(key)
                 const disabled = !isSelected && (settings.favoriteCategories || []).length >= 3
                 return (
@@ -442,14 +466,16 @@ const Settings = () => {
                   }}
                     className={settingsChipClass(isSelected, disabled)}
                   >
-                    {icon} {t.categories[key]}
+                    <SettingsInlineIcon icon={<SettingsCategoryIcon category={key} />}>
+                      {t.categories[key]}
+                    </SettingsInlineIcon>
                   </button>
                 )
               })}
             </div>
           </SettingsSection>
 
-          <SettingsSection title={`🌐 ${t.settings.language}`}>
+          <SettingsSection title={<SettingsSectionTitle icon={<SettingsIconGlobe />}>{t.settings.language}</SettingsSectionTitle>}>
             <div className="flex gap-2 flex-wrap">
               {LANGUAGES.map(lang => {
                 const meta = LANGUAGE_LABELS[lang]
@@ -463,7 +489,14 @@ const Settings = () => {
             </div>
           </SettingsSection>
 
-          <SettingsSection title={`🖼️ ${t.portrait.settingsTitle} · ${t.settings.theme}`} defaultOpen={false}>
+          <SettingsSection
+            title={
+              <SettingsSectionTitle icon={<SettingsIconPortrait />}>
+                {`${t.portrait.settingsTitle} · ${t.settings.theme}`}
+              </SettingsSectionTitle>
+            }
+            defaultOpen={false}
+          >
             <p className="text-xs text-[var(--text-muted)] mb-2">{t.portrait.settingsHint}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div className="grid grid-cols-2 gap-1.5">
@@ -480,7 +513,11 @@ const Settings = () => {
                       aria-pressed={selected}
                       className={settingsChoiceClass(selected, true)}
                     >
-                      {gender === 'male' ? `👨 ${t.portrait.genderMale}` : `👩 ${t.portrait.genderFemale}`}
+                      {gender === 'male' ? (
+                        <SettingsInlineIcon icon={<SettingsIconMale />}>{t.portrait.genderMale}</SettingsInlineIcon>
+                      ) : (
+                        <SettingsInlineIcon icon={<SettingsIconFemale />}>{t.portrait.genderFemale}</SettingsInlineIcon>
+                      )}
                     </button>
                   )
                 })}
@@ -490,8 +527,15 @@ const Settings = () => {
                   <label key={themeKey} className={`${settingsOptionClass(theme === themeKey)} has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--accent)]`}>
                     <input type="radio" name="theme" value={themeKey} checked={theme === themeKey} onChange={() => { playUiClick(); setTheme(themeKey) }} className="sr-only" />
                     <span>
-                      {themeKey === 'modern' ? '🌙' : themeKey === 'light' ? '☀️' : themeKey === 'rpg' ? '🐉' : '🖊️'}{' '}
-                      {themeKey === 'modern' ? t.settings.themeModern : themeKey === 'light' ? t.settings.themeLight : themeKey === 'rpg' ? t.settings.themeRpg : (t.settings.themeStudio ?? ritual.studioThemeLabel)}
+                      <SettingsInlineIcon icon={<SettingsThemeIcon theme={themeKey} />}>
+                        {themeKey === 'modern'
+                          ? t.settings.themeModern
+                          : themeKey === 'light'
+                            ? t.settings.themeLight
+                            : themeKey === 'rpg'
+                              ? t.settings.themeRpg
+                              : (t.settings.themeStudio ?? ritual.studioThemeLabel)}
+                      </SettingsInlineIcon>
                     </span>
                   </label>
                 ))}
@@ -506,12 +550,12 @@ const Settings = () => {
             t={t}
             referenceSourceLabels={referenceSourceLabels}
           />
-        </div>
-        ) : (
-        <div className="settings-block">
-          <ProgressBackupSettings />
+
           {typeof window !== 'undefined' && window.electronAPI && (
-            <SettingsSection title={`💾 ${t.settings.storageSection}`} defaultOpen={false}>
+            <SettingsSection
+              title={<SettingsSectionTitle icon={<SettingsIconStorage />}>{t.settings.storageSection}</SettingsSectionTitle>}
+              defaultOpen
+            >
               <p className="text-xs text-[var(--text-muted)]">{t.settings.storageLocalHint}</p>
               {!storageModeLoaded ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -615,8 +659,15 @@ const Settings = () => {
               <p className="text-xs text-[var(--text-muted)]">{t.settings.privacyLocalOnly}</p>
             </SettingsSection>
           )}
+        </div>
+        ) : (
+        <div className="settings-block">
+          <ProgressBackupSettings />
 
-          <SettingsSection title={`🔊 ${t.settings.sound}`} collapsible={false} defaultOpen={false}>
+          <SettingsSection
+            title={<SettingsSectionTitle icon={<SettingsIconSound />}>{t.settings.sound}</SettingsSectionTitle>}
+            defaultOpen={false}
+          >
               <div className="settings-toggle-row">
                 <label htmlFor="sound-enabled" className="settings-row-label">{t.settings.enableSounds}</label>
                 <button
@@ -646,7 +697,9 @@ const Settings = () => {
                   className="flex-1 h-1.5 accent-[var(--gold-primary)]"
                 />
                 <span className="text-gold font-mono text-xs w-10 text-right">{Math.round(settings.soundVolume * 100)}%</span>
-                <button type="button" onClick={() => { playUiClick(); testSound() }} className="btn-primary text-xs px-2 py-1" aria-label={t.settings.testSound}>🔔</button>
+                <button type="button" onClick={() => { playUiClick(); testSound() }} className="btn-primary text-xs px-2 py-1 inline-flex items-center justify-center" aria-label={t.settings.testSound}>
+                  <SettingsIconBell className="w-4 h-4" />
+                </button>
               </div>
               <div className="settings-toggle-row pt-1">
                 <label htmlFor="ambient-enabled" className="settings-row-label">
@@ -686,7 +739,7 @@ const Settings = () => {
                 </div>
               )}
               {settings.ambientEnabled && (
-                <div className="flex flex-wrap gap-2 pt-2">
+                <div className="flex flex-wrap gap-2">
                   <span className="text-xs text-[var(--text-muted)] w-full">{ritual.ambientPresetLabel}</span>
                   {(['rain', 'cafe', 'fireplace'] as const).map((preset) => (
                     <button
@@ -712,7 +765,11 @@ const Settings = () => {
             </SettingsSection>
 
           <SettingsSection
-            title={`🧭 ${t.settings.tourAndResetSection ?? t.settings.fullAppTour ?? 'Tour & reset'}`}
+            title={
+              <SettingsSectionTitle icon={<SettingsIconCompass />}>
+                {t.settings.tourAndResetSection ?? t.settings.fullAppTour ?? 'Tour & reset'}
+              </SettingsSectionTitle>
+            }
             defaultOpen
           >
             <p className="text-xs text-[var(--text-muted)]">{t.settings.showWelcomeTipsAgain}</p>
@@ -737,13 +794,16 @@ const Settings = () => {
                 className="btn-primary btn-danger text-xs px-3 py-1.5 flex-1"
                 aria-label={t.common.resetProgress}
               >
-                ⚠️ {t.common.resetProgress}
+                <SettingsInlineIcon icon={<SettingsIconWarning />}>{t.common.resetProgress}</SettingsInlineIcon>
               </button>
             </div>
           </SettingsSection>
 
           {typeof window !== 'undefined' && window.electronAPI && (
-            <SettingsSection title={`🖥 ${t.settings.desktopSection}`} defaultOpen={false}>
+            <SettingsSection
+              title={<SettingsSectionTitle icon={<SettingsIconDesktop />}>{t.settings.desktopSection}</SettingsSectionTitle>}
+              defaultOpen={false}
+            >
               <div className="settings-toggle-row">
                 <label htmlFor="minimize-tray" className="settings-row-label">{t.settings.minimizeToTray}</label>
                 <button
@@ -761,6 +821,16 @@ const Settings = () => {
                 >
                   <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--text-primary)] rounded-full transition-transform ${settings.minimizeToTray ? 'translate-x-4' : 'translate-x-0'}`} />
                 </button>
+              </div>
+
+              <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3">
+                <div className="font-semibold text-sm">
+                  {t.settings.widgetSection ?? t.settings.sessionWidgetMode ?? 'Widget mode'}
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
+                  {t.settings.sessionWidgetModeHint ??
+                    'After you start a quest or practice, tap “Collapse to widget” on the session screen to switch to a small floating timer.'}
+                </p>
               </div>
 
               <div className="settings-toggle-row">
@@ -844,7 +914,10 @@ const Settings = () => {
           <ArtAppsSettings />
           <QuestSessionShortcutsSettings />
 
-          <SettingsSection title={`♿ ${t.settings.accessibilitySection}`} defaultOpen={false}>
+          <SettingsSection
+            title={<SettingsSectionTitle icon={<SettingsIconAccessibility />}>{t.settings.accessibilitySection}</SettingsSectionTitle>}
+            defaultOpen={false}
+          >
             <div>
               <p className="text-xs text-[var(--text-muted)] mb-2">{t.settings.fontScale}</p>
               <div className="flex flex-wrap gap-2" role="group" aria-label={t.settings.fontScale}>
@@ -929,6 +1002,45 @@ const Settings = () => {
               >
                 <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--text-primary)] rounded-full transition-transform ${settings.reduceMotion ? 'translate-x-4' : 'translate-x-0'}`} />
               </button>
+            </div>
+
+            <div className="settings-toggle-row">
+              <label htmlFor="telemetry-enabled" className="settings-row-label">{t.settings.telemetryEnabled}</label>
+              <button
+                id="telemetry-enabled"
+                type="button"
+                role="switch"
+                aria-checked={settings.telemetryEnabled === true}
+                aria-label={t.settings.telemetryEnabled}
+                onClick={() => {
+                  playUiClick()
+                  setSettings({ telemetryEnabled: !settings.telemetryEnabled })
+                  void saveProgress()
+                }}
+                className={`relative w-9 h-5 rounded-full shrink-0 transition-colors ${settings.telemetryEnabled ? 'bg-[var(--gold-primary)]' : 'bg-[var(--bg-secondary)]'}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--text-primary)] rounded-full transition-transform ${settings.telemetryEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
+              </button>
+            </div>
+
+            <div className="settings-toggle-row">
+              <label htmlFor="vfx-quality" className="settings-row-label">{t.settings.vfxQuality}</label>
+              <select
+                id="vfx-quality"
+                value={settings.vfxQuality ?? 'normal'}
+                onChange={(e) => {
+                  playUiClick()
+                  setSettings({
+                    vfxQuality: e.target.value as 'off' | 'normal' | 'enhanced',
+                  })
+                  void saveProgress()
+                }}
+                className="settings-select"
+              >
+                <option value="off">{t.settings.vfxQualityOff}</option>
+                <option value="normal">{t.settings.vfxQualityNormal}</option>
+                <option value="enhanced">{t.settings.vfxQualityEnhanced}</option>
+              </select>
             </div>
           </SettingsSection>
 

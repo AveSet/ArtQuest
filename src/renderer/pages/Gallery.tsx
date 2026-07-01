@@ -25,6 +25,7 @@ import { useLearningFocusTags } from '@/utils/useLearningFocusTags'
 import { useDailyQuests } from '@/utils/useDailyQuests'
 import { generateShareCardPng, downloadShareCard, type ShareCardFormat } from '@/utils/shareCard'
 import { computePlayerLevel, getPlayerRankKey } from '@/utils/playerLevel'
+import { useGalleryWorkContextMenu } from '@/components/GalleryWorkContextMenu'
 import { playUiClick } from '@/utils/sound'
 
 type ViewMode = 'grouped' | 'grid' | 'compact'
@@ -86,10 +87,11 @@ const Gallery = () => {
     useShallow((s) => ({ adaptiveWeights: s.adaptiveWeights, streakState: s.streakState })),
   )
   const focusTags = useLearningFocusTags()
+  const { openContextMenu, menuPortal, openFileLocation } = useGalleryWorkContextMenu()
 
   useEffect(() => {
     void refreshGallerySyncFromDisk()
-    const unsubscribe = window.electronAPI?.onGallerySyncUpdated?.(() => {
+    const unsubscribe = window.electronAPI?.gallery?.onSyncUpdated?.(() => {
       void refreshGallerySyncFromDisk()
     })
     return () => unsubscribe?.()
@@ -521,6 +523,7 @@ const Gallery = () => {
                   mediaType={work.mediaType}
                   alt={work.questTitle}
                   className="gallery-thumb"
+                  onContextMenu={(e) => openContextMenu(e, work.savedPath)}
                 />
                 <span className="text-[10px] text-[var(--text-muted)] truncate w-full">{work.questTitle}</span>
                 <span className="text-[10px] text-[var(--text-secondary)]">
@@ -570,6 +573,7 @@ const Gallery = () => {
                 mediaType={work.mediaType}
                 alt={work.questTitle}
                 className=""
+                onContextMenu={(e) => openContextMenu(e, work.savedPath)}
               />
               <div className="min-w-0 flex-1 text-left">
                 <div className="text-sm font-semibold text-[var(--text-heading)] truncate">{work.questTitle}</div>
@@ -645,6 +649,7 @@ const Gallery = () => {
               mediaType={lightboxWork.mediaType}
               alt={lightboxWork.questTitle}
               className=""
+              onContextMenu={(e) => openContextMenu(e, lightboxWork.savedPath)}
             />
           }
         >
@@ -660,6 +665,15 @@ const Gallery = () => {
               </span>
             ) : null}
           </div>
+          <button
+            type="button"
+            className="mt-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold disabled:opacity-40"
+            disabled={!lightboxWork.savedPath || !window.electronAPI?.shell?.showItemInFolder}
+            title={!lightboxWork.savedPath ? (t.gallery.showInFolderDisabled ?? 'File not saved locally') : undefined}
+            onClick={() => void openFileLocation(lightboxWork.savedPath)}
+          >
+            {t.gallery.showInFolder}
+          </button>
           <button
             type="button"
             className="mt-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold"
@@ -723,6 +737,7 @@ const Gallery = () => {
           ) : null}
         </GalleryLightbox>
       )}
+      {menuPortal}
     </div>
   )
 }

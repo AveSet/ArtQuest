@@ -83,6 +83,28 @@
   cursor: pointer;
 }
 
+.settings-section-title-row,
+.settings-inline-icon-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.settings-section-title__icon,
+.settings-inline-icon-row__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--accent);
+}
+
+.settings-icon {
+  width: 100%;
+  height: 100%;
+}
+
 .settings-section-title {
   flex: 1;
   min-width: 0;

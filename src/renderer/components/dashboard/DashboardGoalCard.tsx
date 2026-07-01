@@ -4,22 +4,24 @@ import { Link } from 'react-router'
 import { useI18n } from '@/i18n'
 import { fmt } from '@/i18n/dashboardCopy'
 import { useUIStore } from '@/store/useUIStore'
-import { playUiClick } from '@/utils/sound'
+import { playSound, playUiClick } from '@/utils/sound'
 import { Box } from '@/components/tags'
 
 export default function DashboardGoalCard() {
   const { t } = useI18n()
-  const { activeGoal, completedGoals, setActiveGoal, completeActiveGoal } = useUIStore(
+  const { activeGoal, completedGoals, setActiveGoal, completeActiveGoal, reduceMotion } = useUIStore(
     useShallow((s) => ({
       activeGoal: s.activeGoal,
       completedGoals: s.completedGoals,
       setActiveGoal: s.setActiveGoal,
       completeActiveGoal: s.completeActiveGoal,
+      reduceMotion: s.settings.reduceMotion,
     })),
   )
 
   const [draft, setDraft] = useState('')
   const [editing, setEditing] = useState(false)
+  const [celebrating, setCelebrating] = useState(false)
 
   useEffect(() => {
     if (activeGoal && !editing) {
@@ -38,16 +40,25 @@ export default function DashboardGoalCard() {
   }
 
   const handleComplete = () => {
-    playUiClick()
+    playSound('achievement')
+    useUIStore.getState().triggerPortraitCelebrate()
+    if (!reduceMotion) setCelebrating(true)
     completeActiveGoal()
     setDraft('')
     setEditing(true)
+    if (!reduceMotion) {
+      window.setTimeout(() => setCelebrating(false), 650)
+    }
   }
 
   const showForm = !activeGoal || editing
 
   return (
-    <section className="card-fantasy border border-[var(--accent)]/25 mb-4" aria-labelledby="dashboard-goal-title">
+    <section
+      className={`card-fantasy border border-[var(--accent)]/25 mb-4${celebrating ? ' goal-complete-burst' : ''}`}
+      aria-labelledby="dashboard-goal-title"
+      data-onboarding="dashboard-goals"
+    >
       <Box className="mb-3">
         <h2 id="dashboard-goal-title" className="heading-2 text-sm mb-1">
           {t.dashboard.goalTitle ?? 'Goal'}
@@ -115,7 +126,7 @@ export default function DashboardGoalCard() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="btn-primary text-sm py-2 px-4"
+              className={`btn-primary text-sm py-2 px-4${celebrating ? ' goal-complete-btn-flash' : ''}`}
               onClick={handleComplete}
             >
               {t.dashboard.goalComplete}

@@ -8,7 +8,7 @@ const MAX_WARM_ITEMS = 24
  * on every `CompletedWork` in Zustand (saves memory).
  */
 export async function warmGalleryImageCache(): Promise<void> {
-  if (!window.electronAPI?.readImage && !window.electronAPI?.getLocalMediaUrl) return
+  if (!window.electronAPI?.gallery?.readImage && !window.electronAPI?.gallery?.getLocalMediaUrl) return
 
   const works = useQuestStore.getState().completedWorks
   if (works.length === 0) return

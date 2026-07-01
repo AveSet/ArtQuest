@@ -145,7 +145,7 @@ test('beginner tier shows fundamentals gate on dashboard and quests catalog', as
   await page.goto(seedUrl('/'))
   await dismissE2eOverlays(page)
   await expect(page.getByRole('heading', { name: /^Fundamentals$/i })).toBeVisible({ timeout: 20_000 })
-  await expect(page.getByText(/0\/10.*exercises/i)).toBeVisible()
+  await expect(page.getByText(/0\/11.*exercises/i)).toBeVisible()
 
   await page.goto('/#/quests')
   await dismissE2eOverlays(page)

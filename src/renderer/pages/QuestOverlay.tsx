@@ -1,25 +1,22 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { MaterialVideoMode } from '@/utils/materialExternalCatalog'
 import type { SessionOverlayPayload, QuestSessionCommand } from '@/types/electron'
-import { openReferenceWindow } from '@/utils/openReferenceWindow'
+import { expandSessionToMainWindow } from '@/utils/sessionOverlayActions'
 import { applyThemeToDocument, useThemeStore } from '@/store/useThemeStore'
-import { cancelSessionFromOverlay, expandSessionToMainWindow } from '@/utils/sessionOverlayActions'
 
 const EMPTY_PAYLOAD: SessionOverlayPayload = { hasSession: false }
 
 function readInitialOverlayPayload(): SessionOverlayPayload {
-  const snapshot = window.electronAPI?.getQuestOverlaySnapshot?.()
+  const snapshot = window.electronAPI?.overlay?.getSnapshot?.()
   if (snapshot?.hasSession) return snapshot
   return EMPTY_PAYLOAD
 }
 
 function send(command: QuestSessionCommand) {
-  void window.electronAPI?.dispatchQuestSessionCommand?.(command)
+  void window.electronAPI?.session?.dispatchCommand?.(command)
 }
 
 export default function QuestOverlay() {
   const [payload, setPayload] = useState<SessionOverlayPayload>(readInitialOverlayPayload)
-  const [refsOpen, setRefsOpen] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const lastReportedHeightRef = useRef(0)
   const theme = useThemeStore((s) => s.theme)
@@ -29,16 +26,15 @@ export default function QuestOverlay() {
     const height = Math.ceil(cardRef.current.getBoundingClientRect().height)
     if (height < 1 || Math.abs(height - lastReportedHeightRef.current) < 2) return
     lastReportedHeightRef.current = height
-    void window.electronAPI?.setOverlayLayout?.({
+    void window.electronAPI?.overlay?.setLayout?.({
       sessionType: payload.sessionType,
-      refsOpen,
       contentHeight: height,
     })
-  }, [payload, refsOpen])
+  }, [payload])
 
   useLayoutEffect(() => {
-    void window.electronAPI?.notifyOverlayReady?.()
-    void window.electronAPI?.getQuestOverlayPayload?.().then((res) => {
+    void window.electronAPI?.overlay?.notifyReady?.()
+    void window.electronAPI?.overlay?.getPayload?.().then((res) => {
       if (res?.success && res.payload && typeof res.payload === 'object') {
         setPayload(res.payload)
       }
@@ -47,10 +43,10 @@ export default function QuestOverlay() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-overlay-window', '1')
-    const unsubFull = window.electronAPI?.onQuestOverlayUpdate?.((next) => {
+    const unsubFull = window.electronAPI?.overlay?.onUpdate?.((next) => {
       setPayload(next)
     })
-    const unsubPatch = window.electronAPI?.onQuestOverlayPatch?.((patch) => {
+    const unsubPatch = window.electronAPI?.overlay?.onPatch?.((patch) => {
       setPayload((prev) => ({ ...prev, ...patch }))
     })
     return () => {
@@ -66,7 +62,6 @@ export default function QuestOverlay() {
   }, [payload.theme, theme])
 
   useEffect(() => {
-    setRefsOpen(false)
     lastReportedHeightRef.current = 0
   }, [payload.sessionType, payload.questId, payload.nodeId])
 
@@ -88,35 +83,50 @@ export default function QuestOverlay() {
   const isQuest = payload.sessionType === 'quest'
   const isPractice = payload.sessionType === 'practice'
 
-  const openRef = (mode: MaterialVideoMode) => {
-    openReferenceWindow({
-      mode,
-      questId: payload.questId,
-      nodeId: payload.nodeId,
-      category: payload.category,
-      tags: payload.preferredTags ?? [],
-      lang: payload.lang,
-    })
-    setRefsOpen(false)
+  const handleNext = () => {
+    if (isQuest) {
+      if (payload.canAdvancePhase) {
+        send('advancePhase')
+        return
+      }
+      if (payload.canSubmitQuest) {
+        send('openQuestFinish')
+      }
+      return
+    }
+    if (payload.canFinishPractice) {
+      send('finishPractice')
+    }
   }
 
-  const primaryQuestCommand = (): QuestSessionCommand => {
-    if (payload.canAdvancePhase) return 'advancePhase'
-    if (payload.canSubmitQuest) return 'openQuestFinish'
-    return 'showMainWindow'
-  }
-
-  const primaryQuestLabel = () => {
+  const nextLabel = () => {
+    if (isPractice) return labels?.finish ?? 'Finish'
     if (payload.canAdvancePhase) return labels?.next ?? 'Next'
-    if (payload.canSubmitQuest) return labels?.submit ?? 'Submit'
-    return labels?.expand ?? 'Expand'
+    if (payload.canSubmitQuest) return labels?.submit ?? labels?.next ?? 'Submit'
+    return labels?.next ?? 'Next'
+  }
+
+  const nextDisabled = isQuest
+    ? !payload.canAdvancePhase && !payload.canSubmitQuest
+    : !payload.canFinishPractice
+
+  const handleOpenReferences = () => {
+    send('openReferences')
+  }
+
+  const handleCancel = () => {
+    if (isQuest) {
+      send('cancelQuestSession')
+      return
+    }
+    send('cancelPractice')
   }
 
   return (
     <div className="quest-overlay-shell">
       <div
         ref={cardRef}
-        className={`quest-overlay-card${isPractice ? ' quest-overlay-card--practice' : ''}${refsOpen ? ' quest-overlay-card--refs-open' : ''}${payload.isReferencePhase ? ' quest-overlay-card--reference' : ''}${payload.isExpired ? ' quest-overlay-card--expired' : ''}${payload.isTimerPaused ? ' quest-overlay-card--paused' : ''}`}
+        className={`quest-overlay-card${isPractice ? ' quest-overlay-card--practice' : ''}${payload.isReferencePhase ? ' quest-overlay-card--reference' : ''}${payload.isExpired ? ' quest-overlay-card--expired' : ''}${payload.isTimerPaused ? ' quest-overlay-card--paused' : ''}`}
       >
         <div className="quest-overlay-drag">
           <span className="quest-overlay-kicker">ArtQuest</span>
@@ -156,76 +166,29 @@ export default function QuestOverlay() {
               </p>
             ) : null}
 
-            <button
-              type="button"
-              className="quest-overlay-refs-toggle"
-              onClick={() => setRefsOpen((v) => !v)}
-              aria-expanded={refsOpen}
-              aria-controls="quest-overlay-ref-grid"
-            >
-              {labels?.needReferences ?? 'Need references?'}
-            </button>
-
-            {refsOpen ? (
-              <div id="quest-overlay-ref-grid" className="quest-overlay-ref-grid">
-                <button type="button" onClick={() => openRef('long')}>
-                  ▶ {labels?.youtubeLong ?? 'YT Long'}
-                </button>
-                <button type="button" onClick={() => openRef('short')}>
-                  ▶ {labels?.youtubeShort ?? 'YT Short'}
-                </button>
-                <button type="button" onClick={() => openRef('pinterest')}>
-                  📌 {labels?.pinterest ?? 'Pin'}
-                </button>
-                <button type="button" onClick={() => openRef('clipTips')}>
-                  🎨 {labels?.clipTips ?? 'CSP'}
-                </button>
-                <button type="button" className="quest-overlay-ref-grid__wide" onClick={() => openRef('sketchfab')}>
-                  🧊 {labels?.sketchfab ?? '3D'}
-                </button>
-              </div>
-            ) : null}
-
-            <div className="quest-overlay-actions">
-              {isQuest ? (
-                <>
-                  <button
-                    type="button"
-                    className="quest-overlay-actions__primary"
-                    onClick={() => send(primaryQuestCommand())}
-                    disabled={
-                      !payload.canAdvancePhase &&
-                      !payload.canSubmitQuest &&
-                      primaryQuestCommand() === 'advancePhase'
-                    }
-                  >
-                    {primaryQuestLabel()}
-                  </button>
-                  <button
-                    type="button"
-                    className="quest-overlay-actions__danger"
-                    onClick={() => cancelSessionFromOverlay()}
-                  >
-                    {labels?.cancel ?? 'Cancel'}
-                  </button>
-                </>
-              ) : payload.canFinishPractice ? (
-                <button
-                  type="button"
-                  className="quest-overlay-actions__primary quest-overlay-actions__wide"
-                  onClick={() => send('finishPractice')}
-                >
-                  {labels?.finish ?? 'Finish'}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="quest-overlay-actions__danger quest-overlay-actions__wide"
-                  onClick={() => send('cancelPractice')}
-                >
-                  {labels?.cancel ?? 'Cancel'}
-                </button>
-              )}
+            <div className="quest-overlay-actions quest-overlay-actions--triple">
+              <button
+                type="button"
+                className="quest-overlay-actions__primary"
+                onClick={handleNext}
+                disabled={nextDisabled}
+              >
+                {nextLabel()}
+              </button>
+              <button
+                type="button"
+                className="quest-overlay-actions__reference"
+                onClick={handleOpenReferences}
+              >
+                {labels?.references ?? labels?.needReferences ?? 'Reference'}
+              </button>
+              <button
+                type="button"
+                className="quest-overlay-actions__danger"
+                onClick={handleCancel}
+              >
+                {labels?.cancel ?? 'Cancel'}
+              </button>
             </div>
           </>
         ) : (

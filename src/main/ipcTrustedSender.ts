@@ -4,12 +4,14 @@ import type { IpcMainEvent, IpcMainInvokeEvent } from 'electron'
 import { app, ipcMain } from 'electron'
 
 /** IPC channels that touch FS, shell, cloud, or desktop integration. */
-const PRIVILEGED_IPC_CHANNELS = new Set([
+export const PRIVILEGED_IPC_CHANNELS = new Set([
   'save-progress',
   'save-progress-sync',
   'load-progress',
   'read-corrupt-progress-backup',
   'clear-progress',
+  'artquest:v1:progress:append-log',
+  'artquest:v1:telemetry:track',
   'save-image',
   'save-quest-reference',
   'delete-quest-reference',
@@ -52,6 +54,8 @@ const PRIVILEGED_IPC_CHANNELS = new Set([
   'artquest:v1:overlay:get-payload',
   'artquest:v1:overlay:ready',
   'artquest:v1:session:set-tick-active',
+  'artquest:v1:taskbar:set-progress',
+  'artquest:v1:window-bounds:apply',
 ])
 
 let trustedRendererRoots: string[] | null = null

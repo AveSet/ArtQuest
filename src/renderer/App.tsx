@@ -1,5 +1,5 @@
 import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router'
-import { lazy, useEffect, useRef, useState } from 'react'
+import { lazy, useEffect } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import Navbar from './components/Navbar'
 import AchievementPopup from './components/AchievementPopup'
@@ -11,15 +11,10 @@ import ErrorBoundary from './components/ErrorBoundary'
 import type { ReactNode } from 'react'
 import { useUIStore } from './store/useUIStore'
 import { useThemeStore } from './store/useThemeStore'
-import { useQuestStore } from './store/useQuestStore'
 import { I18nProvider, useI18n } from './i18n'
-import { initAutoSave } from './utils/autoSave'
-import { checkAndGenerateDailyQuests, initializeDailyQuests } from './utils/dailyQuestCoordinator'
-import { ensureAudioContext, preloadSounds } from './utils/sound'
-import { stopAmbientLoop, syncAmbientLoop } from './utils/ambientSound'
 import { devInfo } from './utils/devLog'
-import { warmGalleryImageCache } from './utils/hydrateGallery'
-import { pushDesktopIntegrationSync } from './utils/desktopIntegration'
+import DesktopAccessibilityEffects from './components/app/DesktopAccessibilityEffects'
+import { useAppBootstrap } from './hooks/useAppBootstrap'
 import OnboardingTour from './components/OnboardingTour'
 import LearningProfileModal from './components/LearningProfileModal'
 import LevelUpToast from './components/LevelUpToast'
@@ -33,7 +28,7 @@ import ReferencePanelToggle from './components/Quest/ReferencePanelToggle'
 import AppToastLayer from './components/AppToastLayer'
 import QuestSessionCommandBridge from './components/QuestSessionCommandBridge'
 import ActivityBridge, { NavigateBridge, SessionTickBridge } from './components/ActivityBridge'
-import WindowBoundsBridge, { applySavedWindowBounds } from './components/WindowBoundsBridge'
+import WindowBoundsBridge from './components/WindowBoundsBridge'
 import BreakReminderToast from './components/BreakReminderToast'
 import { initViewportHeightSync } from './utils/viewportHeight'
 import AnimatedRouteOutlet from './components/ui/AnimatedRouteOutlet'
@@ -93,36 +88,6 @@ function RouteLoading() {
       <PageSkeleton variant={variant} />
     </div>
   )
-}
-
-function DesktopAccessibilityEffects() {
-  const { isLoaded, settings } = useUIStore(
-    useShallow((state) => ({ isLoaded: state.isLoaded, settings: state.settings })),
-  )
-  const { t, language } = useI18n()
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-font-scale', settings.fontScale ?? 'medium')
-    document.documentElement.setAttribute('data-contrast', settings.contrastBoost ? 'boost' : 'normal')
-    document.documentElement.setAttribute('data-motion', settings.reduceMotion ? 'reduce' : 'normal')
-  }, [settings.fontScale, settings.contrastBoost, settings.reduceMotion])
-
-  useEffect(() => {
-    if (!isLoaded || !window.electronAPI?.syncDesktopSettings) return
-    pushDesktopIntegrationSync(settings, {
-      reminderTitle: t.desktop.reminderTitle,
-      reminderBody: t.desktop.reminderBody,
-    })
-  }, [isLoaded, language, settings, t.desktop.reminderTitle, t.desktop.reminderBody])
-
-  const windowBoundsAppliedRef = useRef(false)
-  useEffect(() => {
-    if (!isLoaded || windowBoundsAppliedRef.current) return
-    windowBoundsAppliedRef.current = true
-    applySavedWindowBounds(useUIStore.getState().settings.windowBounds)
-  }, [isLoaded])
-
-  return null
 }
 
 function ScrollToTopOnRouteChange() {
@@ -276,83 +241,7 @@ function App() {
 
   const isLoaded = useUIStore((state) => state.isLoaded)
   const theme = useThemeStore((state) => state.theme)
-  const loadProgress = useUIStore((state) => state.loadProgress)
-  const loadQuests = useQuestStore((state) => state.loadQuests)
-  const autoSaveInitRef = useRef(false)
-
-  const autoCleanupRef = useRef<(() => void) | null | undefined>(null)
-  const [_softRestartOpen, _setSoftRestartOpen] = useState(false)
-
-  useEffect(() => {
-    Promise.all([loadQuests(), loadProgress()])
-      .then(() => {
-        initializeDailyQuests()
-        useQuestStore.getState().ensureWeeklyChallenge()
-        void useUIStore.getState().saveProgress()
-        if (!autoSaveInitRef.current) {
-          autoCleanupRef.current = initAutoSave()
-          autoSaveInitRef.current = true
-        }
-        void import('./utils/e2eTestHooks').then(({ installE2eTestHooks }) => installE2eTestHooks())
-        const runWarm = () => void warmGalleryImageCache()
-        if (typeof requestIdleCallback === 'function') {
-          requestIdleCallback(runWarm, { timeout: 8000 })
-        } else {
-          window.setTimeout(runWarm, 2000)
-        }
-
-        const streakState = useUIStore.getState().streakState
-        if (streakState.lastActiveDate) {
-          const daysSince = Math.floor(
-            (Date.now() - new Date(streakState.lastActiveDate + 'T00:00:00').getTime()) / 86400000,
-          )
-          if (daysSince >= 14) _setSoftRestartOpen(true)
-        }
-      })
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && useUIStore.getState().isLoaded) {
-        const questStore = useQuestStore.getState()
-        checkAndGenerateDailyQuests()
-        questStore.ensureWeeklyChallenge()
-      }
-    }
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    const resumeAudio = () => {
-      ensureAudioContext()
-      preloadSounds()
-      document.removeEventListener('pointerdown', resumeAudio)
-      document.removeEventListener('keydown', resumeAudio)
-    }
-    document.addEventListener('pointerdown', resumeAudio, { once: true })
-    document.addEventListener('keydown', resumeAudio, { once: true })
-
-    syncAmbientLoop()
-    const unsubAmbient = useUIStore.subscribe((state, prev) => {
-      const a = state.settings
-      const b = prev.settings
-      if (
-        a.ambientEnabled !== b.ambientEnabled ||
-        a.ambientVolume !== b.ambientVolume ||
-        a.soundEnabled !== b.soundEnabled ||
-        a.reduceMotion !== b.reduceMotion
-      ) {
-        syncAmbientLoop()
-      }
-    })
-
-    return () => {
-      unsubAmbient()
-      stopAmbientLoop()
-      autoCleanupRef.current?.()
-      autoCleanupRef.current = null
-      autoSaveInitRef.current = false
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      document.removeEventListener('pointerdown', resumeAudio)
-      document.removeEventListener('keydown', resumeAudio)
-    }
-  }, [loadQuests, loadProgress])
+  const { softRestartOpen, setSoftRestartOpen } = useAppBootstrap()
 
   if (!isLoaded) {
     return (
@@ -365,7 +254,7 @@ function App() {
   return (
     <I18nProvider>
       <ErrorBoundaryWithI18n>
-        <AppRoutes softRestartOpen={_softRestartOpen} setSoftRestartOpen={_setSoftRestartOpen} />
+        <AppRoutes softRestartOpen={softRestartOpen} setSoftRestartOpen={setSoftRestartOpen} />
       </ErrorBoundaryWithI18n>
     </I18nProvider>
   )

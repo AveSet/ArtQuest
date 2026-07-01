@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useUIStore } from '@/store/useUIStore'
 import { buildLevelUpOrbits, buildLevelUpShards } from './celebrationLayout'
+import VfxWebglLayer from './vfx/VfxWebglLayer'
 
 const LEVELUP_SHARDS = buildLevelUpShards(14)
 const LEVELUP_ORBITS = buildLevelUpOrbits(8)
@@ -35,6 +36,7 @@ export default function LevelUpCelebration() {
       {LEVELUP_ORBITS.map(({ key, style }) => (
         <span key={key} className="levelup-celebration-screen__orbit" style={style} />
       ))}
+      <VfxWebglLayer preset="levelUp" />
     </div>,
     document.body,
   )
