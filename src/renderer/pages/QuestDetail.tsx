@@ -25,6 +25,7 @@ import {
 import { getQuestDisplayMinutes } from '@/utils/questSessionPlan'
 import { usePersonalizedQuestMinutes } from '@/utils/usePersonalizedQuestMinutes'
 import { openReferenceWindow, defaultModeForReferenceSource } from '@/utils/openReferenceWindow'
+import { normalizeReferenceSource } from '@/utils/buildReferenceQuery'
 import { collapseSessionToOverlay } from '@/utils/sessionOverlayActions'
 import { resolveQuestSkillNodeId } from '@/utils/resolveQuestSkillNode'
 import { resolveQuestTitle } from '@/utils/questDisplay'
@@ -114,7 +115,6 @@ const QuestDetail = () => {
   )
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [showAbandonConfirm, setShowAbandonConfirm] = useState(false)
-  const [showReferenceChoices, setShowReferenceChoices] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([])
   const [uploadedFileData, setUploadedFileData] = useState<(File | null)[]>([])
   const [workComment, setWorkComment] = useState('')
@@ -262,7 +262,6 @@ const QuestDetail = () => {
     quickStartHandledRef.current = true
     setTimerExpired(false)
     expireSoundPlayedRef.current = false
-    setShowReferenceChoices(false)
     resetSubmitState()
     const trackStart = isFundamentalsTrackId(quest.id)
       ? resolveFundamentalsTrackSessionStart(quest.id, fundamentalsProgress)
@@ -282,7 +281,6 @@ const QuestDetail = () => {
     if (!quest || warmupDoneToday) return
     setTimerExpired(false)
     expireSoundPlayedRef.current = false
-    setShowReferenceChoices(false)
     const trackStart = isFundamentalsTrackId(quest.id)
       ? resolveFundamentalsTrackSessionStart(quest.id, fundamentalsProgress)
       : undefined
@@ -305,26 +303,11 @@ const QuestDetail = () => {
   }, [quest, isWarmupQuest, isFundamentalsQuest, warmupDoneToday, startGlobalSession, personalizedMinutes?.minutes, fundamentalsProgress, resetSubmitState])
 
 
-  const openQuestRefs = useCallback(
-    (mode: 'long' | 'short' | 'pinterest' | 'clipTips' | 'sketchfab') => {
-      if (!quest) return
-      void openReferenceWindow({
-        mode,
-        questId: quest.id,
-        nodeId: resolveQuestSkillNodeId(quest),
-        category: quest.category,
-        tags: quest.tags,
-        lang,
-      })
-    },
-    [quest, lang],
-  )
-
-  const handleShowReferenceChoices = useCallback(() => {
+  const openQuestReferences = useCallback(() => {
     if (!quest) return
-    setShowReferenceChoices(true)
-    const source =
-      useUIStore.getState().settings.preferredReferenceSource ?? ('pinterest' as const)
+    const source = normalizeReferenceSource(
+      useUIStore.getState().settings.preferredReferenceSource ?? 'pinterest',
+    )
     void openReferenceWindow({
       mode: defaultModeForReferenceSource(source),
       source,
@@ -336,17 +319,10 @@ const QuestDetail = () => {
     })
   }, [quest, lang])
 
-  const openRefsYoutubeLong = useCallback(() => openQuestRefs('long'), [openQuestRefs])
-  const openRefsYoutubeShort = useCallback(() => openQuestRefs('short'), [openQuestRefs])
-  const openRefsPinterest = useCallback(() => openQuestRefs('pinterest'), [openQuestRefs])
-  const openRefsClipTips = useCallback(() => openQuestRefs('clipTips'), [openQuestRefs])
-  const openRefsSketchfab = useCallback(() => openQuestRefs('sketchfab'), [openQuestRefs])
-
   const cancelSession = useCallback(() => {
     setTimerExpired(false)
     expireSoundPlayedRef.current = false
     cancelGlobalSession()
-    setShowReferenceChoices(false)
     resetSubmitState()
   }, [cancelGlobalSession, resetSubmitState])
 
@@ -593,18 +569,12 @@ const QuestDetail = () => {
           fundamentalsSteps={fundamentalsSteps}
           isFundamentals={isFundamentalsQuest}
           lastPracticeNotesValue={lastPracticeNotesValue}
-          showReferenceChoices={showReferenceChoices}
           t={t}
           returnAfterQuest={returnAfterQuest}
           onBack={() => {
             navigate(returnAfterQuest ?? '/quests')
           }}
-          onShowReferenceChoices={handleShowReferenceChoices}
-          onStartYoutubeLong={openRefsYoutubeLong}
-          onStartYoutubeShort={openRefsYoutubeShort}
-          onStartPinterest={openRefsPinterest}
-          onStartClipTips={openRefsClipTips}
-          onStartSketchfab={openRefsSketchfab}
+          onOpenReferences={openQuestReferences}
           onStartQuestNow={startQuestNow}
         />
       ) : (

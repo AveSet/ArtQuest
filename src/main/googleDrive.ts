@@ -4,6 +4,7 @@ import fs from 'fs'
 import http from 'http'
 import path from 'path'
 import { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET } from './googleOAuth.config'
+import { galleryRemoteFolderPath } from '../shared/galleryDrivePath'
 import {
   getCloudAccount,
   getNextUploadCandidate,
@@ -538,6 +539,25 @@ function extFromName(name: string, mediaType: 'image' | 'video'): string {
   return mediaType === 'video' ? 'mp4' : 'png'
 }
 
+async function listRemoteGallerySubfolders(folderId: string): Promise<GoogleDriveFile[]> {
+  const folders: GoogleDriveFile[] = []
+  let pageToken: string | undefined
+  do {
+    const url = new URL('https://www.googleapis.com/drive/v3/files')
+    url.searchParams.set(
+      'q',
+      `'${folderId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+    )
+    url.searchParams.set('fields', 'nextPageToken,files(id,name,mimeType)')
+    url.searchParams.set('pageSize', '100')
+    if (pageToken) url.searchParams.set('pageToken', pageToken)
+    const data = await googleFetch<{ files?: GoogleDriveFile[]; nextPageToken?: string }>(url.toString())
+    folders.push(...(data.files ?? []))
+    pageToken = data.nextPageToken
+  } while (pageToken)
+  return folders.filter((folder) => folder.id && folder.name)
+}
+
 async function listRemoteGalleryFiles(folderId: string): Promise<GoogleDriveFile[]> {
   const files: GoogleDriveFile[] = []
   let pageToken: string | undefined
@@ -554,16 +574,39 @@ async function listRemoteGalleryFiles(folderId: string): Promise<GoogleDriveFile
   return files.filter((file) => file.id && file.mimeType !== 'application/vnd.google-apps.folder')
 }
 
-async function reconcilePendingUploadsWithRemote(remoteFiles: GoogleDriveFile[]): Promise<number> {
-  const account = getGoogleDriveStatus()
-  const byGalleryId = new Map<string, GoogleDriveFile>()
-  const bySha = new Map<string, GoogleDriveFile>()
-  for (const remote of remoteFiles) {
+type RemoteGalleryEntry = { remote: GoogleDriveFile; remotePath: string }
+
+async function listAllRemoteGalleryFiles(rootFolderId: string, rootPath: string): Promise<RemoteGalleryEntry[]> {
+  const out: RemoteGalleryEntry[] = []
+  const base = rootPath.replace(/\/+$/, '')
+
+  async function walk(folderId: string, currentPath: string): Promise<void> {
+    const files = await listRemoteGalleryFiles(folderId)
+    for (const file of files) {
+      if (!file.name) continue
+      out.push({ remote: file, remotePath: `${currentPath}/${file.name}` })
+    }
+    const subfolders = await listRemoteGallerySubfolders(folderId)
+    for (const sub of subfolders) {
+      if (!sub.id || !sub.name) continue
+      await walk(sub.id, `${currentPath}/${sub.name}`)
+    }
+  }
+
+  await walk(rootFolderId, base)
+  return out
+}
+
+async function reconcilePendingUploadsWithRemote(entries: RemoteGalleryEntry[]): Promise<number> {
+  const byGalleryId = new Map<string, RemoteGalleryEntry>()
+  const bySha = new Map<string, RemoteGalleryEntry>()
+  for (const entry of entries) {
+    const remote = entry.remote
     if (!remote.id || !remote.name) continue
     const galleryItemId = remote.appProperties?.artquestGalleryItemId
     const sha = remote.appProperties?.sha256
-    if (galleryItemId) byGalleryId.set(galleryItemId, remote)
-    if (sha) bySha.set(sha, remote)
+    if (galleryItemId) byGalleryId.set(galleryItemId, entry)
+    if (sha) bySha.set(sha, entry)
   }
 
   let linked = 0
@@ -576,24 +619,27 @@ async function reconcilePendingUploadsWithRemote(remoteFiles: GoogleDriveFile[])
         ? bySha.get(pending.checksumSha256)
         : undefined
 
-    let remote: GoogleDriveFile | undefined
+    let entry: RemoteGalleryEntry | undefined
     if (remoteByGalleryId) {
-      remote = remoteByGalleryId
-    } else if (remoteBySha && remoteBySha.appProperties?.sha256 === pending.checksumSha256) {
-      remote = remoteBySha
+      entry = remoteByGalleryId
+    } else if (
+      remoteBySha &&
+      remoteBySha.remote.appProperties?.sha256 === pending.checksumSha256
+    ) {
+      entry = remoteBySha
     } else {
       continue
     }
 
+    const remote = entry.remote
     if (!remote?.id || !remote.name) continue
     if (!(await verifyRemoteDriveFile(remote.id))) continue
 
-    const remotePath = `${account.remoteRootPath.replace(/\/+$/, '')}/${remote.name}`
     linkGalleryItemToRemoteFile({
       queueId: pending.queueId,
       galleryItemId: pending.galleryItemId,
       remoteFileId: remote.id,
-      remotePath,
+      remotePath: entry.remotePath,
     })
     linked += 1
   }
@@ -611,14 +657,14 @@ function localFileMatchesRemote(localPath: string, remoteSha?: string, localChec
   return true
 }
 
-async function reconcileAndDownloadFromRemote(remoteFiles: GoogleDriveFile[]): Promise<{ downloaded: number; linked: number }> {
-  const account = getGoogleDriveStatus()
+async function reconcileAndDownloadFromRemote(entries: RemoteGalleryEntry[]): Promise<{ downloaded: number; linked: number }> {
   let downloaded = 0
   let linked = 0
 
-  for (const remote of remoteFiles) {
+  for (const entry of entries) {
+    const remote = entry.remote
     if (!remote.id || !remote.name) continue
-    const remotePath = `${account.remoteRootPath.replace(/\/+$/, '')}/${remote.name}`
+    const remotePath = entry.remotePath
     const remoteSha = remote.appProperties?.sha256
     const galleryItemId = remote.appProperties?.artquestGalleryItemId
 
@@ -682,8 +728,8 @@ async function downloadMissingGalleryFromDrive(): Promise<{ downloaded: number; 
   const account = getGoogleDriveStatus()
   if (!account.connected) return { downloaded: 0, linked: 0 }
   const folderId = await ensureFolderPath(account.remoteRootPath)
-  const remoteFiles = await listRemoteGalleryFiles(folderId)
-  return reconcileAndDownloadFromRemote(remoteFiles)
+  const entries = await listAllRemoteGalleryFiles(folderId, account.remoteRootPath)
+  return reconcileAndDownloadFromRemote(entries)
 }
 
 async function uploadCandidate(candidate: UploadCandidate): Promise<string> {
@@ -694,7 +740,10 @@ async function uploadCandidate(candidate: UploadCandidate): Promise<string> {
     throw new Error('Local gallery file is missing')
   }
   const account = getGoogleDriveStatus()
-  const folderId = await ensureFolderPath(account.remoteRootPath)
+  const uploadFolderPath = candidate.remotePath
+    ? galleryRemoteFolderPath(candidate.remotePath)
+    : account.remoteRootPath
+  const folderId = await ensureFolderPath(uploadFolderPath)
   const fileName = path.basename(candidate.localFilePath)
   const metadata: Record<string, unknown> = {
     name: fileName,
@@ -746,8 +795,8 @@ export async function processGoogleUploadQueue(): Promise<UploadQueueResult> {
     const account = getGoogleDriveStatus()
     try {
       const folderId = await ensureFolderPath(account.remoteRootPath)
-      const remoteFiles = await listRemoteGalleryFiles(folderId)
-      result.linked = await reconcilePendingUploadsWithRemote(remoteFiles)
+      const entries = await listAllRemoteGalleryFiles(folderId, account.remoteRootPath)
+      result.linked = await reconcilePendingUploadsWithRemote(entries)
     } catch (err) {
       const message = String(err instanceof Error ? err.message : err)
       result.lastError = message

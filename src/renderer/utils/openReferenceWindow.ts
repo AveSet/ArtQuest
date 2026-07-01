@@ -3,6 +3,7 @@ import type { QuestCategory } from '@/data/skillTree'
 import type { Language } from '@/i18n/translations'
 import type { ReferenceSource } from '@/store/models'
 import { useUIStore } from '@/store/useUIStore'
+import { normalizeReferenceSource } from '@/utils/buildReferenceQuery'
 import {
   isElectronDesktop,
   openReferenceWindowIpc,
@@ -20,11 +21,15 @@ export type ReferenceWindowParams = {
 }
 
 export function defaultModeForReferenceSource(source: ReferenceSource): MaterialVideoMode {
-  switch (source) {
+  switch (normalizeReferenceSource(source)) {
     case 'pinterest':
       return 'pinterest'
-    case 'artstation':
+    case 'sketchfab':
       return 'sketchfab'
+    case 'clipTips':
+      return 'clipTips'
+    case 'youtube_short':
+      return 'short'
     case 'google':
       return 'long'
     case 'youtube':
@@ -53,8 +58,9 @@ async function notifyReferenceWindowFailure(message: string): Promise<void> {
 }
 
 export async function openReferenceWindow(params: ReferenceWindowParams): Promise<boolean> {
-  const source: ReferenceSource =
-    params.source ?? useUIStore.getState().settings.preferredReferenceSource ?? 'pinterest'
+  const source: ReferenceSource = normalizeReferenceSource(
+    params.source ?? useUIStore.getState().settings.preferredReferenceSource ?? 'pinterest',
+  )
   const mode = params.mode ?? defaultModeForReferenceSource(source)
   const payload = { ...params, source, mode }
 

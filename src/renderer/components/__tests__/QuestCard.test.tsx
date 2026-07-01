@@ -34,7 +34,6 @@ const renderCard = (overrides: Partial<Parameters<typeof QuestCard>[0]> = {}) =>
         <QuestCard
           quest={mockQuest}
           language="en"
-          onDetails={vi.fn()}
           onStart={vi.fn()}
           {...overrides}
         />

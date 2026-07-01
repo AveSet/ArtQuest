@@ -50,7 +50,6 @@ const QuestCatalogRow = memo(function QuestCatalogRow({
         questTitleOverrides={questTitleOverrides}
         locked={!unlock.unlocked}
         prerequisiteHint={prereqHint}
-        onDetails={onDetails}
         onStart={unlock.unlocked ? onDetails : undefined}
         completed={isQuestPermanentlyCompleted(quest, completedQuests)}
       />

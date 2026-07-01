@@ -243,7 +243,9 @@ export interface Translations {
     referenceSourceSelector?: string
     referenceSourcePinterest?: string
     referenceSourceYoutube?: string
-    referenceSourceArtstation?: string
+    referenceSourceYoutubeShort?: string
+    referenceSourceSketchfab?: string
+    referenceSourceClipTips?: string
     referenceSourceGoogle?: string
     refWindowTags?: string
     refWindowAll?: string
@@ -429,6 +431,7 @@ export interface Translations {
     timerMainLabel?: string
     timerReferenceLabel?: string
     needReferences?: string
+    references?: string
     overlayReference?: string
     overlayCancelQuest?: string
     referenceYoutube?: string
@@ -1280,6 +1283,7 @@ export const translations: Record<Language, any> = {
       timerMainLabel: 'Quest time',
       timerReferenceLabel: 'Reference time',
       needReferences: 'Need references?',
+      references: 'References',
       overlayReference: 'Reference',
       overlayCancelQuest: 'Cancel',
       referenceYoutube: 'YouTube',
@@ -1758,7 +1762,9 @@ export const translations: Record<Language, any> = {
       referenceSourceSelector: 'Reference source',
       referenceSourcePinterest: 'Pinterest',
       referenceSourceYoutube: 'YouTube Long',
-      referenceSourceArtstation: 'ArtStation',
+      referenceSourceYoutubeShort: 'YouTube Shorts',
+      referenceSourceSketchfab: 'Sketchfab',
+      referenceSourceClipTips: 'CSP Tips',
       referenceSourceGoogle: 'Google Images',
       refWindowTags: 'Tags',
       refWindowAll: 'All',
@@ -2255,6 +2261,7 @@ export const translations: Record<Language, any> = {
       timerMainLabel: 'Время квеста',
       timerReferenceLabel: 'Время на референсы',
       needReferences: 'Нужны референсы?',
+      references: 'Референсы',
       overlayReference: 'Референс',
       overlayCancelQuest: 'Отменить',
       referenceYoutube: 'YouTube',
@@ -2734,7 +2741,9 @@ export const translations: Record<Language, any> = {
       referenceSourceSelector: 'Источник референсов',
       referenceSourcePinterest: 'Pinterest',
       referenceSourceYoutube: 'YouTube Long',
-      referenceSourceArtstation: 'ArtStation',
+      referenceSourceYoutubeShort: 'YouTube Shorts',
+      referenceSourceSketchfab: 'Sketchfab',
+      referenceSourceClipTips: 'CSP Tips',
       referenceSourceGoogle: 'Google Images',
       refWindowTags: 'Теги',
       refWindowAll: 'Все',

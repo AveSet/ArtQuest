@@ -1,51 +1,78 @@
 import { describe, expect, it } from 'vitest'
-import { buildReferenceQuery, buildReferenceSourceUrl } from '@/utils/buildReferenceQuery'
+import {
+  buildReferenceQuery,
+  buildReferenceSourceUrl,
+  normalizeReferenceSource,
+} from '@/utils/buildReferenceQuery'
+
+const questWithTags = {
+  id: 42,
+  title: { en: 'Hand poses gesture study', ru: 'Жесты рук' },
+  category: 'anatomy' as const,
+  tags: ['hands', 'poses', 'gesture', 'novice', 'practice', 'digital'],
+}
 
 describe('buildReferenceQuery', () => {
-  it('builds Pinterest image reference queries from quest category and tags', () => {
-    expect(buildReferenceQuery({
-      category: 'drawing',
-      tags: ['plants', 'flat-color', 'botanical'],
-    }, 'pinterest')).toBe('drawing plants flat-color botanical reference')
+  it('builds short contextual Pinterest query from quest title and tags', () => {
+    const query = buildReferenceQuery(questWithTags, 'pinterest')
+    expect(query.split(/\s+/).length).toBeLessThanOrEqual(6)
+    expect(query.toLowerCase()).toMatch(/reference|art/)
   })
 
-  it('builds YouTube tutorial queries instead of reference queries', () => {
-    expect(buildReferenceQuery({
-      category: 'anatomy',
-      tags: ['hands', 'poses', 'gesture'],
-    }, 'youtube')).toBe('anatomy hands poses gesture tutorial step by step')
+  it('builds YouTube tutorial query with limited words', () => {
+    const query = buildReferenceQuery(questWithTags, 'youtube')
+    expect(query.split(/\s+/).length).toBeLessThanOrEqual(6)
+    expect(query.toLowerCase()).toContain('tutorial')
   })
 
-  it('builds ArtStation portfolio-style queries', () => {
-    expect(buildReferenceQuery({
-      category: 'character_design',
-      tags: ['warrior', 'armor'],
-    }, 'artstation')).toBe('character design warrior armor concept art illustration')
+  it('builds single-word Sketchfab query', () => {
+    const query = buildReferenceQuery(questWithTags, 'sketchfab')
+    expect(query.split(/\s+/).length).toBeLessThanOrEqual(2)
   })
 
-  it('uses explicit referenceQuery as the Pinterest query', () => {
-    expect(buildReferenceQuery({
-      id: 1,
-      category: 'drawing',
-      tags: ['plants'],
-      referenceQuery: 'flat color fill plants reference',
-    }, 'pinterest')).toBe('flat color fill plants reference')
+  it('uses explicit referenceQuery when concise', () => {
+    expect(
+      buildReferenceQuery(
+        {
+          ...questWithTags,
+          referenceQuery: 'hand pose reference',
+        },
+        'pinterest',
+      ),
+    ).toBe('hand pose reference')
   })
 
   it('uses fundamentals phase reference query for track quests', () => {
-    expect(buildReferenceQuery({
-      id: 96001,
-      category: 'drawing',
-      tags: ['fundamentals', 'book-25', 'track', 'novice'],
-    }, 'google', 0)).toBe('Straights and Curves lines drawing reference')
+    expect(
+      buildReferenceQuery(
+        {
+          id: 96001,
+          title: { en: 'Fundamentals track', ru: 'Fundamentals track' },
+          category: 'drawing',
+          tags: ['fundamentals', 'book-25', 'track', 'novice'],
+        },
+        'google',
+        0,
+      ),
+    ).toBe('Straights and Curves lines drawing reference')
+  })
+
+  it('migrates legacy artstation to sketchfab URLs', () => {
+    expect(normalizeReferenceSource('artstation')).toBe('sketchfab')
+    expect(buildReferenceSourceUrl('artstation' as never, 'warrior')).toBe(
+      'https://sketchfab.com/search?q=warrior&type=models&sort_by=relevance',
+    )
   })
 
   it('builds source-specific URLs', () => {
-    expect(buildReferenceSourceUrl('google', 'flat color plants art reference')).toBe(
-      'https://images.google.com/search?tbm=isch&q=flat%20color%20plants%20art%20reference',
+    expect(buildReferenceSourceUrl('google', 'plants reference')).toBe(
+      'https://images.google.com/search?tbm=isch&q=plants%20reference',
     )
-    expect(buildReferenceSourceUrl('artstation', 'warrior concept art')).toBe(
-      'https://www.artstation.com/search?query=warrior%20concept%20art',
+    expect(buildReferenceSourceUrl('youtube_short', 'gesture')).toBe(
+      'https://www.youtube.com/results?search_query=gesture%20%23shorts',
+    )
+    expect(buildReferenceSourceUrl('clipTips', 'line art')).toBe(
+      'https://tips.clip-studio.com/en-us/search?word=line%20art',
     )
   })
 })

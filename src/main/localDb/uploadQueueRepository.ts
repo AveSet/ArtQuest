@@ -3,6 +3,7 @@ import path from 'path'
 import { isCloudOnlyStorage, type StorageMode } from '../../shared/storageMode'
 import { getCloudAccount, getStorageMode } from './cloudAccountRepository'
 import { appendEvent, getDb, nowIso, randomId, runTransaction } from './dbCore'
+import { buildGalleryRemotePath } from '../../shared/galleryDrivePath'
 import type { SyncStatus, UploadCandidate } from './types'
 
 function pruneLocalOriginalAfterCloudUpload(galleryItemId: string): void {
@@ -97,15 +98,15 @@ export function migrateGalleryItemsToCloudMode(): number {
   runTransaction(() => {
     const rows = getDb()
       .prepare(
-        `SELECT id, local_file_path, sync_status
+        `SELECT id, local_file_path, sync_status, created_at
          FROM gallery_item
          WHERE storage_mode = 'local' OR storage_mode = 'google_drive'`,
       )
-      .all() as Array<{ id: string; local_file_path: string; sync_status: SyncStatus }>
+      .all() as Array<{ id: string; local_file_path: string; sync_status: SyncStatus; created_at: string }>
 
     for (const row of rows) {
       const filename = path.basename(row.local_file_path)
-      const remotePath = `${remoteRoot.replace(/\/+$/, '')}/${filename}`
+      const remotePath = buildGalleryRemotePath(remoteRoot, row.created_at, filename)
       getDb()
         .prepare(
           `UPDATE gallery_item

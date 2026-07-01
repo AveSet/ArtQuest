@@ -15,6 +15,7 @@ import {
 } from './dbCore'
 import { dataUrlToBuffer } from './mediaDataUrl'
 import type { SavedGalleryItem, SyncStatus } from './types'
+import { buildGalleryRemotePath } from '../../shared/galleryDrivePath'
 import {
   enqueueGalleryUpload,
   findUploadQueueIdForGalleryItem,
@@ -93,8 +94,8 @@ export function saveGalleryMediaFromDataUrl(dataUrl: string, questId: string): S
   const syncStatus: SyncStatus =
     shouldQueue && account?.connected ? 'queued' : shouldQueue ? 'queued_until_connected' : 'local_only'
   const remoteRoot = account?.remoteRootPath || '/ArtQuest/Gallery'
-  const remotePath = shouldQueue ? `${remoteRoot.replace(/\/+$/, '')}/${filename}` : null
   const createdAt = nowIso()
+  const remotePath = shouldQueue ? buildGalleryRemotePath(remoteRoot, createdAt, filename) : null
   const numericQuestId = Number.parseInt(questId, 10)
 
   runTransaction(() => {

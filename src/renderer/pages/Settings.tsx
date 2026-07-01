@@ -55,7 +55,6 @@ import {
   SettingsIconSound,
   SettingsIconStorage,
   SettingsIconTarget,
-  SettingsIconBell,
   SettingsIconWarning,
   SettingsSectionTitle,
   SettingsInlineIcon,
@@ -339,7 +338,9 @@ const Settings = () => {
   const referenceSourceLabels: Record<ReferenceSource, string> = {
     pinterest: t.resources.referenceSourcePinterest ?? 'Pinterest',
     youtube: t.resources.referenceSourceYoutube ?? 'YouTube Long',
-    artstation: t.resources.referenceSourceArtstation ?? 'ArtStation',
+    youtube_short: t.resources.referenceSourceYoutubeShort ?? 'YouTube Shorts',
+    sketchfab: t.resources.referenceSourceSketchfab ?? t.quests.referenceSketchfab ?? 'Sketchfab',
+    clipTips: t.resources.referenceSourceClipTips ?? t.quests.referenceClipTips ?? 'CSP Tips',
     google: t.resources.referenceSourceGoogle ?? 'Google Images',
   }
 
@@ -731,8 +732,16 @@ const Settings = () => {
                   className="flex-1 h-1.5 accent-[var(--gold-primary)]"
                 />
                 <span className="text-gold font-mono text-xs w-10 text-right">{Math.round(settings.soundVolume * 100)}%</span>
-                <button type="button" onClick={() => { playUiClick(); testSound() }} className="btn-primary text-xs px-2 py-1 inline-flex items-center justify-center" aria-label={t.settings.testSound}>
-                  <SettingsIconBell className="w-4 h-4" />
+                <button
+                  type="button"
+                  onClick={() => { playUiClick(); testSound() }}
+                  className="settings-sound-test-btn"
+                  aria-label={t.settings.testSound}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="settings-sound-test-btn__icon">
+                    <path d="M12 4a4 4 0 0 0-4 4v3l-2 2h12l-2-2V8a4 4 0 0 0-4-4z" />
+                    <path d="M10 20h4" />
+                  </svg>
                 </button>
               </div>
               <div className="settings-toggle-row pt-1">

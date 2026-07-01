@@ -37,7 +37,7 @@ export default function SettingsReferencesSection({
           {t.settings.referenceSourceHint ??
             'The reference window opens with this source and remembers the last source you choose there.'}
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
           {REFERENCE_SOURCES.map((source) => {
             const selected = (settings.preferredReferenceSource ?? 'pinterest') === source
             return (

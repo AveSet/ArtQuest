@@ -14,7 +14,6 @@ interface QuestCardProps {
   locked?: boolean
   prerequisiteHint?: string
   onStart?: (id: number, estimatedTime: number) => void
-  onDetails?: (id: number) => void
 }
 
 const QuestCard = memo(function QuestCard({
@@ -25,7 +24,6 @@ const QuestCard = memo(function QuestCard({
   locked = false,
   prerequisiteHint,
   onStart,
-  onDetails,
 }: QuestCardProps) {
   const { t } = useI18n()
   const title = resolveQuestTitle(quest, language, questTitleOverrides)
@@ -82,12 +80,6 @@ const QuestCard = memo(function QuestCard({
       </Box>
 
       <Box className="quest-card-actions flex-wrap" role="group" aria-label={t.a11y.questActions}>
-        {onDetails && (
-          <button type="button" onClick={() => onDetails(quest.id)} className="btn-primary text-sm" aria-label={t.a11y.viewQuestDetails.replace('{title}', title)}>
-            {t.common.details}
-          </button>
-        )}
-
         {completed && !quest.is_repeatable ? (
           <span className="text-success font-semibold" role="status" aria-label={t.a11y.questCompletedStatus.replace('{title}', title)}>✓ <span>{t.common.completed}</span></span>
         ) : locked ? (

@@ -165,13 +165,6 @@ export default function DashboardDailyChecklist({
                           >
                             {t.common.startQuest}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => navigate(`/quests/${quest.id}`)}
-                            className="text-xs font-medium text-[var(--accent-hover)] hover:underline bg-transparent border-0 p-0 cursor-pointer"
-                          >
-                            {t.common.details}
-                          </button>
                         </div>
                       </>
                     )}

@@ -1,8 +1,6 @@
 import type { Quest } from '@/store/models'
 import type { Language } from '@/i18n/translations'
 import QuestMaterialsButton from '@/components/QuestMaterialsButton'
-import ReferenceSourceChoices from '@/components/Quest/ReferenceSourceChoices'
-import { getReferenceYoutubeButtonLabels } from '@/utils/referenceYtLabels'
 import QuestTitleEditor from '@/components/QuestTitleEditor'
 import { isFundamentalsQuestId } from '@/data/fundamentalsExercises'
 import { isWarmupQuestId } from '@/data/warmupQuests'
@@ -26,19 +24,13 @@ export type QuestDetailOverviewProps = {
   lastPracticeNotesValue?: string
   fundamentalsSteps?: string[]
   isFundamentals?: boolean
-  showReferenceChoices: boolean
   t: {
     quests: Record<string, string | undefined>
     common: Record<string, string | undefined>
   }
   returnAfterQuest: string | null
   onBack: () => void
-  onShowReferenceChoices: () => void
-  onStartYoutubeLong: () => void
-  onStartYoutubeShort: () => void
-  onStartPinterest: () => void
-  onStartClipTips: () => void
-  onStartSketchfab: () => void
+  onOpenReferences: () => void
   onStartQuestNow: () => void
 }
 
@@ -52,15 +44,9 @@ export default function QuestDetailOverview({
   lastPracticeNotesValue,
   fundamentalsSteps = [],
   isFundamentals = false,
-  showReferenceChoices,
   t,
   onBack,
-  onShowReferenceChoices,
-  onStartYoutubeLong,
-  onStartYoutubeShort,
-  onStartPinterest,
-  onStartClipTips,
-  onStartSketchfab,
+  onOpenReferences,
   onStartQuestNow,
 }: QuestDetailOverviewProps) {
   const isWarmup = isWarmupQuestId(quest.id)
@@ -69,7 +55,6 @@ export default function QuestDetailOverview({
   const personalized = usePersonalizedQuestMinutes(quest)
   const lastCompletionMinutes = useLastQuestCompletionMinutes(quest.id)
   const displayMinutes = getQuestDisplayMinutes(quest, false, personalized?.minutes)
-  const ytLabels = getReferenceYoutubeButtonLabels(lang)
   const fundamentalsExercise = isFundamentalsExercise
     ? getFundamentalsQuestById(quest.id)
     : undefined
@@ -211,25 +196,11 @@ export default function QuestDetailOverview({
               </p>
             )}
             <div className="flex flex-col sm:flex-row gap-1.5">
-              {!isQuickSession &&
-                (!showReferenceChoices ? (
-                  <button type="button" onClick={onShowReferenceChoices} className="btn-secondary flex-1 py-1.5 text-xs">
-                    🖼 {t.quests.needReferences}
-                  </button>
-                ) : (
-                  <ReferenceSourceChoices
-                    youtubeLongLabel={ytLabels.long}
-                    youtubeShortLabel={ytLabels.short}
-                    pinterestLabel={t.quests.referencePinterest ?? 'Pinterest'}
-                    clipTipsLabel={t.quests.referenceClipTips ?? 'CSP Tips'}
-                    sketchfabLabel={t.quests.referenceSketchfab ?? 'Sketchfab'}
-                    onYoutubeLong={onStartYoutubeLong}
-                    onYoutubeShort={onStartYoutubeShort}
-                    onPinterest={onStartPinterest}
-                    onClipTips={onStartClipTips}
-                    onSketchfab={onStartSketchfab}
-                  />
-                ))}
+              {!isQuickSession && (
+                <button type="button" onClick={onOpenReferences} className="btn-secondary flex-1 py-1.5 text-xs">
+                  🖼 {t.quests.references ?? 'References'}
+                </button>
+              )}
               {!isQuickSession && <QuestMaterialsButton quest={quest} className="flex-1 py-1.5 text-xs" />}
             </div>
             <button type="button" onClick={onStartQuestNow} className="btn-primary w-full py-2.5 text-base">

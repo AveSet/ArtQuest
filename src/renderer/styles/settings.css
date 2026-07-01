@@ -313,3 +313,30 @@
 [data-theme='rpg'] .settings-page input[type='range'] {
   min-width: 0;
 }
+
+.settings-sound-test-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-tertiary);
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.settings-sound-test-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent);
+}
+
+.settings-sound-test-btn__icon {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}

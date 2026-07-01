@@ -3,7 +3,7 @@ import { QUEST_SESSION_SHORTCUT_COMMANDS } from './questSessionShortcuts'
 import { unpackQuestCompletionLogsFromStorage } from './progressLogLiveCompression'
 
 /** Bump when saved shape changes; migrateProgressPayload handles older versions. */
-export const CURRENT_PROGRESS_SCHEMA_VERSION = 27
+export const CURRENT_PROGRESS_SCHEMA_VERSION = 28
 
 const questCategorySchema = z.enum([
   'drawing',
@@ -137,7 +137,14 @@ const materialCustomLinkSchema = z.strictObject({
   })
 
 const themeSchema = z.enum(['modern', 'light', 'rpg', 'studio'])
-const referenceSourceSchema = z.enum(['pinterest', 'youtube', 'artstation', 'google'])
+const referenceSourceSchema = z.enum([
+  'pinterest',
+  'youtube',
+  'youtube_short',
+  'sketchfab',
+  'clipTips',
+  'google',
+])
 
 const sessionPhaseSchema = z.discriminatedUnion('kind', [
   z.strictObject({
@@ -641,6 +648,9 @@ export function migrateProgressPayload(raw: unknown): Record<string, unknown> {
     partialSettings.theme !== 'studio'
   ) {
     partialSettings.theme = DEFAULT_SETTINGS.theme
+  }
+  if (partialSettings.preferredReferenceSource === 'artstation') {
+    partialSettings.preferredReferenceSource = 'sketchfab'
   }
   if (!referenceSourceSchema.safeParse(partialSettings.preferredReferenceSource).success) {
     partialSettings.preferredReferenceSource = DEFAULT_SETTINGS.preferredReferenceSource

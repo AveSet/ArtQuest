@@ -11,7 +11,13 @@ export type { LearningProfile }
 
 export type PortraitGender = 'male' | 'female'
 
-export type ReferenceSource = 'pinterest' | 'youtube' | 'artstation' | 'google'
+export type ReferenceSource =
+  | 'pinterest'
+  | 'youtube'
+  | 'youtube_short'
+  | 'sketchfab'
+  | 'clipTips'
+  | 'google'
 
 export interface PortraitProgress {
   dailyChestStreak: number
@@ -77,6 +83,8 @@ export interface Quest {
   tags: string[]
   /** Explicit English query for external reference search; display titles stay user-facing. */
   referenceQuery?: string
+  /** Optional per-source search overrides for reference window. */
+  referenceQueries?: Partial<Record<ReferenceSource, string>>
   prerequisites: number[]
   medium: 'traditional' | 'digital' | 'both'
   is_repeatable: boolean

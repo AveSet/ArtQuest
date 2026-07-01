@@ -14,7 +14,6 @@ import { SkillNodeIcon } from '@/components/SkillNodeIcon'
 import type { SkillNode } from '@/store/models'
 import { useSkillPracticeStore } from '@/store/useSkillPracticeStore'
 import { useVisibleCategories } from '@/utils/useVisibleCategories'
-import ReferenceSourceChoices from '@/components/Quest/ReferenceSourceChoices'
 import { openReferenceWindow, defaultModeForReferenceSource } from '@/utils/openReferenceWindow'
 import {
   collapseSessionToOverlay,
@@ -27,7 +26,6 @@ import { finishSkillPracticeSession } from '@/utils/skillPracticeFinish'
 import { cancelSkillPracticeSession } from '@/utils/skillPracticeCancel'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { getLocalDateStr } from '@/utils/dailyQuests'
-import { getReferenceYoutubeButtonLabels } from '@/utils/referenceYtLabels'
 import { areSessionTimersDisabled } from '@/utils/sessionTimersPreference'
 
 /** Bottom tier of the drawing track (row 0 in layout) — for onboarding demo panel. */
@@ -83,13 +81,11 @@ const Skills = () => {
   const navigate = useNavigate()
   const skillNodes = useSkillStore(s => s.skillNodes)
   const { t, language } = useI18n()
-  const ytLabels = getReferenceYoutubeButtonLabels(language)
   const [searchParams] = useSearchParams()
 
   const [activeCategory, setActiveCategory] = useState<QuestCategory>('drawing')
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [showResult, setShowResult] = useState(false)
-  const [showReferenceChoices, setShowReferenceChoices] = useState(false)
   const [resultXp, setResultXp] = useState(0)
   const skillDetailPanelRef = useRef<HTMLDivElement>(null)
   const { session: practiceSession, startSession: startSkillPracticeSession, setPanelMinimized: setPracticePanelMinimized, panelMinimized: practicePanelMinimized } =
@@ -148,7 +144,6 @@ const Skills = () => {
   }, [practiceSession, skillNodes, practicePanelMinimized])
 
   useEffect(() => {
-    setShowReferenceChoices(false)
   }, [selectedNodeId])
 
   const nodesByRow = useMemo(() => {
@@ -233,24 +228,8 @@ const Skills = () => {
     ensurePracticeStarted()
   }, [ensurePracticeStarted])
 
-  const openNodeRefs = useCallback(
-    (mode: 'long' | 'short' | 'pinterest' | 'clipTips' | 'sketchfab') => {
-      if (!selectedNode) return
-      setShowReferenceChoices(true)
-      void openReferenceWindow({
-        mode,
-        nodeId: selectedNode.id,
-        category: selectedNode.category,
-        tags: selectedNode.tags,
-        lang,
-      })
-    },
-    [selectedNode, lang],
-  )
-
-  const handleShowReferenceChoices = useCallback(() => {
+  const openNodeReferences = useCallback(() => {
     if (!selectedNode) return
-    setShowReferenceChoices(true)
     const source =
       useUIStore.getState().settings.preferredReferenceSource ?? ('pinterest' as const)
     void openReferenceWindow({
@@ -262,12 +241,6 @@ const Skills = () => {
       lang,
     })
   }, [selectedNode, lang])
-
-  const openMaterialsLong = useCallback(() => openNodeRefs('long'), [openNodeRefs])
-  const openMaterialsShort = useCallback(() => openNodeRefs('short'), [openNodeRefs])
-  const openPinterest = useCallback(() => openNodeRefs('pinterest'), [openNodeRefs])
-  const openClipTips = useCallback(() => openNodeRefs('clipTips'), [openNodeRefs])
-  const openSketchfab = useCallback(() => openNodeRefs('sketchfab'), [openNodeRefs])
 
   const practiceReadyToFinish =
     areSessionTimersDisabled() || activePracticeElapsedSec >= 60
@@ -286,14 +259,12 @@ const Skills = () => {
   const cancelPractice = useCallback(() => {
     if (!selectedNode || practiceSession?.nodeId !== selectedNode.id) return
     cancelSkillPracticeSession()
-    setShowReferenceChoices(false)
     navigate('/skills')
     if (window.electronAPI) expandSessionToMainWindow()
   }, [selectedNode, practiceSession?.nodeId, navigate])
 
   const dismissPanel = useCallback(() => {
     setSelectedNodeId(null)
-    setShowReferenceChoices(false)
     if (practiceSession) setPracticePanelMinimized(true)
   }, [practiceSession, setPracticePanelMinimized])
 
@@ -591,30 +562,13 @@ const Skills = () => {
                       <div className="text-3xl font-mono text-center text-[var(--accent-hover)] mb-2">
                         {activePracticeDisplay}
                       </div>
-                      {!showReferenceChoices ? (
-                        <button
-                          type="button"
-                          onClick={handleShowReferenceChoices}
-                          className="btn-secondary w-full py-2 text-sm mb-2"
-                        >
-                          🖼 {t.quests.needReferences}
-                        </button>
-                      ) : (
-                        <div className="mb-2">
-                          <ReferenceSourceChoices
-                            youtubeLongLabel={ytLabels.long}
-                            youtubeShortLabel={ytLabels.short}
-                            pinterestLabel={t.quests.referencePinterest ?? 'Pinterest'}
-                            clipTipsLabel={t.quests.referenceClipTips ?? 'CSP Tips'}
-                            sketchfabLabel={t.quests.referenceSketchfab ?? 'Sketchfab'}
-                            onYoutubeLong={openMaterialsLong}
-                            onYoutubeShort={openMaterialsShort}
-                            onPinterest={openPinterest}
-                            onClipTips={openClipTips}
-                            onSketchfab={openSketchfab}
-                          />
-                        </div>
-                      )}
+                      <button
+                        type="button"
+                        onClick={openNodeReferences}
+                        className="btn-secondary w-full py-2 text-sm mb-2"
+                      >
+                        🖼 {t.quests.references ?? 'References'}
+                      </button>
                       {isSelectedNodePracticeActive && !shouldCountTime ? (
                         <p className="text-[11px] text-amber-700 dark:text-amber-300 mb-2">
                           {t.skills.practiceArtAppPausedHint}
