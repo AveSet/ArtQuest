@@ -1,5 +1,6 @@
 import { app } from 'electron'
 import { pauseActivityTracking } from '../activityTracker'
+import { persistWindowBoundsInProgress } from '../progress/persistWindowBounds'
 import { appState } from './appState'
 import { stopActivityPolling } from '../timers/activityPoll'
 import { stopSessionTickTimer } from '../timers/sessionTickTimer'
@@ -55,6 +56,11 @@ export function completeQuitAfterFlush(): void {
 export function flushProgressBeforeQuit(): void {
   appState.quitFlushAcknowledged = false
   try {
+    try {
+      persistWindowBoundsInProgress()
+    } catch (err) {
+      console.warn('[quit] Failed to persist window bounds from main:', err)
+    }
     if (!appState.mainWindow || appState.mainWindow.isDestroyed()) {
       completeQuitAfterFlush()
       return

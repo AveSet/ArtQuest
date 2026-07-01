@@ -854,6 +854,7 @@ export const ko = {
     "goalsTitle": "나의 목표",
     "goalsBody": "대시보드에서 개인 목표를 설정하세요. 매일 알림으로 표시됩니다. 완료하면 완료로 표시하세요.",
     "materialsEngagementBody": "「지금 학습 중」에서 진행에 맞춘 추천을 보거나 전체 카탈로그를 탐색하세요. 참여 칩은 열어본 항목을 기억합니다.",
+    "settingsStorageBody": "갤러리 파일 저장 위치를 선택하세요: 로컬만, 로컬 + Google Drive, 클라우드만. 여기서 Google Drive를 연결해 동기화합니다.",
     "settingsTitle": "설정",
     "settingsBody": "학습 프로필, 초상화, 테마, 언어, 소리, 접근성. 아래 버튼을 눌러 언제든지 전체 둘러보기를 다시 재생해 보세요.",
     "skipTour": "둘러보기 건너뛰기",

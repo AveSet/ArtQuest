@@ -710,6 +710,7 @@ export interface Translations {
     goalsTitle?: string
     goalsBody?: string
     materialsEngagementBody?: string
+    settingsStorageBody?: string
     settingsTitle: string
     settingsBody: string
     skipTour: string
@@ -1838,6 +1839,8 @@ export const translations: Record<Language, any> = {
         'Set a personal goal on the dashboard — it stays visible as a daily reminder. Mark it completed when you finish.',
       materialsEngagementBody:
         'Use Learning now for focused picks tied to your progress, or browse the full catalog. Engagement chips remember what you opened.',
+      settingsStorageBody:
+        'Choose where gallery files live: local only, local + Google Drive, or cloud only. Connect Google Drive here to sync your works.',
       settingsTitle: 'Settings',
       settingsBody:
         'Storage mode (local / cloud), session widget, theme, language, sounds, and accessibility. Replay this full tour anytime from the button below.',
@@ -2859,6 +2862,8 @@ export const translations: Record<Language, any> = {
         'Задайте личную цель на главной — она будет напоминать каждый день. Отметьте выполненной, когда достигнете.',
       materialsEngagementBody:
         '«Сейчас в обучении» — подборка под ваш прогресс; полный каталог — все материалы. Метки запоминают, что вы открывали.',
+      settingsStorageBody:
+        'Выберите, где хранятся файлы галереи: только локально, локально + Google Drive или только облако. Подключите Google Drive для синхронизации.',
       settingsTitle: 'Настройки',
       settingsBody:
         'Режим хранения (локально / облако), виджет сессии, тема, язык, звуки и доступность. Полный тур можно запустить снова кнопкой ниже.',

@@ -13,8 +13,8 @@ import {
 type Onb = Translations['onboarding']
 type TourMode = 'quick' | 'full'
 
-const PAD = 14
-const RADIUS = 12
+const PAD = 18
+const RADIUS = 14
 
 const FULL_STEP_SELECTORS: (string | null)[] = [
   null,
@@ -31,6 +31,7 @@ const FULL_STEP_SELECTORS: (string | null)[] = [
   '[data-onboarding="materials-engagement-chips"]',
   '[data-onboarding="page-statistics"]',
   '[data-onboarding="page-achievements"]',
+  '[data-onboarding="settings-storage"]',
   '[data-onboarding="full-tour-button"]',
 ]
 
@@ -50,6 +51,7 @@ const FULL_STEP_PATHS: (string | null)[] = [
   '/progress/stats',
   '/progress/achievements',
   '/settings',
+  '/settings',
 ]
 
 /** Quick start: welcome → skills → next action → dailies → reward stars → full tour (settings). */
@@ -64,7 +66,7 @@ const QUICK_STEP_SELECTORS: (string | null)[] = [
 
 const QUICK_STEP_PATHS: (string | null)[] = [null, '/', '/', '/', '/', '/settings']
 
-const FULL_LAST_STEP = 14
+const FULL_LAST_STEP = 15
 const QUICK_LAST_STEP = 5
 
 function queryVisibleOnboardingTarget(selector: string): HTMLElement | null {
@@ -136,6 +138,8 @@ function stepTooltip(
     case 13:
       return { title: o.achievementsTitle, body: o.achievementsBody }
     case 14:
+      return { title: o.settingsTitle, body: o.settingsStorageBody ?? o.settingsBody }
+    case 15:
       return { title: o.settingsTitle, body: o.settingsBody }
     default:
       return null

@@ -24,6 +24,8 @@ export function SkillNodeIcon({ nodeId, category, className, size = 'tree' }: Sk
       category={category}
       className={['skill-node-icon', SIZE_CLASS[size], className].filter(Boolean).join(' ')}
       style={{ ['--skill-node-accent' as string]: accent }}
+      width={size === 'tree' ? 24 : size === 'panel' ? 32 : 16}
+      height={size === 'tree' ? 24 : size === 'panel' ? 32 : 16}
     />
   )
 }

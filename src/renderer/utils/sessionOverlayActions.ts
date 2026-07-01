@@ -1,7 +1,14 @@
 import { getI18nFromStore } from '@/i18n'
 import { useUIStore } from '@/store/useUIStore'
-import { isElectronDesktop, openSessionOverlayIpc } from '@/utils/electronBridge'
+import { getElectronAPI, isElectronDesktop, openSessionOverlayIpc } from '@/utils/electronBridge'
 import { forceSyncSessionOverlayPayload } from '@/utils/sessionOverlaySync'
+
+type FlatOverlayExtras = {
+  hideSessionOverlay?: () => Promise<unknown>
+  toggleQuestOverlay?: () => Promise<unknown>
+  expandQuestOverlay?: () => Promise<unknown>
+  cancelQuestOverlay?: () => Promise<unknown>
+}
 
 /** PiP widget is available in Electron when enabled in settings. */
 export function isSessionWidgetModeEnabled(): boolean {
@@ -22,20 +29,36 @@ export async function collapseSessionToOverlay(): Promise<void> {
 
 /** Hide floating overlay without restoring the main window. */
 export function hideSessionOverlay(): void {
-  void window.electronAPI?.overlay?.hide?.()
+  const api = getElectronAPI() as FlatOverlayExtras & {
+    overlay?: { hide?: () => Promise<unknown> }
+  }
+  if (!api) return
+  void (api.overlay?.hide ?? api.hideSessionOverlay)?.()
 }
 
 /** Toggle between PiP widget and main window (Electron only). */
 export function toggleSessionOverlayView(): void {
-  void window.electronAPI?.overlay?.toggle?.()
+  const api = getElectronAPI() as FlatOverlayExtras & {
+    overlay?: { toggle?: () => Promise<unknown> }
+  }
+  if (!api) return
+  void (api.overlay?.toggle ?? api.toggleQuestOverlay)?.()
 }
 
 /** Hide widget and restore main window without ending the session. */
 export function expandSessionToMainWindow(): void {
-  void window.electronAPI?.overlay?.expand?.()
+  const api = getElectronAPI() as FlatOverlayExtras & {
+    overlay?: { expand?: () => Promise<unknown> }
+  }
+  if (!api) return
+  void (api.overlay?.expand ?? api.expandQuestOverlay)?.()
 }
 
 /** Hide widget, restore main window, and end the session from the main renderer. */
 export function cancelSessionFromOverlay(): void {
-  void window.electronAPI?.overlay?.cancel?.()
+  const api = getElectronAPI() as FlatOverlayExtras & {
+    overlay?: { cancel?: () => Promise<unknown> }
+  }
+  if (!api) return
+  void (api.overlay?.cancel ?? api.cancelQuestOverlay)?.()
 }

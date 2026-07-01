@@ -8,6 +8,7 @@ export default function SettingsSection({
   compact = false,
   children,
   testId,
+  onboardingId,
 }: {
   title: ReactNode
   defaultOpen?: boolean
@@ -15,18 +16,19 @@ export default function SettingsSection({
   compact?: boolean
   children: ReactNode
   testId?: string
+  onboardingId?: string
 }) {
   const [open, setOpen] = useState(defaultOpen)
   if (!collapsible) {
     return (
-      <div className="settings-section card-fantasy" data-testid={testId}>
+      <div className="settings-section card-fantasy" data-testid={testId} data-onboarding={onboardingId}>
         <h2 className="settings-section-title mb-2">{title}</h2>
         <div className="space-y-2">{children}</div>
       </div>
     )
   }
   return (
-    <div className={`settings-section card-fantasy${compact ? ' settings-section--compact' : ''}`} data-testid={testId}>
+    <div className={`settings-section card-fantasy${compact ? ' settings-section--compact' : ''}`} data-testid={testId} data-onboarding={onboardingId}>
       <button
         type="button"
         className="settings-section-header"

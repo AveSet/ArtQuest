@@ -9,6 +9,7 @@ import { attachMainWindowBoundsReporting, reportWindowBoundsToRenderer } from '.
 import { showOverlayWindow } from './overlayWindow'
 import { buildTray } from '../tray/trayManager'
 import { clampWindowPoint, isFiniteMainRect } from '../ipc/windowBoundsHandlers'
+import { persistWindowBoundsInProgress } from '../progress/persistWindowBounds'
 
 /** Fit dashboard sidebar without clipping; stay within work area. */
 export function getDefaultWindowSize(): { width: number; height: number } {
@@ -113,6 +114,13 @@ export function createWindow(): void {
     reportWindowBoundsToRenderer({
       main: { x: b.x, y: b.y, width: b.width, height: b.height },
     })
+    if (appState.isQuitting) {
+      try {
+        persistWindowBoundsInProgress()
+      } catch (err) {
+        console.warn('[mainWindow] Failed to persist window bounds on close:', err)
+      }
+    }
     if (!appState.isQuitting && appState.minimizeToTraySetting) {
       event.preventDefault()
       appState.mainWindow.hide()

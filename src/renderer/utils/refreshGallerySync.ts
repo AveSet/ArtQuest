@@ -1,5 +1,6 @@
 import { useQuestStore } from '@/store/useQuestStore'
 import { useUIStore } from '@/store/useUIStore'
+import { listGalleryImagesIpc } from '@/utils/electronBridge'
 import type { CompletedWork } from '@/store/models'
 
 function mediaPathKey(filePath: string): string {
@@ -41,16 +42,29 @@ function savedImageToWork(img: {
 
 /** Merge disk gallery metadata into quest store; import missing works for gallery display. */
 export async function refreshGallerySyncFromDisk(options?: { persist?: boolean }): Promise<boolean> {
-  if (!window.electronAPI?.gallery?.listImages) return false
-
-  const savedImages = await window.electronAPI.gallery.listImages()
-  if (savedImages.length === 0) return false
+  const savedImages = await listGalleryImagesIpc()
+  if (!savedImages || savedImages.length === 0) return false
 
   const works = useQuestStore.getState().completedWorks
   let changed = false
   const nextWorks = [...works]
 
-  for (const img of savedImages) {
+  for (const raw of savedImages) {
+    const img = raw as {
+      id?: string
+      path: string
+      questId: number
+      date: string
+      mediaType?: 'image' | 'video'
+      thumbnailPath?: string
+      storageMode?: CompletedWork['storageMode']
+      cloudProvider?: string
+      remoteFileId?: string
+      remotePath?: string
+      syncStatus?: string
+      syncError?: string
+      lastSyncAt?: string
+    }
     if (img.questId == null) continue
 
     const existingIdx = nextWorks.findIndex(

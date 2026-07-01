@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useUIStore } from '@/store/useUIStore'
+import { applyWindowBoundsIpc, subscribeWindowBoundsReport } from '@/utils/electronBridge'
 import type { Settings } from '@/store/models'
 
 type WindowBoundsPartial = NonNullable<Settings['windowBounds']>
@@ -79,7 +80,7 @@ export default function WindowBoundsBridge() {
   }
 
   useEffect(() => {
-    const unsub = window.electronAPI?.desktop?.onWindowBoundsReport?.((partial) => {
+    const unsub = subscribeWindowBoundsReport((partial) => {
       queueBoundsSave(partial)
     })
     return () => {
@@ -94,6 +95,5 @@ export default function WindowBoundsBridge() {
 }
 
 export function applySavedWindowBounds(bounds: Settings['windowBounds']): void {
-  if (!bounds || (!bounds.main && !bounds.overlay && !bounds.reference)) return
-  void window.electronAPI?.desktop?.applyWindowBounds?.(bounds)
+  applyWindowBoundsIpc(bounds ?? {})
 }

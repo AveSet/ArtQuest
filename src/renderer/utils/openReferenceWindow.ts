@@ -3,7 +3,11 @@ import type { QuestCategory } from '@/data/skillTree'
 import type { Language } from '@/i18n/translations'
 import type { ReferenceSource } from '@/store/models'
 import { useUIStore } from '@/store/useUIStore'
-import { isElectronDesktop, openReferenceWindowIpc } from '@/utils/electronBridge'
+import {
+  isElectronDesktop,
+  openReferenceWindowIpc,
+  showTestNotificationIpc,
+} from '@/utils/electronBridge'
 
 export type ReferenceWindowParams = {
   mode?: MaterialVideoMode
@@ -43,6 +47,11 @@ function buildReferenceMaterialsHash(
   return `#/reference-materials?${p.toString()}`
 }
 
+async function notifyReferenceWindowFailure(message: string): Promise<void> {
+  console.error('[openReferenceWindow]', message)
+  await showTestNotificationIpc({ title: 'ArtQuest', body: message })
+}
+
 export async function openReferenceWindow(params: ReferenceWindowParams): Promise<boolean> {
   const source: ReferenceSource =
     params.source ?? useUIStore.getState().settings.preferredReferenceSource ?? 'pinterest'
@@ -53,12 +62,14 @@ export async function openReferenceWindow(params: ReferenceWindowParams): Promis
     try {
       const result = await openReferenceWindowIpc(payload)
       if (result && !result.success) {
-        console.error('[openReferenceWindow]', result.error ?? 'failed to open reference window')
+        await notifyReferenceWindowFailure(String(result.error ?? 'Could not open reference window'))
         return false
       }
-      if (result) return true
+      if (result?.success) return true
+      await notifyReferenceWindowFailure('Reference window API is unavailable')
+      return false
     } catch (err) {
-      console.error('[openReferenceWindow]', err)
+      await notifyReferenceWindowFailure(String(err))
       return false
     }
   }

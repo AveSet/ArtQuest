@@ -854,6 +854,7 @@ export const zhTw: Translations = {
     "goalsTitle": "你的目標",
     "goalsBody": "在儀表板上設定個人目標——它會作為每日提醒一直顯示。完成時請標記為已完成。",
     "materialsEngagementBody": "使用「正在學習」查看與進度相關的精選內容，或瀏覽完整目錄。參與標記會記住你開啟的內容。",
+    "settingsStorageBody": "選擇畫廊檔案的儲存方式：僅本機、本機 + Google 雲端硬碟或僅雲端。在此連接 Google 雲端硬碟以同步作品。",
     "settingsTitle": "設置",
     "settingsBody": "學習個人資料、肖像、主題、語言、聲音和可訪問性。您可以隨時通過下面的按鈕重播此完整導覽。",
     "skipTour": "跳過遊覽",

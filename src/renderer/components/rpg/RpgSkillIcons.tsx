@@ -10,18 +10,19 @@ import {
 type IconProps = SVGProps<SVGSVGElement>
 
 function SkillIcon({ children, ...props }: IconProps & { children: ReactNode }) {
+  const { width, height, ...rest } = props
   return (
     <svg
       viewBox="0 0 24 24"
-      width="1em"
-      height="1em"
+      width={width ?? '1em'}
+      height={height ?? '1em'}
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.4}
+      strokeWidth={1.6}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      {...props}
+      {...rest}
     >
       {children}
     </svg>

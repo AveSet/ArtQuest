@@ -26,7 +26,7 @@ import { useDailyQuests } from '@/utils/useDailyQuests'
 import { generateShareCardPng, downloadShareCard, type ShareCardFormat } from '@/utils/shareCard'
 import { computePlayerLevel, getPlayerRankKey } from '@/utils/playerLevel'
 import { useGalleryWorkContextMenu } from '@/components/GalleryWorkContextMenu'
-import { isElectronDesktop } from '@/utils/electronBridge'
+import { isElectronDesktop, subscribeGallerySyncUpdated } from '@/utils/electronBridge'
 import { playUiClick } from '@/utils/sound'
 
 type ViewMode = 'grouped' | 'grid' | 'compact'
@@ -92,14 +92,9 @@ const Gallery = () => {
 
   useEffect(() => {
     void refreshGallerySyncFromDisk()
-    const unsubscribe =
-      window.electronAPI?.gallery?.onSyncUpdated?.(() => {
-        void refreshGallerySyncFromDisk()
-      }) ??
-      (window.electronAPI as { onGallerySyncUpdated?: (cb: () => void) => () => void } | undefined)
-        ?.onGallerySyncUpdated?.(() => {
-          void refreshGallerySyncFromDisk()
-        })
+    const unsubscribe = subscribeGallerySyncUpdated(() => {
+      void refreshGallerySyncFromDisk()
+    })
     return () => unsubscribe?.()
   }, [])
 

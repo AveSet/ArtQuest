@@ -210,13 +210,18 @@ export const useUIStore = create<UIState>((set, get) => ({
       setBatchLoading(true)
       set({ loadProgressError: null, corruptProgressBackupPath: null })
 
-      const response: LoadProgressResponse = window.electronAPI?.progress?.load
-        ? await window.electronAPI.progress.load()
-        : loadProgressFromBrowserWithStatus()
+      const api = window.electronAPI
+      const response: LoadProgressResponse = api?.progress?.load
+        ? await api.progress.load()
+        : api?.loadProgress
+          ? await api.loadProgress()
+          : loadProgressFromBrowserWithStatus()
 
       let savedImages: SavedGalleryImage[] = []
-      if (window.electronAPI?.gallery?.listImages) {
-        savedImages = await window.electronAPI.gallery.listImages()
+      if (api?.gallery?.listImages) {
+        savedImages = await api.gallery.listImages()
+      } else if (api?.getSavedImages) {
+        savedImages = (await api.getSavedImages()) as SavedGalleryImage[]
       }
 
       if (response.status === 'ok') {

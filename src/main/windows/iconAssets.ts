@@ -191,12 +191,16 @@ export function resolvePreloadPath(surface: 'main' | 'overlay' = 'main'): string
     path.join(__dirname, '..', fileName),
     path.join(__dirname, '..', '..', 'preload', fileName),
     path.join(__dirname, '..', '..', 'preload', surface === 'main' ? 'preload.mjs' : 'overlayPreload.mjs'),
+    path.join(process.resourcesPath, 'app.asar', 'out', 'preload', fileName),
+    path.join(process.resourcesPath, 'app', 'out', 'preload', fileName),
+    path.join(process.resourcesPath, 'out', 'preload', fileName),
   ]
   for (const p of candidates) {
     if (p && fs.existsSync(p)) {
       return p
     }
   }
-  console.error('[preload] Could not resolve preload path for', surface, 'tried:', candidates)
-  return candidates[0] || ''
+  const msg = `[preload] Could not resolve preload path for ${surface}; tried: ${candidates.join(', ')}`
+  console.error(msg)
+  throw new Error(msg)
 }

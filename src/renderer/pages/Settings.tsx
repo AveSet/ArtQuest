@@ -24,7 +24,18 @@ import SettingsReferencesSection from '@/components/settings/SettingsReferencesS
 import QuestSessionShortcutsSettings from '@/components/settings/QuestSessionShortcutsSettings'
 import ArtAppsSettings from '@/components/settings/ArtAppsSettings'
 import { syncAmbientLoop } from '@/utils/ambientSound'
-import { isElectronDesktop } from '@/utils/electronBridge'
+import {
+  connectGoogleDriveIpc,
+  disconnectGoogleDriveIpc,
+  getGoogleDriveStatusIpc,
+  getStorageModeIpc,
+  isElectronDesktop,
+  openExternalIpc,
+  setGoogleDrivePathIpc,
+  setStorageModeIpc,
+  showTestNotificationIpc,
+  syncGalleryIpc,
+} from '@/utils/electronBridge'
 import { getSessionRitual } from '@/i18n/sessionRitualCopy'
 import { settingsChoiceClass, settingsChipClass, settingsOptionClass } from '@/utils/settingsUi'
 import type { ReferenceSource } from '@/store/models'
@@ -89,20 +100,22 @@ const Settings = () => {
   useEffect(() => {
     if (!isDesktop) return
     let cancelled = false
-    Promise.all([
-      window.electronAPI.cloud.getMode?.(),
-      window.electronAPI.cloud.getGoogleDriveStatus?.(),
-    ]).then(([modeResult, statusResult]) => {
+    Promise.all([getStorageModeIpc(), getGoogleDriveStatusIpc()]).then(([modeResult, statusResult]) => {
       if (cancelled) return
       if (modeResult?.success && modeResult.mode) {
         setStorageModeState(modeResult.mode as StorageMode)
       }
       setStorageModeLoaded(true)
       if (statusResult?.success && statusResult.account) {
+        const account = statusResult.account as {
+          connected: boolean
+          accountEmail: string | null
+          remoteRootPath: string
+        }
         setGoogleAccount({
-          connected: statusResult.account.connected,
-          accountEmail: statusResult.account.accountEmail,
-          remoteRootPath: statusResult.account.remoteRootPath,
+          connected: account.connected,
+          accountEmail: account.accountEmail,
+          remoteRootPath: account.remoteRootPath,
         })
         setNeedsScopeReconnect(Boolean(statusResult.needsScopeReconnect))
         setDriveFolderUrl(statusResult.folderWebUrl ?? null)
@@ -123,7 +136,7 @@ const Settings = () => {
   const updateStorageMode = async (mode: StorageMode) => {
     playUiClick()
     setStorageModeState(mode)
-    const result = await window.electronAPI?.cloud?.setMode?.(mode)
+    const result = await setStorageModeIpc(mode)
     if (result && !result.success) {
       setCloudMsgKind('error')
       setCloudMsg(String(result.error ?? t.settings.storageUpdateFailed!))
@@ -134,15 +147,20 @@ const Settings = () => {
     playUiClick()
     setCloudMsg('')
     setCloudMsgKind('info')
-    const result = await window.electronAPI?.cloud?.connectGoogleDrive?.()
+    const result = await connectGoogleDriveIpc()
     if (result?.success && result.account) {
+      const account = result.account as {
+        connected: boolean
+        accountEmail: string | null
+        remoteRootPath: string
+      }
       setGoogleAccount({
-        connected: result.account.connected,
-        accountEmail: result.account.accountEmail,
-        remoteRootPath: result.account.remoteRootPath,
+        connected: account.connected,
+        accountEmail: account.accountEmail,
+        remoteRootPath: account.remoteRootPath,
       })
       setNeedsScopeReconnect(false)
-      const status = await window.electronAPI?.cloud?.getGoogleDriveStatus?.()
+      const status = await getGoogleDriveStatusIpc()
       setDriveFolderUrl(status?.folderWebUrl ?? null)
     } else if (result?.error) {
       setCloudMsgKind('error')
@@ -154,12 +172,17 @@ const Settings = () => {
     playUiClick()
     setCloudMsg('')
     setCloudMsgKind('info')
-    const result = await window.electronAPI?.cloud?.disconnectGoogleDrive?.()
+    const result = await disconnectGoogleDriveIpc()
     if (result?.success && result.account) {
+      const account = result.account as {
+        connected: boolean
+        accountEmail: string | null
+        remoteRootPath: string
+      }
       setGoogleAccount({
-        connected: result.account.connected,
-        accountEmail: result.account.accountEmail,
-        remoteRootPath: result.account.remoteRootPath,
+        connected: account.connected,
+        accountEmail: account.accountEmail,
+        remoteRootPath: account.remoteRootPath,
       })
       setNeedsScopeReconnect(false)
       setDriveFolderUrl(null)
@@ -171,12 +194,17 @@ const Settings = () => {
 
   const updateGooglePath = async (remoteRootPath: string) => {
     setGoogleAccount(prev => ({ ...prev, remoteRootPath }))
-    const result = await window.electronAPI?.cloud?.setGoogleDrivePath?.(remoteRootPath)
+    const result = await setGoogleDrivePathIpc(remoteRootPath)
     if (result?.success && result.account) {
+      const account = result.account as {
+        connected: boolean
+        accountEmail: string | null
+        remoteRootPath: string
+      }
       setGoogleAccount({
-        connected: result.account.connected,
-        accountEmail: result.account.accountEmail,
-        remoteRootPath: result.account.remoteRootPath,
+        connected: account.connected,
+        accountEmail: account.accountEmail,
+        remoteRootPath: account.remoteRootPath,
       })
     } else if (result?.error) {
       setCloudMsgKind('error')
@@ -187,14 +215,14 @@ const Settings = () => {
   const syncCloudGallery = async () => {
     playUiClick()
     setCloudMsg('')
-    const result = await window.electronAPI?.gallery?.sync?.()
+    const result = await syncGalleryIpc()
     if (!result?.success) {
       setCloudMsgKind('error')
       setCloudMsg(result?.error ?? t.settings.syncFailed!)
       return
     }
     await refreshGallerySyncFromDisk()
-    const status = await window.electronAPI?.cloud?.getGoogleDriveStatus?.()
+    const status = await getGoogleDriveStatusIpc()
     setDriveFolderUrl(status?.folderWebUrl ?? null)
     if (result.needsScopeReconnect) {
       setNeedsScopeReconnect(true)
@@ -226,9 +254,9 @@ const Settings = () => {
 
   const openDriveFolder = async () => {
     playUiClick()
-    const url = driveFolderUrl ?? (await window.electronAPI?.cloud?.getGoogleDriveStatus?.())?.folderWebUrl
+    const url = driveFolderUrl ?? (await getGoogleDriveStatusIpc())?.folderWebUrl
     if (url) {
-      await window.electronAPI?.shell?.openExternal?.(url)
+      await openExternalIpc(url)
     } else {
       setCloudMsgKind('info')
       setCloudMsg(t.settings.googleDriveFolderPending ?? 'Run Sync first to create the Google Drive folder.')
@@ -558,6 +586,8 @@ const Settings = () => {
             <SettingsSection
               title={<SettingsSectionTitle icon={<SettingsIconStorage />}>{t.settings.storageSection}</SettingsSectionTitle>}
               defaultOpen
+              testId="settings-storage"
+              onboardingId="settings-storage"
             >
               <p className="text-xs text-[var(--text-muted)]">{t.settings.storageLocalHint}</p>
               {!storageModeLoaded ? (
@@ -669,7 +699,7 @@ const Settings = () => {
 
           <SettingsSection
             title={<SettingsSectionTitle icon={<SettingsIconSound />}>{t.settings.sound}</SettingsSectionTitle>}
-            defaultOpen={false}
+            collapsible={false}
             compact
           >
               <div className="settings-toggle-row">
@@ -918,11 +948,7 @@ const Settings = () => {
                 disabled={!settings.remindersEnabled}
                 onClick={async () => {
                   playUiClick()
-                  await (
-                    window.electronAPI?.desktop?.showTestNotification ??
-                    (window.electronAPI as { showTestNotification?: typeof window.electronAPI.desktop.showTestNotification })
-                      ?.showTestNotification
-                  )?.({
+                  await showTestNotificationIpc({
                     title: t.desktop.reminderTitle,
                     body: t.desktop.reminderBody,
                   })

@@ -854,6 +854,7 @@ export const zh = {
     "goalsTitle": "你的目标",
     "goalsBody": "在仪表板上设定个人目标——它会作为每日提醒一直显示。完成时请标记为已完成。",
     "materialsEngagementBody": "使用「正在学习」查看与进度相关的精选内容，或浏览完整目录。参与标记会记住你打开的内容。",
+    "settingsStorageBody": "选择画廊文件的存储方式：仅本地、本地 + Google 云端硬盘或仅云端。在此连接 Google 云端硬盘以同步作品。",
     "settingsTitle": "设置",
     "settingsBody": "学习个人资料、肖像、主题、语言、声音和可访问性。您可以随时通过下面的按钮重播此完整导览。",
     "skipTour": "跳过游览",
