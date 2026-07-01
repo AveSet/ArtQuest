@@ -20,6 +20,11 @@
 - `npm run electron:build:portable` — same + portable exe (more AV false positives)
 - Windows code signing (optional): set `WIN_CSC_LINK` + `WIN_CSC_KEY_PASSWORD` before build
 
+## Git LFS
+- Binary assets (`*.png`, `*.webp`, `*.wav`, `*.ico`, video) are tracked with **Git LFS** (see [`.gitattributes`](.gitattributes)).
+- After clone: `git lfs install` (once per machine) — hooks fetch real files instead of pointer stubs.
+- CI checks out with `lfs: true` in GitHub Actions.
+
 ## Path Aliases
 - `@/*` → `src/renderer/*`
 
@@ -55,7 +60,7 @@
 ## Achievement Tracking
 - `questCompletionLogs` array is unbounded (was previously capped at 500)
 - Achievements count from `questCompletionLogs.length` — keep them all
-- Progress schema **v23** (`src/shared/progressSchema.ts`): `questReviewSchedule`, `feedbackStats`, `materialEngagement`, `lastExportAt`, `preferredReferenceSource`, `windowBounds`, `longAbsenceReturnDate`, etc. (campaign/learningPath removed)
+- Progress schema **v27** (`src/shared/progressSchema.ts`): `questReviewSchedule`, `feedbackStats`, `materialEngagement`, `lastExportAt`, `preferredReferenceSource`, `windowBounds`, `longAbsenceReturnDate`, `vfxQuality`, etc. (campaign/learningPath removed)
 
 ## Quest unlock & review
 - Prerequisites: satisfied if quest id is in `completedQuests` **or** appears in `questCompletionLogs` (`getSatisfiedQuestIds` in `questPrerequisites.ts`)
