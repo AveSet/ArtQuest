@@ -3,6 +3,7 @@ import type { QuestCategory } from '@/data/skillTree'
 import type { Language } from '@/i18n/translations'
 import type { ReferenceSource } from '@/store/models'
 import { useUIStore } from '@/store/useUIStore'
+import { isElectronDesktop, openReferenceWindowIpc } from '@/utils/electronBridge'
 
 export type ReferenceWindowParams = {
   mode?: MaterialVideoMode
@@ -48,14 +49,14 @@ export async function openReferenceWindow(params: ReferenceWindowParams): Promis
   const mode = params.mode ?? defaultModeForReferenceSource(source)
   const payload = { ...params, source, mode }
 
-  if (window.electronAPI?.reference?.open) {
+  if (isElectronDesktop()) {
     try {
-      const result = await window.electronAPI.reference.open(payload)
+      const result = await openReferenceWindowIpc(payload)
       if (result && !result.success) {
         console.error('[openReferenceWindow]', result.error ?? 'failed to open reference window')
         return false
       }
-      return true
+      if (result) return true
     } catch (err) {
       console.error('[openReferenceWindow]', err)
       return false

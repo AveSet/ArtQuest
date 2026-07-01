@@ -1,21 +1,23 @@
 import { getI18nFromStore } from '@/i18n'
+import { useUIStore } from '@/store/useUIStore'
+import { isElectronDesktop, openSessionOverlayIpc } from '@/utils/electronBridge'
 import { forceSyncSessionOverlayPayload } from '@/utils/sessionOverlaySync'
 
-/** PiP widget is available in Electron; collapse is always manual during an active session. */
+/** PiP widget is available in Electron when enabled in settings. */
 export function isSessionWidgetModeEnabled(): boolean {
-  return typeof window !== 'undefined' && Boolean(window.electronAPI)
+  if (!isElectronDesktop()) return false
+  return useUIStore.getState().settings.sessionWidgetMode !== false
 }
 
 /** Show session PiP widget and hide the main window (manual collapse only). */
 export async function collapseSessionToOverlay(): Promise<void> {
-  const api = window.electronAPI
-  if (!api?.overlay?.open) return
+  if (!isElectronDesktop()) return
 
   const { language, t } = getI18nFromStore()
   const synced = await forceSyncSessionOverlayPayload(language, t)
   if (!synced) return
 
-  await api.overlay.open({ hideMain: true })
+  await openSessionOverlayIpc({ hideMain: true })
 }
 
 /** Hide floating overlay without restoring the main window. */

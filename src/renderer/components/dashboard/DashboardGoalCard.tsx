@@ -41,13 +41,16 @@ export default function DashboardGoalCard() {
 
   const handleComplete = () => {
     playSound('achievement')
+    if (!reduceMotion) {
+      window.setTimeout(() => playSound('levelUp'), 120)
+    }
     useUIStore.getState().triggerPortraitCelebrate()
     if (!reduceMotion) setCelebrating(true)
     completeActiveGoal()
     setDraft('')
     setEditing(true)
     if (!reduceMotion) {
-      window.setTimeout(() => setCelebrating(false), 650)
+      window.setTimeout(() => setCelebrating(false), 900)
     }
   }
 

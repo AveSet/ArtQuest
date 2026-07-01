@@ -187,12 +187,16 @@ export function loadWindowIcon(): Electron.NativeImage {
 export function resolvePreloadPath(surface: 'main' | 'overlay' = 'main'): string {
   const fileName = surface === 'main' ? 'preload.js' : 'overlayPreload.js'
   const candidates = [
-    path.join(__dirname, '..', '..', 'preload', fileName),
+    path.join(__dirname, '..', 'preload', fileName),
     path.join(__dirname, '..', fileName),
+    path.join(__dirname, '..', '..', 'preload', fileName),
     path.join(__dirname, '..', '..', 'preload', surface === 'main' ? 'preload.mjs' : 'overlayPreload.mjs'),
   ]
   for (const p of candidates) {
-    if (p && fs.existsSync(p)) return p
+    if (p && fs.existsSync(p)) {
+      return p
+    }
   }
+  console.error('[preload] Could not resolve preload path for', surface, 'tried:', candidates)
   return candidates[0] || ''
 }

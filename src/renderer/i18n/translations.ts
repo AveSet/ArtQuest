@@ -1817,10 +1817,10 @@ export const translations: Record<Language, any> = {
         'Browse the full library here. Filter by direction and difficulty, or add your own quest — no daily or weekly headers, just the catalog.',
       galleryTitle: 'Your gallery',
       galleryBody:
-        'Every completed quest with uploaded work is saved here. Browse by month and compare versions over time.',
+        'Every completed quest with uploaded work is saved here. Right-click a result to reveal it in the folder on disk.',
       skillsPageTitle: 'Skill tree',
       skillsPageBody:
-        'Interactive skill tracks by category. Select a node to open the side panel with practice timer, XP, and level details.',
+        'Interactive skill tracks with icons on each node. Select a node to open practice, references, and the floating session widget.',
       skillsNodeDemoTitle: 'Node details',
       skillsNodeDemoBody:
         'The side panel shows level, XP, tags, and timed practice. Use it to deepen a track without starting a full quest.',
@@ -1840,7 +1840,7 @@ export const translations: Record<Language, any> = {
         'Use Learning now for focused picks tied to your progress, or browse the full catalog. Engagement chips remember what you opened.',
       settingsTitle: 'Settings',
       settingsBody:
-        'Learning profile, portrait, theme, language, sounds, and accessibility. Replay this full tour anytime from the button below.',
+        'Storage mode (local / cloud), session widget, theme, language, sounds, and accessibility. Replay this full tour anytime from the button below.',
       skipTour: 'Skip tour',
       stepProgress: 'Step {current} of {total}',
       quickWelcomeIntro:
@@ -1849,9 +1849,9 @@ export const translations: Record<Language, any> = {
         'Your portrait and skill levels live here. XP from quests and practice fills these bars — the higher the level, the more you have trained that direction.',
       quickNextActionTitle: 'Best for today',
       quickNextActionBody:
-        'A short warm-up or the next recommended step — with a plan for what comes after. Daily quests are listed below.',
+        'Your personalized next step — warm-up, review, or recommended quest. This card updates daily and after each session.',
       quickDailiesBody:
-        'Three quests each day. Press «Take Quest», work with the session timer, then upload your result to finish. Start with any open daily quest.',
+        'Three fresh quests every day (new picks at midnight). Press «Take Quest», finish with the timer, upload your work — then earn a reward star.',
       quickNavBody:
         'Quests, Skills, Gallery, Resources, and Progress live in this bar — plus active quest and practice timers.',
       portraitStarsTitle: 'Reward star',
@@ -2838,10 +2838,10 @@ export const translations: Record<Language, any> = {
         'Полная библиотека упражнений. Фильтры по направлению и сложности, можно добавить свой квест — без заголовков «ежедневно/неделя», только каталог.',
       galleryTitle: 'Ваша галерея',
       galleryBody:
-        'Каждый завершённый квест с загруженной работой сохраняется здесь. Листайте по месяцам и сравнивайте версии.',
+        'Здесь сохраняются работы по завершённым квестам. Правый клик по результату — «Показать в папке» на диске.',
       skillsPageTitle: 'Дерево навыков',
       skillsPageBody:
-        'Интерактивные ветки по категориям. Выберите узел — справа откроется панель с таймером практики, XP и уровнем.',
+        'Интерактивные ветки с иконками на каждом узле. Выберите узел — откроются практика, референсы и режим виджета сессии.',
       skillsNodeDemoTitle: 'Детали узла',
       skillsNodeDemoBody:
         'На панели — уровень, XP, теги и практика по таймеру. Углубляйте направление без полноценного квеста.',
@@ -2861,7 +2861,7 @@ export const translations: Record<Language, any> = {
         '«Сейчас в обучении» — подборка под ваш прогресс; полный каталог — все материалы. Метки запоминают, что вы открывали.',
       settingsTitle: 'Настройки',
       settingsBody:
-        'Профиль обучения, портрет, тема, язык, звуки и доступность. Полный тур можно запустить снова кнопкой ниже.',
+        'Режим хранения (локально / облако), виджет сессии, тема, язык, звуки и доступность. Полный тур можно запустить снова кнопкой ниже.',
       skipTour: 'Пропустить тур',
       stepProgress: 'Шаг {current} из {total}',
       quickWelcomeIntro:
@@ -2870,9 +2870,9 @@ export const translations: Record<Language, any> = {
         'Портрет и уровни навыков здесь. XP от квестов и практики заполняет полоски — чем выше уровень, тем больше вы тренировали это направление.',
       quickNextActionTitle: 'Сегодня лучше всего',
       quickNextActionBody:
-        'Короткая разминка или следующий рекомендуемый шаг — с планом на остаток дня. Ежедневные квесты перечислены ниже.',
+        'Персональный следующий шаг — разминка, повтор или рекомендованный квест. Карточка обновляется каждый день и после сессий.',
       quickDailiesBody:
-        'Три квеста в день. Нажмите «Взять квест», работайте с таймером сессии, затем загрузите результат. Начните с любого открытого дейлика.',
+        'Три новых квеста каждый день (обновление в полночь). Нажмите «Взять квест», завершите по таймеру, загрузите работу — и получите звезду награды.',
       quickNavBody:
         'Квесты, Навыки, Галерея, Материалы и Прогресс — в этой панели, плюс таймеры активного квеста и практики.',
       portraitStarsTitle: 'Звезда награды',

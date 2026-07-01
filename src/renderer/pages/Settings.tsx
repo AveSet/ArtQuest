@@ -24,6 +24,7 @@ import SettingsReferencesSection from '@/components/settings/SettingsReferencesS
 import QuestSessionShortcutsSettings from '@/components/settings/QuestSessionShortcutsSettings'
 import ArtAppsSettings from '@/components/settings/ArtAppsSettings'
 import { syncAmbientLoop } from '@/utils/ambientSound'
+import { isElectronDesktop } from '@/utils/electronBridge'
 import { getSessionRitual } from '@/i18n/sessionRitualCopy'
 import { settingsChoiceClass, settingsChipClass, settingsOptionClass } from '@/utils/settingsUi'
 import type { ReferenceSource } from '@/store/models'
@@ -83,8 +84,10 @@ const Settings = () => {
   const [driveFolderUrl, setDriveFolderUrl] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<SettingsTab>('personal')
 
+  const isDesktop = isElectronDesktop()
+
   useEffect(() => {
-    if (!window.electronAPI) return
+    if (!isDesktop) return
     let cancelled = false
     Promise.all([
       window.electronAPI.cloud.getMode?.(),
@@ -115,7 +118,7 @@ const Settings = () => {
     return () => {
       cancelled = true
     }
-  }, [t.settings.googleDriveReconnectRequired])
+  }, [t.settings.googleDriveReconnectRequired, isDesktop])
 
   const updateStorageMode = async (mode: StorageMode) => {
     playUiClick()
@@ -551,7 +554,7 @@ const Settings = () => {
             referenceSourceLabels={referenceSourceLabels}
           />
 
-          {typeof window !== 'undefined' && window.electronAPI && (
+          {isDesktop && (
             <SettingsSection
               title={<SettingsSectionTitle icon={<SettingsIconStorage />}>{t.settings.storageSection}</SettingsSectionTitle>}
               defaultOpen
@@ -667,6 +670,7 @@ const Settings = () => {
           <SettingsSection
             title={<SettingsSectionTitle icon={<SettingsIconSound />}>{t.settings.sound}</SettingsSectionTitle>}
             defaultOpen={false}
+            compact
           >
               <div className="settings-toggle-row">
                 <label htmlFor="sound-enabled" className="settings-row-label">{t.settings.enableSounds}</label>
@@ -799,7 +803,7 @@ const Settings = () => {
             </div>
           </SettingsSection>
 
-          {typeof window !== 'undefined' && window.electronAPI && (
+          {isDesktop && (
             <SettingsSection
               title={<SettingsSectionTitle icon={<SettingsIconDesktop />}>{t.settings.desktopSection}</SettingsSectionTitle>}
               defaultOpen={false}
@@ -823,15 +827,30 @@ const Settings = () => {
                 </button>
               </div>
 
-              <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3">
-                <div className="font-semibold text-sm">
+              <div className="settings-toggle-row">
+                <label htmlFor="session-widget-mode" className="settings-row-label">
                   {t.settings.widgetSection ?? t.settings.sessionWidgetMode ?? 'Widget mode'}
-                </div>
-                <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
-                  {t.settings.sessionWidgetModeHint ??
-                    'After you start a quest or practice, tap “Collapse to widget” on the session screen to switch to a small floating timer.'}
-                </p>
+                </label>
+                <button
+                  id="session-widget-mode"
+                  type="button"
+                  role="switch"
+                  aria-checked={settings.sessionWidgetMode}
+                  aria-label={t.settings.sessionWidgetMode ?? 'Session widget mode'}
+                  onClick={() => {
+                    playUiClick()
+                    setSettings({ sessionWidgetMode: !settings.sessionWidgetMode })
+                    void saveProgress()
+                  }}
+                  className={`relative w-9 h-5 rounded-full shrink-0 transition-colors ${settings.sessionWidgetMode ? 'bg-[var(--gold-primary)]' : 'bg-[var(--bg-secondary)]'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--text-primary)] rounded-full transition-transform ${settings.sessionWidgetMode ? 'translate-x-4' : 'translate-x-0'}`} />
+                </button>
               </div>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                {t.settings.sessionWidgetModeHint ??
+                  'After you start a quest or practice, tap “Collapse to widget” on the session screen to switch to a small floating timer.'}
+              </p>
 
               <div className="settings-toggle-row">
                 <label htmlFor="login-start" className="settings-row-label">{t.settings.openAtLogin}</label>
@@ -899,7 +918,11 @@ const Settings = () => {
                 disabled={!settings.remindersEnabled}
                 onClick={async () => {
                   playUiClick()
-                  await window.electronAPI!.showTestNotification!({
+                  await (
+                    window.electronAPI?.desktop?.showTestNotification ??
+                    (window.electronAPI as { showTestNotification?: typeof window.electronAPI.desktop.showTestNotification })
+                      ?.showTestNotification
+                  )?.({
                     title: t.desktop.reminderTitle,
                     body: t.desktop.reminderBody,
                   })

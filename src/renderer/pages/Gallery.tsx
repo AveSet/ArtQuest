@@ -26,6 +26,7 @@ import { useDailyQuests } from '@/utils/useDailyQuests'
 import { generateShareCardPng, downloadShareCard, type ShareCardFormat } from '@/utils/shareCard'
 import { computePlayerLevel, getPlayerRankKey } from '@/utils/playerLevel'
 import { useGalleryWorkContextMenu } from '@/components/GalleryWorkContextMenu'
+import { isElectronDesktop } from '@/utils/electronBridge'
 import { playUiClick } from '@/utils/sound'
 
 type ViewMode = 'grouped' | 'grid' | 'compact'
@@ -91,9 +92,14 @@ const Gallery = () => {
 
   useEffect(() => {
     void refreshGallerySyncFromDisk()
-    const unsubscribe = window.electronAPI?.gallery?.onSyncUpdated?.(() => {
-      void refreshGallerySyncFromDisk()
-    })
+    const unsubscribe =
+      window.electronAPI?.gallery?.onSyncUpdated?.(() => {
+        void refreshGallerySyncFromDisk()
+      }) ??
+      (window.electronAPI as { onGallerySyncUpdated?: (cb: () => void) => () => void } | undefined)
+        ?.onGallerySyncUpdated?.(() => {
+          void refreshGallerySyncFromDisk()
+        })
     return () => unsubscribe?.()
   }, [])
 
@@ -668,7 +674,7 @@ const Gallery = () => {
           <button
             type="button"
             className="mt-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold disabled:opacity-40"
-            disabled={!lightboxWork.savedPath || !window.electronAPI?.shell?.showItemInFolder}
+            disabled={!lightboxWork.savedPath || !isElectronDesktop()}
             title={!lightboxWork.savedPath ? (t.gallery.showInFolderDisabled ?? 'File not saved locally') : undefined}
             onClick={() => void openFileLocation(lightboxWork.savedPath)}
           >

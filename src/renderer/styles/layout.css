@@ -326,11 +326,13 @@ html[data-motion='reduce'] *::after {
 [data-onboarding-active='true'] {
   position: relative;
   z-index: 325;
-  outline: 2px solid var(--gold-primary);
-  outline-offset: 3px;
+  outline: 3px solid var(--gold-primary);
+  outline-offset: 4px;
+  border-radius: 0.75rem;
   box-shadow:
-    0 0 0 4px color-mix(in srgb, var(--gold-primary) 25%, transparent),
-    0 0 24px color-mix(in srgb, var(--gold-primary) 35%, transparent);
+    0 0 0 6px color-mix(in srgb, var(--gold-primary) 30%, transparent),
+    0 0 32px color-mix(in srgb, var(--gold-primary) 45%, transparent),
+    0 0 64px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {

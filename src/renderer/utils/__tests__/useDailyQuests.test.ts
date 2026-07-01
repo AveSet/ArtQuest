@@ -5,6 +5,7 @@ import { useQuestStore } from '@/store/useQuestStore'
 import { useUIStore } from '@/store/useUIStore'
 import { getLocalDateStr } from '../dailyQuests'
 import { buildDailyPrefsKey } from '../dailyQuestGenerator'
+import { checkAndGenerateDailyQuests } from '../dailyQuestCoordinator'
 import type { Quest } from '@/store/models'
 import type { QuestCategory } from '@/data/skillTree'
 
@@ -84,5 +85,39 @@ describe('useDailyQuests', () => {
       expect(result.current.map((q) => q.id).sort()).toEqual([1, 2, 3])
       expect(result.current.map((q) => q.category)).toEqual(['drawing', 'animation', 'anatomy'])
     })
+  })
+
+  it('clears completedToday and picks new daily ids when the calendar date changes', () => {
+    const quests = [
+      makeQuest(1, 'drawing'),
+      makeQuest(2, 'animation'),
+      makeQuest(3, 'anatomy'),
+      makeQuest(4, 'drawing'),
+      makeQuest(5, 'animation'),
+    ]
+    useUIStore.setState({
+      isLoaded: true,
+      settings: {
+        ...useUIStore.getState().settings,
+        favoriteCategories: ['drawing', 'animation', 'anatomy'],
+        useRandomCategories: false,
+        learningProfile: 'animation',
+      },
+    })
+    useQuestStore.setState({
+      quests,
+      questsLoaded: true,
+      lastDailyQuestDate: '2026-05-14',
+      dailyQuestsIds: [1, 2, 3],
+      completedToday: [1, 2],
+    })
+
+    checkAndGenerateDailyQuests('2026-05-15')
+
+    const state = useQuestStore.getState()
+    expect(state.lastDailyQuestDate).toBe('2026-05-15')
+    expect(state.completedToday).toEqual([])
+    expect(state.dailyQuestsIds.length).toBeGreaterThan(0)
+    expect(state.dailyQuestsIds).not.toEqual([1, 2, 3])
   })
 })

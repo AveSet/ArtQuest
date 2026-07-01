@@ -1,8 +1,10 @@
 import { app, session } from 'electron'
 import {
   getStorageMode,
+  loadProgressSnapshot,
   requeuePendingGalleryUploads,
 } from '../localDb'
+import { parsePersistedWindowBounds } from '../ipc/windowBoundsHandlers'
 import { usesCloudStorage } from '../../shared/storageMode'
 import {
   setActivityTrackerConfig,
@@ -60,6 +62,17 @@ export function registerAppLifecycleHandlers(): void {
   app.whenReady().then(() => {
     if (process.platform === 'win32') {
       app.setAppUserModelId('com.artquest.app')
+    }
+
+    try {
+      const snapshot = loadProgressSnapshot()
+      const settings = snapshot?.settings
+      if (settings && typeof settings === 'object') {
+        const wb = (settings as Record<string, unknown>).windowBounds
+        appState.persistedWindowBounds = parsePersistedWindowBounds(wb)
+      }
+    } catch (err) {
+      console.warn('[bootstrap] Could not preload window bounds from progress:', err)
     }
 
     createWindow()

@@ -203,7 +203,7 @@
 }
 
 .goal-complete-burst {
-  animation: goal-complete-burst 0.65s ease-out;
+  animation: goal-complete-burst 0.9s ease-out;
 }
 
 @keyframes goal-complete-btn-flash {

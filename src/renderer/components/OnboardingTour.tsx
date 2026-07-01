@@ -21,6 +21,7 @@ const FULL_STEP_SELECTORS: (string | null)[] = [
   '[data-onboarding="dashboard-skills"]',
   '[data-onboarding="dashboard-next-action"]',
   '[data-onboarding="dashboard-dailies"]',
+  '[data-onboarding="dashboard-reward-stars"]',
   '[data-onboarding="dashboard-goals"]',
   '[data-onboarding="main-nav"]',
   '[data-onboarding="page-quests"]',
@@ -35,6 +36,7 @@ const FULL_STEP_SELECTORS: (string | null)[] = [
 
 const FULL_STEP_PATHS: (string | null)[] = [
   null,
+  '/',
   '/',
   '/',
   '/',
@@ -62,7 +64,7 @@ const QUICK_STEP_SELECTORS: (string | null)[] = [
 
 const QUICK_STEP_PATHS: (string | null)[] = [null, '/', '/', '/', '/', '/settings']
 
-const FULL_LAST_STEP = 13
+const FULL_LAST_STEP = 14
 const QUICK_LAST_STEP = 5
 
 function queryVisibleOnboardingTarget(selector: string): HTMLElement | null {
@@ -81,7 +83,7 @@ function navigateTargetForStep(mode: TourMode, step: number): { pathname: string
   const paths = mode === 'full' ? FULL_STEP_PATHS : QUICK_STEP_PATHS
   const p = paths[step]
   if (!p) return null
-  if (mode === 'full' && step === 8) return { pathname: p, search: '?onboarding=skill-detail' }
+  if (mode === 'full' && step === 9) return { pathname: p, search: '?onboarding=skill-detail' }
   return { pathname: p, search: '' }
 }
 
@@ -114,24 +116,26 @@ function stepTooltip(
     case 3:
       return { title: o.dailiesTitle, body: o.dailiesBody }
     case 4:
-      return { title: o.goalsTitle ?? o.skillsTitle, body: o.goalsBody ?? o.skillsBody }
+      return { title: o.portraitStarsTitle ?? o.dailiesTitle, body: o.portraitStarsBody ?? o.dailiesBody }
     case 5:
-      return { title: o.navTitle, body: o.navBody }
+      return { title: o.goalsTitle ?? o.skillsTitle, body: o.goalsBody ?? o.skillsBody }
     case 6:
-      return { title: o.questsTitle, body: o.questsBody }
+      return { title: o.navTitle, body: o.navBody }
     case 7:
-      return { title: o.skillsPageTitle, body: o.skillsPageBody }
+      return { title: o.questsTitle, body: o.questsBody }
     case 8:
-      return { title: o.skillsNodeDemoTitle, body: o.skillsNodeDemoBody }
+      return { title: o.skillsPageTitle, body: o.skillsPageBody }
     case 9:
-      return { title: o.galleryTitle, body: o.galleryBody }
+      return { title: o.skillsNodeDemoTitle, body: o.skillsNodeDemoBody }
     case 10:
-      return { title: o.resourcesTitle, body: o.materialsEngagementBody ?? o.resourcesBody }
+      return { title: o.galleryTitle, body: o.galleryBody }
     case 11:
-      return { title: o.statisticsTitle, body: o.statisticsBody }
+      return { title: o.resourcesTitle, body: o.materialsEngagementBody ?? o.resourcesBody }
     case 12:
-      return { title: o.achievementsTitle, body: o.achievementsBody }
+      return { title: o.statisticsTitle, body: o.statisticsBody }
     case 13:
+      return { title: o.achievementsTitle, body: o.achievementsBody }
+    case 14:
       return { title: o.settingsTitle, body: o.settingsBody }
     default:
       return null

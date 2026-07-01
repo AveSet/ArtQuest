@@ -258,6 +258,8 @@ export interface DesktopNamespace {
 }
 
 export interface ElectronAPI {
+  /** Set by preload; reliable desktop detection even before namespaced calls. */
+  isDesktop?: boolean
   progress: ProgressNamespace
   shell: ShellNamespace
   overlay: OverlayNamespace

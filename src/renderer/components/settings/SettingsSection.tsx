@@ -5,12 +5,14 @@ export default function SettingsSection({
   title,
   defaultOpen = true,
   collapsible = true,
+  compact = false,
   children,
   testId,
 }: {
   title: ReactNode
   defaultOpen?: boolean
   collapsible?: boolean
+  compact?: boolean
   children: ReactNode
   testId?: string
 }) {
@@ -24,7 +26,7 @@ export default function SettingsSection({
     )
   }
   return (
-    <div className="settings-section card-fantasy" data-testid={testId}>
+    <div className={`settings-section card-fantasy${compact ? ' settings-section--compact' : ''}`} data-testid={testId}>
       <button
         type="button"
         className="settings-section-header"

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { useI18n } from '@/i18n'
+import { isElectronDesktop, showItemInFolder } from '@/utils/electronBridge'
 
 const CONTEXT_MENU_W = 180
 const CONTEXT_MENU_H = 88
@@ -22,8 +23,8 @@ export function useGalleryWorkContextMenu() {
   const openFileLocation = useCallback(async (savedPath?: string) => {
     const path = savedPath ?? contextMenu?.savedPath
     setContextMenu(null)
-    if (!path || !window.electronAPI?.shell?.showItemInFolder) return
-    await window.electronAPI.shell.showItemInFolder(path)
+    if (!path) return
+    await showItemInFolder(path)
   }, [contextMenu?.savedPath])
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export function useGalleryWorkContextMenu() {
     return () => window.removeEventListener('mousedown', close)
   }, [contextMenu])
 
-  const canShowInFolder = Boolean(contextMenu?.savedPath && window.electronAPI?.shell?.showItemInFolder)
+  const canShowInFolder = Boolean(contextMenu?.savedPath && isElectronDesktop())
 
   const menuPortal =
     contextMenu &&
